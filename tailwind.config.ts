@@ -9,30 +9,30 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Campus Food Sharing Brand Colors
+        // Bocado Brand Colors
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#f0fdf6',
+          100: '#dcfcec',
+          200: '#baf7da',
+          300: '#8aefc0',
+          400: '#6BEFA3', // Main soft mint green
+          500: '#3dd97f',
+          600: '#2bb863',
+          700: '#259250',
+          800: '#227342',
+          900: '#1f5f37',
         },
-        secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
+        dark: {
+          50: '#f5f5f5',
+          100: '#e5e5e5',
+          200: '#d4d4d4',
+          300: '#a3a3a3',
+          400: '#737373',
+          500: '#525252',
+          600: '#404040',
+          700: '#2a2a2a',
+          800: '#1A1A1D', // Secondary dark
+          900: '#0E0E10', // Main deep dark
         },
         success: {
           50: '#f0fdf4',
@@ -72,7 +72,11 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'system-ui', 'sans-serif'],
+      },
+      backgroundColor: {
+        'primary-bg': '#0E0E10',
+        'secondary-bg': '#1A1A1D',
       },
     },
   },
