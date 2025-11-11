@@ -24,10 +24,19 @@ import { TOKEN_KEY } from '@/config/constants';
  * Sign up a new user
  * POST /auth/signup
  */
-export const signup = async (data: SignupRequest): Promise<SignupResponse> => {
+export const signup = async (data: SignupRequest): Promise<any> => {
   const response = await apiClient.post('/auth/signup', data);
-  // Return created user (spec/types may vary). Do not auto-persist token here; let the caller decide.
-  return response.data as SignupResponse;
+  // The backend may return either the created user or { message, token }
+  return response.data;
+};
+
+/**
+ * Get current user's profile
+ * GET /auth/profile
+ */
+export const getProfile = async (): Promise<{ user: any }> => {
+  const response = await apiClient.get('/auth/profile');
+  return response.data as { user: any };
 };
 
 /**

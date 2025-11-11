@@ -13,17 +13,38 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/config/constants';
-import { signup as apiSignup, login as apiLogin } from '@/lib/api/auth';
+import { signup as apiSignup, login as apiLogin, getProfile } from '@/lib/api/auth';
 import { useAuth } from '@/lib/hooks';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { TOKEN_KEY } from '@/config/constants';
 
 export const SignupForm = () => {
   const router = useRouter();
   const [error, setError] = useState('');
-  const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const { login: storeLogin } = useAuth();
+
+  const signupSchema = z
+    .object({
+      email: z.string().min(1, 'El email es requerido').email('Formato de email inválido'),
+      username: z.string().min(3, 'El nombre de usuario debe tener al menos 3 caracteres'),
+      password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
+      confirmPassword: z.string().min(6, 'Confirma tu contraseña'),
+    })
+    .superRefine((val, ctx) => {
+      if (val.password !== val.confirmPassword) {
+        ctx.addIssue({ path: ['confirmPassword'], message: 'Las contraseñas no coinciden', code: z.ZodIssueCode.custom });
+      }
+    });
+
+  type SignupFormData = z.infer<typeof signupSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupFormData>({ resolver: zodResolver(signupSchema) });
 
   // TODO: Initialize React Hook Form
   // const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
@@ -31,20 +52,28 @@ export const SignupForm = () => {
   // });
 
   // TODO: Implement signup handler
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: SignupFormData) => {
     setError('');
     try {
-      if (password !== confirmPassword) {
-        setError('Las contraseñas no coinciden');
+      const created = await apiSignup({ email: data.email, username: data.username, password: data.password });
+
+      // If signup returns a token directly, use it to fetch profile and log the user in
+      const token = (created && (created.token || created.access_token)) as string | undefined;
+      if (token) {
+        // temporarily store token so apiClient can include it in the profile request
+        if (typeof window !== 'undefined') {
+          localStorage.setItem(TOKEN_KEY, token);
+        }
+
+        const profile = await getProfile();
+        storeLogin(profile.user, token);
+        router.push(ROUTES.PRODUCTS);
         return;
       }
 
-      const created = await apiSignup({ email, username, password });
-
-      // Auto-login
-      const loginResp = await apiLogin({ email, password });
+      // Otherwise attempt to login (backend may require explicit login)
+      const loginResp = await apiLogin({ email: data.email, password: data.password });
       if ((loginResp as any).requires2FA) {
-        // Signup succeeded but user has 2FA enabled for some reason — ask for login separately
         router.push(ROUTES.LOGIN);
         return;
       }
@@ -72,27 +101,21 @@ export const SignupForm = () => {
         </div>
       )}
 
-      <form
-        className="space-y-6"
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSubmit({});
-        }}
-      >
+      <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <Input
           label="Email"
           type="email"
           placeholder="tu@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          {...register('email')}
+          error={errors.email?.message}
         />
 
         <Input
           label="Nombre de Usuario"
           type="text"
           placeholder="usuario123"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          {...register('username')}
+          error={errors.username?.message}
         />
 
         <Input
@@ -100,19 +123,19 @@ export const SignupForm = () => {
           type="password"
           placeholder="••••••••"
           helperText="Mínimo 6 caracteres"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register('password')}
+          error={errors.password?.message}
         />
 
         <Input
           label="Confirmar Contraseña"
           type="password"
           placeholder="••••••••"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          {...register('confirmPassword')}
+          error={errors.confirmPassword?.message}
         />
 
-        <Button type="submit" className="w-full" size="lg">
+        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
           Crear Cuenta
         </Button>
       </form>
