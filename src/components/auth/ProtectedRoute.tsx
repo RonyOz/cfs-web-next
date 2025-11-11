@@ -19,21 +19,18 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute = ({ children, requireAdmin = false }: ProtectedRouteProps) => {
   const router = useRouter();
-  // TODO: Get auth state from hook
-  // const { isAuthenticated, isAdmin, user } = useAuth();
-  
-  const isAuthenticated = false; // Replace with actual value
-  const isAdmin = false; // Replace with actual value
+  // Get auth state from hook
+  const { isAuthenticated, isAdmin } = useAuth();
 
   useEffect(() => {
-    // TODO: Check if user is authenticated
+    // Check if user is authenticated
     if (!isAuthenticated) {
       // Redirect to login page
       router.push(ROUTES.LOGIN);
       return;
     }
 
-    // TODO: Check if admin access is required
+    // Check if admin access is required
     if (requireAdmin && !isAdmin) {
       // Redirect to home or show unauthorized message
       router.push(ROUTES.HOME);

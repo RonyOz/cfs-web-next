@@ -13,11 +13,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/config/constants';
+import { login as apiLogin } from '@/lib/api/auth';
+import { useAuth } from '@/lib/hooks';
 
 export const LoginForm = () => {
   const router = useRouter();
   const [requires2FA, setRequires2FA] = useState(false);
   const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [twoFactorCode, setTwoFactorCode] = useState('');
+  const { login: storeLogin } = useAuth();
 
   // TODO: Initialize React Hook Form
   // const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
@@ -26,17 +32,37 @@ export const LoginForm = () => {
 
   // TODO: Implement login handler
   const onSubmit = async (data: any) => {
-    // TODO: Call login API
-    // const response = await login(data);
-    // 
-    // if ('requires2FA' in response) {
-    //   setRequires2FA(true);
-    //   return;
-    // }
-    // 
-    // // Store token and user in auth store
-    // // Redirect to products page
-    // router.push(ROUTES.PRODUCTS);
+    setError('');
+    try {
+      if (!requires2FA) {
+        const resp = await apiLogin({ email, password });
+
+        if ((resp as any).requires2FA) {
+          setRequires2FA(true);
+          return;
+        }
+
+        const loginData = resp as any;
+        // Persist in store
+        storeLogin(loginData.user, loginData.access_token);
+        router.push(ROUTES.PRODUCTS);
+      } else {
+        // verify with twoFactorCode
+        const resp = await apiLogin({ email, password, twoFactorCode });
+
+        if ((resp as any).requires2FA) {
+          // still requires 2FA or invalid
+          setError((resp as any).message || 'Código 2FA inválido');
+          return;
+        }
+
+        const loginData = resp as any;
+        storeLogin(loginData.user, loginData.access_token);
+        router.push(ROUTES.PRODUCTS);
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err?.message || 'Error al iniciar sesión');
+    }
   };
 
   return (
@@ -54,23 +80,29 @@ export const LoginForm = () => {
         </div>
       )}
 
-      <form className="space-y-6">
+      <form
+        className="space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit({});
+        }}
+      >
         {!requires2FA ? (
           <>
             <Input
               label="Email"
               type="email"
               placeholder="tu@email.com"
-              // {...register('email')}
-              // error={errors.email?.message}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
 
             <Input
               label="Contraseña"
               type="password"
               placeholder="••••••••"
-              // {...register('password')}
-              // error={errors.password?.message}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
 
             <Button type="submit" className="w-full" size="lg">
@@ -82,14 +114,14 @@ export const LoginForm = () => {
             <p className="text-sm text-gray-600">
               Ingresa el código de autenticación de dos factores de tu aplicación.
             </p>
-            
+
             <Input
               label="Código 2FA"
               type="text"
               placeholder="123456"
               maxLength={6}
-              // {...register('twoFactorCode')}
-              // error={errors.twoFactorCode?.message}
+              value={twoFactorCode}
+              onChange={(e) => setTwoFactorCode(e.target.value)}
             />
 
             <Button type="submit" className="w-full" size="lg">

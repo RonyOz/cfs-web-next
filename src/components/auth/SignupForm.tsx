@@ -13,10 +13,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button, Input } from '@/components/ui';
 import { ROUTES } from '@/config/constants';
+import { signup as apiSignup, login as apiLogin } from '@/lib/api/auth';
+import { useAuth } from '@/lib/hooks';
 
 export const SignupForm = () => {
   const router = useRouter();
   const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const { login: storeLogin } = useAuth();
 
   // TODO: Initialize React Hook Form
   // const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
@@ -25,18 +32,29 @@ export const SignupForm = () => {
 
   // TODO: Implement signup handler
   const onSubmit = async (data: any) => {
-    // TODO: Call signup API
-    // const user = await signup(data);
-    // 
-    // // Auto-login after signup
-    // const loginResponse = await login({
-    //   email: data.email,
-    //   password: data.password,
-    // });
-    // 
-    // // Store token and user in auth store
-    // // Redirect to products page
-    // router.push(ROUTES.PRODUCTS);
+    setError('');
+    try {
+      if (password !== confirmPassword) {
+        setError('Las contraseñas no coinciden');
+        return;
+      }
+
+      const created = await apiSignup({ email, username, password });
+
+      // Auto-login
+      const loginResp = await apiLogin({ email, password });
+      if ((loginResp as any).requires2FA) {
+        // Signup succeeded but user has 2FA enabled for some reason — ask for login separately
+        router.push(ROUTES.LOGIN);
+        return;
+      }
+
+      const loginData = loginResp as any;
+      storeLogin(loginData.user, loginData.access_token);
+      router.push(ROUTES.PRODUCTS);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err?.message || 'Error al crear la cuenta');
+    }
   };
 
   return (
@@ -54,21 +72,27 @@ export const SignupForm = () => {
         </div>
       )}
 
-      <form className="space-y-6">
+      <form
+        className="space-y-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          onSubmit({});
+        }}
+      >
         <Input
           label="Email"
           type="email"
           placeholder="tu@email.com"
-          // {...register('email')}
-          // error={errors.email?.message}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <Input
           label="Nombre de Usuario"
           type="text"
           placeholder="usuario123"
-          // {...register('username')}
-          // error={errors.username?.message}
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
         />
 
         <Input
@@ -76,16 +100,16 @@ export const SignupForm = () => {
           type="password"
           placeholder="••••••••"
           helperText="Mínimo 6 caracteres"
-          // {...register('password')}
-          // error={errors.password?.message}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
         <Input
           label="Confirmar Contraseña"
           type="password"
           placeholder="••••••••"
-          // {...register('confirmPassword')}
-          // error={errors.confirmPassword?.message}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         <Button type="submit" className="w-full" size="lg">
