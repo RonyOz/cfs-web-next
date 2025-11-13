@@ -10,7 +10,6 @@
 import { useProductStore } from '@/store/productStore';
 
 export const useProducts = () => {
-  // TODO: Implement useProducts hook
   const products = useProductStore((state) => state.products);
   const loading = useProductStore((state) => state.loading);
   const error = useProductStore((state) => state.error);

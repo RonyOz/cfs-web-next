@@ -16,6 +16,7 @@
 
 import { create } from 'zustand';
 import { Product, ProductFormData, ProductFilters } from '@/types';
+import { getProducts } from '@/lib/api';
 
 interface ProductState {
   products: Product[];
@@ -54,17 +55,16 @@ export const useProductStore = create<ProductState>((set, get) => ({
   setError: (error) => set({ error }),
   setFilters: (filters) => set({ filters }),
 
-  // API Actions (TODO: Implement)
   fetchProducts: async (filters) => {
-    // TODO: Implement fetch products
-    // set({ loading: true, error: null });
-    // try {
-    //   const products = await getProducts(filters);
-    //   set({ products, loading: false });
-    // } catch (error) {
-    //   set({ error: 'Error al cargar productos', loading: false });
-    // }
-    throw new Error('Not implemented');
+    set({ loading: true, error: null });
+    try {
+      const products = await getProducts(filters);
+      set({ products, loading: false });
+      console.log("Productos ")
+      console.log(products)
+    } catch (error) {
+      set({ error: 'Error al cargar productos', loading: false });
+    }
   },
 
   fetchProductById: async (id) => {

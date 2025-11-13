@@ -11,23 +11,18 @@ import apiClient from './client';
 import { Product, ProductFormData, ProductFilters, MessageResponse } from '@/types';
 
 /**
- * Get all available products
- * GET /products
- * 
  * TODO: Add pagination parameters
  * TODO: Support filters (search, minPrice, maxPrice, sellerId)
  */
 export const getProducts = async (filters?: ProductFilters): Promise<Product[]> => {
-  // TODO: Implement get products logic with filters
-  // const params = new URLSearchParams();
-  // if (filters?.search) params.append('search', filters.search);
-  // if (filters?.minPrice) params.append('minPrice', filters.minPrice.toString());
-  // if (filters?.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
-  // if (filters?.sellerId) params.append('sellerId', filters.sellerId);
-  // 
-  // const response = await apiClient.get(`/products?${params.toString()}`);
-  // return response.data;
-  throw new Error('Not implemented');
+  const params = new URLSearchParams();
+  if (filters?.search) params.append('search', filters.search);
+  if (filters?.minPrice) params.append('minPrice', filters.minPrice.toString());
+  if (filters?.maxPrice) params.append('maxPrice', filters.maxPrice.toString());
+  if (filters?.sellerId) params.append('sellerId', filters.sellerId);
+  
+  const response = await apiClient.get(`/products?${params.toString()}`);
+  return response.data;
 };
 
 /**
