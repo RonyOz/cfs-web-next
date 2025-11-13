@@ -1,22 +1,14 @@
-/**
- * Product Store
- * Zustand store for managing products state
- * 
- * Academic Requirement: State Management (10%)
- * - Centralized products state
- * - Loading and error states
- * - CRUD operations for products
- * 
- * TODO: Implement all store actions
- * TODO: Add pagination state
- * TODO: Add filters state
- */
-
 'use client';
 
 import { create } from 'zustand';
 import { Product, ProductFormData, ProductFilters } from '@/types';
-import { getProducts } from '@/lib/api';
+import { 
+  getProducts, 
+  getProductById, 
+  createProduct as apiCreateProduct,
+  updateProduct as apiUpdateProduct,
+  deleteProduct as apiDeleteProduct 
+} from '@/lib/api';
 
 interface ProductState {
   products: Product[];
@@ -68,63 +60,56 @@ export const useProductStore = create<ProductState>((set, get) => ({
   },
 
   fetchProductById: async (id) => {
-    // TODO: Implement fetch product by ID
-    // set({ loading: true, error: null });
-    // try {
-    //   const product = await getProductById(id);
-    //   set({ selectedProduct: product, loading: false });
-    // } catch (error) {
-    //   set({ error: 'Error al cargar producto', loading: false });
-    // }
-    throw new Error('Not implemented');
+    set({ loading: true, error: null });
+    try {
+      const product = await getProductById(id);
+      set({ selectedProduct: product, loading: false });
+    } catch (error) {
+      set({ error: 'Error al cargar producto', loading: false });
+      throw error;
+    }
   },
 
   createProduct: async (data) => {
-    // TODO: Implement create product
-    // set({ loading: true, error: null });
-    // try {
-    //   const product = await createProduct(data);
-    //   set((state) => ({
-    //     products: [...state.products, product],
-    //     loading: false,
-    //   }));
-    // } catch (error) {
-    //   set({ error: 'Error al crear producto', loading: false });
-    //   throw error;
-    // }
-    throw new Error('Not implemented');
+    set({ loading: true, error: null });
+    try {
+      const product = await apiCreateProduct(data);
+      set((state) => ({
+        products: [...state.products, product],
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: 'Error al crear producto', loading: false });
+      throw error;
+    }
   },
 
   updateProduct: async (id, data) => {
-    // TODO: Implement update product
-    // set({ loading: true, error: null });
-    // try {
-    //   const updatedProduct = await updateProduct(id, data);
-    //   set((state) => ({
-    //     products: state.products.map((p) => (p.id === id ? updatedProduct : p)),
-    //     selectedProduct: state.selectedProduct?.id === id ? updatedProduct : state.selectedProduct,
-    //     loading: false,
-    //   }));
-    // } catch (error) {
-    //   set({ error: 'Error al actualizar producto', loading: false });
-    //   throw error;
-    // }
-    throw new Error('Not implemented');
+    set({ loading: true, error: null });
+    try {
+      const updatedProduct = await apiUpdateProduct(id, data);
+      set((state) => ({
+        products: state.products.map((p) => (p.id === id ? updatedProduct : p)),
+        selectedProduct: state.selectedProduct?.id === id ? updatedProduct : state.selectedProduct,
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: 'Error al actualizar producto', loading: false });
+      throw error;
+    }
   },
 
   deleteProduct: async (id) => {
-    // TODO: Implement delete product
-    // set({ loading: true, error: null });
-    // try {
-    //   await deleteProduct(id);
-    //   set((state) => ({
-    //     products: state.products.filter((p) => p.id !== id),
-    //     loading: false,
-    //   }));
-    // } catch (error) {
-    //   set({ error: 'Error al eliminar producto', loading: false });
-    //   throw error;
-    // }
-    throw new Error('Not implemented');
+    set({ loading: true, error: null });
+    try {
+      await apiDeleteProduct(id);
+      set((state) => ({
+        products: state.products.filter((p) => p.id !== id),
+        loading: false,
+      }));
+    } catch (error) {
+      set({ error: 'Error al eliminar producto', loading: false });
+      throw error;
+    }
   },
 }));

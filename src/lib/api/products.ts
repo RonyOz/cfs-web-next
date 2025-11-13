@@ -1,19 +1,6 @@
-/**
- * Product API Functions
- * All product-related API calls
- * 
- * TODO: Implement all function bodies
- * TODO: Add pagination support
- * TODO: Add proper error handling
- */
-
 import apiClient from './client';
 import { Product, ProductFormData, ProductFilters, MessageResponse } from '@/types';
 
-/**
- * TODO: Add pagination parameters
- * TODO: Support filters (search, minPrice, maxPrice, sellerId)
- */
 export const getProducts = async (filters?: ProductFilters): Promise<Product[]> => {
   const params = new URLSearchParams();
   if (filters?.search) params.append('search', filters.search);
@@ -25,57 +12,25 @@ export const getProducts = async (filters?: ProductFilters): Promise<Product[]> 
   return response.data;
 };
 
-/**
- * Get product details by ID
- * GET /products/:id
- */
 export const getProductById = async (id: string): Promise<Product> => {
-  // TODO: Implement get product by ID logic
-  // const response = await apiClient.get(`/products/${id}`);
-  // return response.data;
-  throw new Error('Not implemented');
+  const response = await apiClient.get(`/products/${id}`);
+  return response.data;
 };
 
-/**
- * Create a new product
- * POST /products
- * 
- * Note: User must be authenticated
- */
 export const createProduct = async (data: ProductFormData): Promise<Product> => {
-  // TODO: Implement create product logic
-  // Validate data before sending
-  // const response = await apiClient.post('/products', data);
-  // return response.data;
-  throw new Error('Not implemented');
+  const response = await apiClient.post('/products', data);
+  return response.data;
 };
 
-/**
- * Update product
- * PATCH /products/:id
- * 
- * Note: Only product owner or admin can update
- */
 export const updateProduct = async (
   id: string,
   data: Partial<ProductFormData>
 ): Promise<Product> => {
-  // TODO: Implement update product logic
-  // const response = await apiClient.patch(`/products/${id}`, data);
-  // return response.data;
-  throw new Error('Not implemented');
+  const response = await apiClient.patch(`/products/${id}`, data);
+  return response.data;
 };
 
-/**
- * Delete product
- * DELETE /products/:id
- * 
- * Note: Only product owner or admin can delete
- * Cannot delete if product has active orders
- */
 export const deleteProduct = async (id: string): Promise<MessageResponse> => {
-  // TODO: Implement delete product logic
-  // const response = await apiClient.delete(`/products/${id}`);
-  // return response.data;
-  throw new Error('Not implemented');
+  const response = await apiClient.delete(`/products/${id}`);
+  return response.data;
 };
