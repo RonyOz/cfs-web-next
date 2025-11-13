@@ -7,7 +7,6 @@ import { useEffect } from "react";
 
 export default function Home() {
 
-  // Mock data - replace with real API data
   const {
     products,
     loading,
@@ -23,7 +22,7 @@ export default function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-dark-900">
+    <div className="min-h-screen bg-primary-bg">
       <Header />
 
       {/* Hero Section */}
@@ -43,7 +42,7 @@ export default function Home() {
                   Ver Productos
                 </button>
               </Link>
-              <Link href={ROUTES.SIGNUP}>
+              <Link href={ROUTES.AUTH}>
                 <button className="rounded-lg border border-gray-700 bg-transparent px-6 py-3 text-sm font-semibold text-gray-100 hover:bg-gray-800 transition-colors">
                   Comenzar a Vender
                 </button>
