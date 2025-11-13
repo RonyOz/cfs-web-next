@@ -89,8 +89,8 @@ export const LoginForm = () => {
   return (
     <div className="w-full max-w-md">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h2>
-        <p className="mt-2 text-gray-600">
+        <h2 className="text-3xl font-bold text-gray-100">Iniciar Sesión</h2>
+        <p className="mt-2 text-gray-400">
           Ingresa a tu cuenta de Campus Food Sharing
         </p>
       </div>
@@ -109,6 +109,7 @@ export const LoginForm = () => {
               placeholder="tu@email.com"
               {...register('email')}
               error={errors.email?.message}
+              className='text-gray-300'
             />
 
             <Input
@@ -125,7 +126,7 @@ export const LoginForm = () => {
           </>
         ) : (
           <>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-300">
               Ingresa el código de autenticación de dos factores de tu aplicación.
             </p>
             <Input
@@ -149,7 +150,7 @@ export const LoginForm = () => {
       </form>
 
       <div className="mt-6 text-center text-sm">
-        <p className="text-gray-600">
+        <p className="text-gray-300">
           ¿No tienes una cuenta?{' '}
           <Link href={ROUTES.SIGNUP} className="text-primary-600 hover:text-primary-700 font-medium">
             Regístrate aquí

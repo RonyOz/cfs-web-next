@@ -95,15 +95,10 @@ export const Header = () => {
               </>
             ) : (
               <>
-                <Link href={ROUTES.LOGIN}>
+                <Link href={ROUTES.AUTH}>
                   <Button variant="outline" size="sm" className="gap-2">
                     <User className="h-4 w-4" />
                     Iniciar Sesión
-                  </Button>
-                </Link>
-                <Link href={ROUTES.SIGNUP}>
-                  <Button variant="primary" size="sm">
-                    Registrarse
                   </Button>
                 </Link>
               </>
@@ -178,15 +173,10 @@ export const Header = () => {
                 </>
               ) : (
                 <>
-                  <Link href={ROUTES.LOGIN} onClick={() => setMobileMenuOpen(false)}>
+                  <Link href={ROUTES.AUTH} onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" size="sm" className="w-full gap-2">
                       <User className="h-4 w-4" />
-                      Iniciar Sesión
-                    </Button>
-                  </Link>
-                  <Link href={ROUTES.SIGNUP} onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="primary" size="sm" className="w-full">
-                      Registrarse
+                      Iniciar Sesión / Registrarse
                     </Button>
                   </Link>
                 </>

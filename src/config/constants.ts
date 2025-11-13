@@ -25,8 +25,9 @@ export const USER_ROLES = {
 // Routes
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
-  SIGNUP: '/signup',
+  AUTH: '/auth',
+  LOGIN: '/auth', // Alias for backwards compatibility
+  SIGNUP: '/auth', // Alias for backwards compatibility
   PRODUCTS: '/products',
   PRODUCT_DETAIL: (id: string) => `/products/${id}`,
   PRODUCT_NEW: '/products/new',
