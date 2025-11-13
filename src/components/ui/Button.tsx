@@ -1,13 +1,8 @@
-/**
- * TODO: Implement all button variants (primary, secondary, danger, etc.)
- * TODO: Add loading state
- * TODO: Add disabled state styling
- */
-
 'use client';
 
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -25,21 +20,20 @@ export const Button = ({
   disabled,
   ...props
 }: ButtonProps) => {
-  // TODO: Implement button variants and sizes with Tailwind classes
-  const baseStyles = 'rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseStyles = 'inline-flex items-center justify-center gap-2 rounded-lg font-normal transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 focus:ring-offset-dark-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none cursor-pointer';
   
   const variantStyles = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
-    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500',
-    danger: 'bg-danger-600 text-white hover:bg-danger-700 focus:ring-danger-500',
-    outline: 'border-2 border-primary-600 text-primary-600 hover:bg-primary-50',
-    ghost: 'text-primary-600 hover:bg-primary-50',
+    primary: 'bg-primary-400 text-dark-900 hover:bg-primary-500 active:bg-primary-600 shadow-sm hover:shadow-md',
+    secondary: 'bg-dark-700 text-gray-100 hover:bg-dark-600 active:bg-dark-500 border border-dark-600',
+    danger: 'bg-danger-600 text-white hover:bg-danger-700 active:bg-danger-800 shadow-sm hover:shadow-md',
+    outline: 'border-2 border-primary-400 text-primary-400 hover:bg-primary-400/10 active:bg-primary-400/20',
+    ghost: 'text-gray-300 hover:bg-dark-800 active:bg-dark-700 hover:text-primary-400',
   };
 
   const sizeStyles = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    sm: 'px-3 py-1.5 text-sm h-8',
+    md: 'px-4 py-2 text-base h-10',
+    lg: 'px-6 py-3 text-lg h-12',
   };
 
   return (
@@ -48,12 +42,12 @@ export const Button = ({
         baseStyles,
         variantStyles[variant],
         sizeStyles[size],
-        (disabled || isLoading) && 'opacity-50 cursor-not-allowed',
         className
       )}
       disabled={disabled || isLoading}
       {...props}
     >
+      {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
       {isLoading ? 'Cargando...' : children}
     </button>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ROUTES } from "@/config/constants";
 import { useProducts } from "@/lib/hooks";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/Button";
 
 export default function Home() {
 
@@ -38,14 +39,14 @@ export default function Home() {
             </p>
             <div className="mt-10 flex items-center justify-center gap-4">
               <Link href={ROUTES.PRODUCTS}>
-                <button className="rounded-lg bg-primary-400 px-6 py-3 text-sm font-semibold text-dark-900 shadow-sm hover:bg-primary-500 transition-colors">
+                <Button variant="primary" size="lg">
                   Ver Productos
-                </button>
+                </Button>
               </Link>
               <Link href={ROUTES.AUTH}>
-                <button className="rounded-lg border border-gray-700 bg-transparent px-6 py-3 text-sm font-semibold text-gray-100 hover:bg-gray-800 transition-colors">
+                <Button variant="outline" size="lg">
                   Comenzar a Vender
-                </button>
+                </Button>
               </Link>
             </div>
           </div>

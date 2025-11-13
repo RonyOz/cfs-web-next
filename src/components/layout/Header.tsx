@@ -1,8 +1,3 @@
-/**
- * Header Component
- * Navigation bar with authentication state and role-based access
- */
-
 'use client';
 
 import Link from 'next/link';
@@ -96,7 +91,7 @@ export const Header = () => {
             ) : (
               <>
                 <Link href={ROUTES.AUTH}>
-                  <Button variant="outline" size="sm" className="gap-2">
+                  <Button variant="outline" size="sm" className="gap-2 border-[1px]">
                     <User className="h-4 w-4" />
                     Iniciar Sesión
                   </Button>
