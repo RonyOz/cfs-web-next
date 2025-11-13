@@ -1,10 +1,3 @@
-/**
- * Products Hook
- * Custom hook for managing products state
- * 
- * TODO: Implement hook logic using Zustand store and API calls
- */
-
 'use client';
 
 import { useProductStore } from '@/store/productStore';
