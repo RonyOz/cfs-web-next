@@ -1,11 +1,3 @@
-/**
- * TODO: Implement form logic with React Hook Form
- * TODO: Add Zod validation
- * TODO: Add password strength indicator
- * TODO: Show error messages properly (no window.alert!)
- * TODO: Redirect after successful signup
- */
-
 'use client';
 
 import { useState } from 'react';
@@ -46,12 +38,6 @@ export const SignupForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<SignupFormData>({ resolver: zodResolver(signupSchema) });
 
-  // TODO: Initialize React Hook Form
-  // const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
-  //   resolver: zodResolver(signupSchema),
-  // });
-
-  // TODO: Implement signup handler
   const onSubmit = async (data: SignupFormData) => {
     setError('');
     try {

@@ -1,11 +1,3 @@
-/**
- * TODO: Implement form logic with React Hook Form
- * TODO: Add Zod validation
- * TODO: Handle 2FA flow
- * TODO: Show error messages properly (no window.alert!)
- * TODO: Redirect after successful login
- */
-
 'use client';
 
 import { useState } from 'react';
@@ -42,12 +34,6 @@ export const LoginForm = () => {
     getValues,
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
 
-  // TODO: Initialize React Hook Form
-  // const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
-  //   resolver: zodResolver(loginSchema),
-  // });
-
-  // TODO: Implement login handler
   const onSubmit = async (data: LoginFormData) => {
     setError('');
     try {
