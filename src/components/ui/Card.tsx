@@ -15,12 +15,11 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const Card = ({ children, hover = false, className, ...props }: CardProps) => {
-  // TODO: Implement card with shadow and border
   return (
     <div
       className={cn(
-        'bg-white rounded-lg border border-gray-200 shadow-sm p-6',
-        hover && 'hover:shadow-md transition-shadow cursor-pointer',
+        'bg-dark-800 rounded-lg border border-dark-700 shadow-sm p-6',
+        hover && 'hover:border-primary-400/50 hover:shadow-lg transition-all duration-200',
         className
       )}
       {...props}
@@ -44,7 +43,7 @@ export const CardBody = ({ children, className, ...props }: HTMLAttributes<HTMLD
 );
 
 export const CardFooter = ({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('mt-4 pt-4 border-t border-gray-200', className)} {...props}>
+  <div className={cn('mt-4 pt-4 border-t border-dark-700', className)} {...props}>
     {children}
   </div>
 );

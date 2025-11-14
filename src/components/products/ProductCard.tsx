@@ -11,6 +11,8 @@ import { Product } from '@/types';
 import { Card, Button } from '@/components/ui';
 import { formatPrice } from '@/lib/utils';
 import { ROUTES } from '@/config/constants';
+import { useAuth } from '@/lib/hooks';
+import { ShoppingCart } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -27,34 +29,33 @@ export const ProductCard = ({
   onDelete,
   showActions = true,
 }: ProductCardProps) => {
-  // TODO: Get current user from auth store
-  // const { user, isAdmin } = useAuth();
+  const { user, isAdmin } = useAuth();
   
-  // TODO: Check if current user is the owner
-  // const isOwner = user?.id === product.seller.id;
-  // const canEdit = isOwner || isAdmin;
+  const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
+  const isOwner = user?.id === sellerId;
+  const canEdit = isOwner || isAdmin;
 
   return (
     <Card hover className="h-full flex flex-col">
       {/* Product Image Placeholder */}
-      <div className="w-full h-48 bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
-        <p className="text-gray-500">Imagen del Producto</p>
+      <div className="w-full h-48 bg-dark-700 rounded-lg mb-4 flex items-center justify-center">
+        <p className="text-gray-500 text-sm">Sin imagen</p>
       </div>
 
       {/* Product Info */}
       <div className="flex-1">
         <Link href={ROUTES.PRODUCT_DETAIL(product.id)}>
-          <h3 className="text-lg font-semibold text-gray-900 hover:text-primary-600">
+          <h3 className="text-lg font-semibold text-gray-100 hover:text-primary-400 transition-colors">
             {product.name}
           </h3>
         </Link>
         
-        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+        <p className="text-sm text-gray-400 mt-2 line-clamp-2">
           {product.description}
         </p>
 
-        <div className="mt-3 flex items-center justify-between">
-          <p className="text-2xl font-bold text-primary-600">
+        <div className="mt-4 flex items-center justify-between">
+          <p className="text-2xl font-bold text-primary-400">
             {formatPrice(product.price)}
           </p>
           <p className="text-sm text-gray-500">
@@ -62,7 +63,7 @@ export const ProductCard = ({
           </p>
         </div>
 
-        <p className="text-xs text-gray-500 mt-2">
+        <p className="text-xs text-gray-500 mt-3">
           Vendedor: {typeof product.seller === 'object' ? product.seller.username : 'N/A'}
         </p>
       </div>
@@ -70,20 +71,19 @@ export const ProductCard = ({
       {/* Actions */}
       {showActions && (
         <div className="mt-4 flex gap-2">
-          {/* TODO: Show "Add to Cart" only if not owner */}
-          {onAddToCart && product.stock > 0 && (
+          {!isOwner && onAddToCart && product.stock > 0 && (
             <Button
               variant="primary"
               size="sm"
-              className="flex-1"
+              className="flex-1 gap-2"
               onClick={() => onAddToCart(product)}
             >
-              Agregar al Carrito
+              <ShoppingCart className="h-4 w-4" />
+              Agregar
             </Button>
           )}
 
-          {/* TODO: Show edit/delete buttons only for owner or admin */}
-          {/* {canEdit && ( */}
+          {canEdit && (
             <>
               {onEdit && (
                 <Button
@@ -104,13 +104,13 @@ export const ProductCard = ({
                 </Button>
               )}
             </>
-          {/* )} */}
+          )}
         </div>
       )}
 
       {product.stock === 0 && (
-        <div className="mt-2 p-2 bg-danger-50 rounded-lg text-center">
-          <p className="text-sm text-danger-700 font-medium">Agotado</p>
+        <div className="mt-2 p-2 bg-danger-600/20 border border-danger-600 rounded-lg text-center">
+          <p className="text-sm text-danger-500 font-medium">Agotado</p>
         </div>
       )}
     </Card>
