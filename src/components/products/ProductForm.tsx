@@ -1,123 +1,150 @@
-/**
- * TODO: Implement form logic with React Hook Form
- * TODO: Add Zod validation
- * TODO: Handle create and update modes
- * TODO: Show error messages properly (no window.alert!)
- */
-
 'use client';
 
-import { useEffect } from 'react';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Product, ProductFormData } from '@/types';
-import { Button, Input } from '@/components/ui';
+import { Button, Input, Card } from '@/components/ui';
+import { useProducts } from '@/lib/hooks';
+import { ROUTES } from '@/config/constants';
 
 interface ProductFormProps {
   product?: Product | null;
-  onSubmit: (data: ProductFormData) => Promise<void>;
-  onCancel?: () => void;
-  isLoading?: boolean;
 }
 
-export const ProductForm = ({
-  product,
-  onSubmit,
-  onCancel,
-  isLoading = false,
-}: ProductFormProps) => {
+export const ProductForm = ({ product }: ProductFormProps) => {
+  const router = useRouter();
+  const { createProduct, updateProduct } = useProducts();
   const isEditMode = !!product;
+  
+  const [formData, setFormData] = useState<ProductFormData>({
+    name: product?.name || '',
+    description: product?.description || '',
+    price: product?.price || 0,
+    stock: product?.stock || 0,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  // TODO: Initialize React Hook Form
-  // const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>({
-  //   resolver: zodResolver(productSchema),
-  //   defaultValues: product || {},
-  // });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'number' ? parseFloat(value) || 0 : value
+    }));
+  };
 
-  // TODO: Reset form when product changes
-  useEffect(() => {
-    if (product) {
-      // reset(product);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    
+    // Validation
+    if (!formData.name.trim()) {
+      setError('El nombre es requerido');
+      return;
     }
-  }, [product]);
+    if (formData.price <= 0) {
+      setError('El precio debe ser mayor a 0');
+      return;
+    }
+    if (formData.stock < 0) {
+      setError('El stock no puede ser negativo');
+      return;
+    }
 
-  // TODO: Implement submit handler
-  const handleFormSubmit = async (data: ProductFormData) => {
+    setIsLoading(true);
     try {
-      await onSubmit(data);
-      // Show success message
-      // Reset form if creating new product
-      if (!isEditMode) {
-        // reset();
+      if (isEditMode && product) {
+        await updateProduct(product.id, formData);
+      } else {
+        await createProduct(formData);
       }
-    } catch (error) {
-      // Show error message (no window.alert!)
+      router.push(ROUTES.PRODUCTS);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err?.message || 'Error al guardar el producto');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <form className="space-y-6">
-      <Input
-        label="Nombre del Producto"
-        type="text"
-        placeholder="Ej: Sandwich de jamón"
-        // {...register('name')}
-        // error={errors.name?.message}
-      />
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Descripción
-        </label>
-        <textarea
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-          rows={4}
-          placeholder="Describe tu producto..."
-          // {...register('description')}
-        />
-        {/* TODO: Show error message */}
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <Input
-          label="Precio (USD)"
-          type="number"
-          step="0.01"
-          min="0"
-          placeholder="0.00"
-          // {...register('price', { valueAsNumber: true })}
-          // error={errors.price?.message}
-        />
+    <Card>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-4 bg-danger-600/20 border border-danger-600 rounded-lg">
+            <p className="text-sm text-danger-500">{error}</p>
+          </div>
+        )}
 
         <Input
-          label="Stock"
-          type="number"
-          min="0"
-          placeholder="0"
-          // {...register('stock', { valueAsNumber: true })}
-          // error={errors.stock?.message}
+          label="Nombre del Producto"
+          name="name"
+          type="text"
+          placeholder="Ej: Sandwich de jamón"
+          value={formData.name}
+          onChange={handleChange}
+          required
         />
-      </div>
 
-      <div className="flex gap-4">
-        <Button
-          type="submit"
-          variant="primary"
-          className="flex-1"
-          isLoading={isLoading}
-        >
-          {isEditMode ? 'Actualizar Producto' : 'Crear Producto'}
-        </Button>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Descripción
+          </label>
+          <textarea
+            name="description"
+            className="w-full px-3 py-2 bg-dark-900 border border-dark-700 rounded-lg text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
+            rows={4}
+            placeholder="Describe tu producto..."
+            value={formData.description}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        {onCancel && (
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="Precio (USD)"
+            name="price"
+            type="number"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            value={formData.price}
+            onChange={handleChange}
+            required
+          />
+
+          <Input
+            label="Stock"
+            name="stock"
+            type="number"
+            min="0"
+            placeholder="0"
+            value={formData.stock}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        <div className="flex gap-4">
+          <Button
+            type="submit"
+            variant="primary"
+            className="flex-1"
+            isLoading={isLoading}
+          >
+            {isEditMode ? 'Actualizar Producto' : 'Crear Producto'}
+          </Button>
+
           <Button
             type="button"
             variant="outline"
-            onClick={onCancel}
+            onClick={() => router.push(ROUTES.PRODUCTS)}
             disabled={isLoading}
           >
             Cancelar
           </Button>
-        )}
-      </div>
-    </form>
+        </div>
+      </form>
+    </Card>
   );
 };

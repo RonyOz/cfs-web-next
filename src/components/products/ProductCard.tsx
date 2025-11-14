@@ -1,11 +1,6 @@
-/**
- * TODO: Add "Add to Cart" functionality
- * TODO: Show edit/delete buttons based on user role and ownership
- * TODO: Add product image support
- */
-
 'use client';
 
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { Card, Button } from '@/components/ui';
@@ -17,7 +12,6 @@ import { ShoppingCart } from 'lucide-react';
 interface ProductCardProps {
   product: Product;
   onAddToCart?: (product: Product) => void;
-  onEdit?: (product: Product) => void;
   onDelete?: (productId: string) => void;
   showActions?: boolean;
 }
@@ -25,10 +19,10 @@ interface ProductCardProps {
 export const ProductCard = ({
   product,
   onAddToCart,
-  onEdit,
   onDelete,
   showActions = true,
 }: ProductCardProps) => {
+  const router = useRouter();
   const { user, isAdmin } = useAuth();
   
   const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
@@ -85,15 +79,13 @@ export const ProductCard = ({
 
           {canEdit && (
             <>
-              {onEdit && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onEdit(product)}
-                >
-                  Editar
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push(`${ROUTES.PRODUCTS}/${product.id}/edit`)}
+              >
+                Editar
+              </Button>
               {onDelete && (
                 <Button
                   variant="danger"

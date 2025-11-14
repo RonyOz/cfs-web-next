@@ -1,9 +1,3 @@
-/** 
- * TODO: Add order status badge styling
- * TODO: Show cancel button only for pending orders and owner/admin
- * TODO: Show order details on click
- */
-
 'use client';
 
 import Link from 'next/link';
@@ -11,6 +5,8 @@ import { Order } from '@/types';
 import { Card, Button } from '@/components/ui';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 import { ROUTES, ORDER_STATUS } from '@/config/constants';
+import { useAuth } from '@/lib/hooks';
+import { Package, Clock, CheckCircle, XCircle } from 'lucide-react';
 
 interface OrderCardProps {
   order: Order;
@@ -19,38 +15,45 @@ interface OrderCardProps {
 }
 
 export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProps) => {
-  // TODO: Get current user from auth store
-  // const { user, isAdmin } = useAuth();
-  
-  // TODO: Check if current user can cancel order
-  // const canCancel = (user?.id === order.buyer.id || isAdmin) && order.status === ORDER_STATUS.PENDING;
+  const { user, isAdmin } = useAuth();
+  const canCancel = (user?.id === order.buyer.id || isAdmin) && order.status === ORDER_STATUS.PENDING;
 
-  const getStatusBadge = (status: string) => {
-    const badges: Record<string, string> = {
-      [ORDER_STATUS.PENDING]: 'bg-warning-100 text-warning-700',
-      [ORDER_STATUS.COMPLETED]: 'bg-success-100 text-success-700',
-      [ORDER_STATUS.CANCELLED]: 'bg-danger-100 text-danger-700',
+  const getStatusConfig = (status: string) => {
+    const configs = {
+      [ORDER_STATUS.PENDING]: {
+        icon: Clock,
+        color: 'text-warning-500',
+        bg: 'bg-warning-600/20',
+        border: 'border-warning-600',
+        label: 'Pendiente',
+      },
+      [ORDER_STATUS.COMPLETED]: {
+        icon: CheckCircle,
+        color: 'text-success-500',
+        bg: 'bg-success-600/20',
+        border: 'border-success-600',
+        label: 'Completado',
+      },
+      [ORDER_STATUS.CANCELLED]: {
+        icon: XCircle,
+        color: 'text-danger-500',
+        bg: 'bg-danger-600/20',
+        border: 'border-danger-600',
+        label: 'Cancelado',
+      },
     };
-
-    const labels: Record<string, string> = {
-      [ORDER_STATUS.PENDING]: 'Pendiente',
-      [ORDER_STATUS.COMPLETED]: 'Completado',
-      [ORDER_STATUS.CANCELLED]: 'Cancelado',
-    };
-
-    return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium ${badges[status] || ''}`}>
-        {labels[status] || status}
-      </span>
-    );
+    return configs[status] || configs[ORDER_STATUS.PENDING];
   };
 
+  const statusConfig = getStatusConfig(order.status);
+  const StatusIcon = statusConfig.icon;
+
   return (
-    <Card>
+    <Card hover>
       <div className="flex justify-between items-start mb-4">
         <div>
           <Link href={ROUTES.ORDER_DETAIL(order.id)}>
-            <h3 className="text-lg font-semibold text-gray-900 hover:text-primary-600">
+            <h3 className="text-lg font-semibold text-gray-100 hover:text-primary-400 transition-colors">
               Orden #{order.id.slice(0, 8)}
             </h3>
           </Link>
@@ -58,17 +61,20 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
             {formatDateTime(order.createdAt)}
           </p>
         </div>
-        {getStatusBadge(order.status)}
+        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.border} border`}>
+          <StatusIcon className="h-3.5 w-3.5" />
+          <span className={statusConfig.color}>{statusConfig.label}</span>
+        </span>
       </div>
 
       {/* Order Items Summary */}
       <div className="space-y-2 mb-4">
         {order.items.map((item) => (
           <div key={item.id} className="flex justify-between text-sm">
-            <span className="text-gray-700">
+            <span className="text-gray-400">
               {item.quantity}x {item.product.name}
             </span>
-            <span className="text-gray-900 font-medium">
+            <span className="text-gray-100 font-medium">
               {formatPrice(item.price * item.quantity)}
             </span>
           </div>
@@ -76,15 +82,15 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
       </div>
 
       {/* Total */}
-      <div className="pt-4 border-t border-gray-200 flex justify-between items-center">
-        <span className="text-lg font-semibold text-gray-900">Total</span>
-        <span className="text-2xl font-bold text-primary-600">
+      <div className="pt-4 border-t border-dark-700 flex justify-between items-center">
+        <span className="text-lg font-semibold text-gray-100">Total</span>
+        <span className="text-2xl font-bold text-primary-400">
           {formatPrice(order.total)}
         </span>
       </div>
 
       {/* Actions */}
-      {showActions && onCancel && order.status === ORDER_STATUS.PENDING && (
+      {showActions && onCancel && canCancel && (
         <div className="mt-4">
           <Button
             variant="danger"
