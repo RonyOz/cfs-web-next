@@ -106,8 +106,8 @@ export default function AuthPage() {
             <div className="text-center mb-8">
               {/* Logo */}
               <div className="flex justify-center mb-6">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-400 shadow-lg shadow-primary-400/20">
-                  <span className="text-3xl font-bold text-dark-900">B</span>
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary-400 shadow-lg shadow-primary-400/20 p-3">
+                  <img src="/logo.svg" alt="Bocado" className="h-full w-full" />
                 </div>
               </div>
               <h2 className="text-3xl font-bold text-white mb-2">Bienvenido a Bocado</h2>
