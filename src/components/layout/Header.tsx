@@ -91,7 +91,7 @@ export const Header = () => {
             ) : (
               <>
                 <Link href={ROUTES.AUTH}>
-                  <Button variant="outline" size="sm" className="gap-2 border-[1px]">
+                  <Button variant="outline" size="sm" className="gap-2 border">
                     <User className="h-4 w-4" />
                     Iniciar Sesión
                   </Button>
