@@ -1,22 +1,9 @@
-/**
- * Order Store
- * Zustand store for managing orders and cart state
- * 
- * Academic Requirement: State Management (10%)
- * - Centralized orders state
- * - Shopping cart state
- * - Loading and error states
- * 
- * TODO: Implement all store actions
- * TODO: Add cart persistence (localStorage)
- * TODO: Add order validation logic
- */
-
 'use client';
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Order, CreateOrderData, CreateOrderItem } from '@/types';
+import { getOrders, getOrderById, createOrder as apiCreateOrder, deleteOrder as apiDeleteOrder } from '@/lib/api/orders';
 
 interface CartItem {
   productId: string;
@@ -62,26 +49,31 @@ export const useOrderStore = create<OrderState>()(
 
       // Cart Actions
       addToCart: (item) => {
-        // TODO: Implement add to cart
-        // Check if item already exists in cart
-        // If exists, update quantity
-        // If not, add new item
-        // Validate stock availability
         const cart = get().cart;
         const existingItem = cart.find((i) => i.productId === item.productId);
 
         if (existingItem) {
-          // Update quantity
+          const newQuantity = existingItem.quantity + item.quantity;
+          // Validate stock availability
+          if (newQuantity > item.stock) {
+            set({ error: 'No hay suficiente stock disponible' });
+            return;
+          }
           set({
             cart: cart.map((i) =>
               i.productId === item.productId
-                ? { ...i, quantity: i.quantity + item.quantity }
+                ? { ...i, quantity: newQuantity }
                 : i
             ),
+            error: null,
           });
         } else {
-          // Add new item
-          set({ cart: [...cart, item] });
+          // Validate initial quantity
+          if (item.quantity > item.stock) {
+            set({ error: 'No hay suficiente stock disponible' });
+            return;
+          }
+          set({ cart: [...cart, item], error: null });
         }
       },
 
@@ -93,22 +85,39 @@ export const useOrderStore = create<OrderState>()(
       },
 
       updateCartItemQuantity: (productId, quantity) => {
-        // TODO: Implement update cart item quantity
-        // Validate quantity > 0 and <= stock
-        set((state) => ({
-          cart: state.cart.map((item) =>
-            item.productId === productId ? { ...item, quantity } : item
+        const cart = get().cart;
+        const item = cart.find((i) => i.productId === productId);
+        
+        if (!item) {
+          set({ error: 'Producto no encontrado en el carrito' });
+          return;
+        }
+
+        // Validate quantity
+        if (quantity <= 0) {
+          // Remove item if quantity is 0 or less
+          get().removeFromCart(productId);
+          return;
+        }
+
+        if (quantity > item.stock) {
+          set({ error: 'No hay suficiente stock disponible' });
+          return;
+        }
+
+        set({
+          cart: cart.map((i) =>
+            i.productId === productId ? { ...i, quantity } : i
           ),
-        }));
+          error: null,
+        });
       },
 
       clearCart: () => {
-        // TODO: Implement clear cart
         set({ cart: [] });
       },
 
       getCartTotal: () => {
-        // TODO: Calculate cart total
         const cart = get().cart;
         return cart.reduce((total, item) => total + item.price * item.quantity, 0);
       },
@@ -118,75 +127,64 @@ export const useOrderStore = create<OrderState>()(
       setLoading: (loading) => set({ loading }),
       setError: (error) => set({ error }),
 
-      // API Actions (TODO: Implement)
+      // API Actions
       fetchOrders: async () => {
-        // TODO: Implement fetch orders
-        // set({ loading: true, error: null });
-        // try {
-        //   const orders = await getOrders();
-        //   set({ orders, loading: false });
-        // } catch (error) {
-        //   set({ error: 'Error al cargar órdenes', loading: false });
-        // }
-        throw new Error('Not implemented');
+        set({ loading: true, error: null });
+        try {
+          const orders = await getOrders();
+          set({ orders, loading: false });
+        } catch (error) {
+          set({ error: 'Error al cargar órdenes', loading: false });
+          throw error;
+        }
       },
 
       fetchOrderById: async (id) => {
-        // TODO: Implement fetch order by ID
-        // set({ loading: true, error: null });
-        // try {
-        //   const order = await getOrderById(id);
-        //   set({ loading: false });
-        //   return order;
-        // } catch (error) {
-        //   set({ error: 'Error al cargar orden', loading: false });
-        //   throw error;
-        // }
-        throw new Error('Not implemented');
+        set({ loading: true, error: null });
+        try {
+          const order = await getOrderById(id);
+          set({ loading: false });
+          return order;
+        } catch (error) {
+          set({ error: 'Error al cargar orden', loading: false });
+          throw error;
+        }
       },
 
       createOrder: async (data) => {
-        // TODO: Implement create order
-        // Business Rules:
-        // - Validate stock availability
-        // - Ensure not ordering own products
-        // - Calculate total
-        // set({ loading: true, error: null });
-        // try {
-        //   const order = await createOrder(data);
-        //   set((state) => ({
-        //     orders: [order, ...state.orders],
-        //     cart: [], // Clear cart after successful order
-        //     loading: false,
-        //   }));
-        // } catch (error) {
-        //   set({ error: 'Error al crear orden', loading: false });
-        //   throw error;
-        // }
-        throw new Error('Not implemented');
+        set({ loading: true, error: null });
+        try {
+          const order = await apiCreateOrder(data);
+          set((state) => ({
+            orders: [order, ...state.orders],
+            cart: [], // Clear cart after successful order
+            loading: false,
+          }));
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Error al crear orden';
+          set({ error: errorMessage, loading: false });
+          throw error;
+        }
       },
 
       deleteOrder: async (id) => {
-        // TODO: Implement delete/cancel order
-        // Can only delete orders with status 'pending'
-        // set({ loading: true, error: null });
-        // try {
-        //   await deleteOrder(id);
-        //   set((state) => ({
-        //     orders: state.orders.filter((o) => o.id !== id),
-        //     loading: false,
-        //   }));
-        // } catch (error) {
-        //   set({ error: 'Error al cancelar orden', loading: false });
-        //   throw error;
-        // }
-        throw new Error('Not implemented');
+        set({ loading: true, error: null });
+        try {
+          await apiDeleteOrder(id);
+          set((state) => ({
+            orders: state.orders.filter((o) => o.id !== id),
+            loading: false,
+          }));
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Error al cancelar orden';
+          set({ error: errorMessage, loading: false });
+          throw error;
+        }
       },
     }),
     {
-      name: 'order-storage', // localStorage key for cart persistence
-      // TODO: Configure which parts of state to persist
-      // partialize: (state) => ({ cart: state.cart }),
+      name: 'order-storage',
+      partialize: (state) => ({ cart: state.cart }), // Only persist cart
     }
   )
 );
