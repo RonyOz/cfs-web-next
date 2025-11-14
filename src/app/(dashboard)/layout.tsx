@@ -1,9 +1,4 @@
-/**
- * Dashboard Layout
- * TODO: Implementar header, navbar y footer
- */
-
-import { Header, Navbar, Footer } from '@/components/layout';
+import { Header } from '@/components/layout';
 
 export default function DashboardLayout({
   children,
@@ -11,13 +6,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="min-h-screen bg-dark-900">
       <Header />
-      <Navbar />
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+      <main className="container mx-auto px-4 py-8">
         {children}
       </main>
-      <Footer />
-    </>
+    </div>
   );
 }
