@@ -30,8 +30,8 @@ export const Header = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link href={ROUTES.HOME} className="flex items-center gap-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-400">
-              <span className="text-lg font-bold text-dark-900">B</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-400 p-1.5">
+              <img src="/logo.svg" alt="Bocado" className="h-full w-full" />
             </div>
             <span className="text-lg font-semibold text-gray-100">Bocado</span>
           </Link>
