@@ -184,16 +184,16 @@ export default function Home() {
                       : 'No hay productos disponibles'
                     }
                   </p>
-                  {searchQuery && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="mt-4"
-                      onClick={() => setSearchQuery('')}
-                    >
-                      Ver todos los productos
-                    </Button>
-                  )}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-4"
+                    onClick={() => setSearchQuery('')}
+                  >
+                    Ver todos los productos
+                  </Button>
+
                   {!searchQuery && isAuthenticated && (
                     <Link href={ROUTES.PRODUCTS}>
                       <Button variant="primary" size="sm" className="mt-4">
