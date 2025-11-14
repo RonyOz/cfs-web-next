@@ -52,8 +52,6 @@ export const useProductStore = create<ProductState>((set, get) => ({
     try {
       const products = await getProducts(filters);
       set({ products, loading: false });
-      console.log("Productos ")
-      console.log(products)
     } catch (error) {
       set({ error: 'Error al cargar productos', loading: false });
     }
