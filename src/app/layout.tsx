@@ -13,8 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bocado",
-  description: "Marketplace de comida en el campus",
+  title: "Bocado - Campus Food Sharing",
+  description: "Toda la comida del campus en un solo lugar. Explora, pide o comparte comida cuando más la necesitas.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
+  openGraph: {
+    title: "Bocado - Campus Food Sharing",
+    description: "Toda la comida del campus en un solo lugar",
+    type: "website",
+    locale: "es_ES",
+  },
 };
 
 export default function RootLayout({
