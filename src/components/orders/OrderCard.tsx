@@ -42,7 +42,7 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
         label: 'Cancelado',
       },
     };
-    return configs[status] || configs[ORDER_STATUS.PENDING];
+    return configs[status as keyof typeof configs] || configs[ORDER_STATUS.PENDING];
   };
 
   const statusConfig = getStatusConfig(order.status);

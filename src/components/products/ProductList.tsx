@@ -78,7 +78,6 @@ export const ProductList = ({
             key={product.id}
             product={product}
             onAddToCart={onAddToCart}
-            onEdit={onEdit}
             onDelete={onDelete}
             showActions={showActions}
           />
