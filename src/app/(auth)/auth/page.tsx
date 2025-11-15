@@ -36,13 +36,26 @@ export default function AuthPage() {
       }
 
       const token = (resp as any).access_token || (resp as any).token;
+      console.log('[handleLogin] Token received:', token ? `${token.substring(0, 20)}...` : 'NULL');
+
       if (token) {
+        // Guardar token en localStorage
         localStorage.setItem(TOKEN_KEY, token);
+        console.log('[handleLogin] Token saved to localStorage');
+
+        // Pequeño delay para asegurar que localStorage se actualice
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Obtener perfil del usuario
+        console.log('[handleLogin] Fetching profile...');
         const profile = await getProfile();
+        console.log('[handleLogin] Profile received:', profile);
+
         storeLogin(profile.user, token);
         router.push(ROUTES.HOME);
       }
     } catch (err: any) {
+      console.error('[handleLogin] Error:', err);
       setError(err?.response?.data?.message || err?.message || 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);
@@ -69,10 +82,21 @@ export default function AuthPage() {
     try {
       const resp = await apiSignup({ email, username, password });
       const token = (resp as any).access_token || (resp as any).token;
-      
+      console.log('[handleSignup] Token received:', token ? `${token.substring(0, 20)}...` : 'NULL');
+
       if (token) {
+        // Guardar token en localStorage
         localStorage.setItem(TOKEN_KEY, token);
+        console.log('[handleSignup] Token saved to localStorage');
+
+        // Pequeño delay para asegurar que localStorage se actualice
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        // Obtener perfil del usuario
+        console.log('[handleSignup] Fetching profile...');
         const profile = await getProfile();
+        console.log('[handleSignup] Profile received:', profile);
+
         storeLogin(profile.user, token);
         router.push(ROUTES.HOME);
       } else {
@@ -80,6 +104,7 @@ export default function AuthPage() {
         setActiveTab('login');
       }
     } catch (err: any) {
+      console.error('[handleSignup] Error:', err);
       setError(err?.response?.data?.message || err?.message || 'Error al crear la cuenta');
     } finally {
       setIsLoading(false);
@@ -129,22 +154,20 @@ export default function AuthPage() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('login')}
-                  className={`py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    activeTab === 'login'
+                  className={`py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === 'login'
                       ? 'bg-primary-400 text-dark-900 shadow-lg'
                       : 'text-gray-400 hover:text-gray-300'
-                  }`}
+                    }`}
                 >
                   Iniciar Sesión
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('signup')}
-                  className={`py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    activeTab === 'signup'
+                  className={`py-2 px-4 rounded-md text-sm font-medium transition-all ${activeTab === 'signup'
                       ? 'bg-primary-400 text-dark-900 shadow-lg'
                       : 'text-gray-400 hover:text-gray-300'
-                  }`}
+                    }`}
                 >
                   Registrarse
                 </button>

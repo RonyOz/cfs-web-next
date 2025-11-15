@@ -15,11 +15,17 @@ apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Get token from localStorage (client-side only)
     const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
-    
+
+    console.log('[Axios Interceptor] Request URL:', config.url);
+    console.log('[Axios Interceptor] Token:', token ? `${token.substring(0, 20)}...` : 'NULL');
+
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('[Axios Interceptor] Authorization header set');
+    } else {
+      console.log('[Axios Interceptor] No token or headers to set');
     }
-    
+
     return config;
   },
   (error) => {
@@ -42,10 +48,11 @@ apiClient.interceptors.response.use(
         // Unauthorized - Clear auth state and redirect to login
         if (typeof window !== 'undefined') {
           localStorage.removeItem(TOKEN_KEY);
-          
-          // Only redirect if not already on login page
-          if (!window.location.pathname.includes('/login')) {
-            window.location.href = '/login?error=session_expired';
+
+          // Only redirect if not already on auth pages
+          const pathname = window.location.pathname;
+          if (!pathname.includes('/auth') && !pathname.includes('/login')) {
+            window.location.href = '/auth?error=session_expired';
           }
         }
         console.error('Unauthorized - session expired');
@@ -54,10 +61,6 @@ apiClient.interceptors.response.use(
       case 403:
         // Forbidden - User doesn't have permission
         console.error('Forbidden - insufficient permissions');
-        if (typeof window !== 'undefined') {
-          // You could show a toast notification here
-          alert('No tienes permisos para realizar esta acción');
-        }
         break;
 
       case 404:
@@ -75,16 +78,12 @@ apiClient.interceptors.response.use(
       case 503:
         // Server error
         console.error('Server error:', message);
-        if (typeof window !== 'undefined') {
-          // You could show a toast notification here
-          alert('Error del servidor. Por favor, intenta más tarde.');
-        }
         break;
 
       default:
         console.error('API Error:', message);
     }
-    
+
     return Promise.reject(error);
   }
 );

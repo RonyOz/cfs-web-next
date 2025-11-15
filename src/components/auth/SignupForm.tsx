@@ -41,31 +41,26 @@ export const SignupForm = () => {
   const onSubmit = async (data: SignupFormData) => {
     setError('');
     try {
-      const created = await apiSignup({ email: data.email, username: data.username, password: data.password });
+      // 1. Registrar usuario - el backend devuelve { message, token }
+      const signupResp = await apiSignup({
+        email: data.email,
+        username: data.username,
+        password: data.password
+      });
 
-      // If signup returns a token directly, use it to fetch profile and log the user in
-      const token = (created && (created.token || created.access_token)) as string | undefined;
-      if (token) {
-        // temporarily store token so apiClient can include it in the profile request
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(TOKEN_KEY, token);
-        }
-
-        const profile = await getProfile();
-        storeLogin(profile.user, token);
-        router.push(ROUTES.PRODUCTS);
-        return;
+      // 2. El signup devuelve un token, guardarlo temporalmente
+      const token = signupResp.token;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(TOKEN_KEY, token);
       }
 
-      // Otherwise attempt to login (backend may require explicit login)
-      const loginResp = await apiLogin({ email: data.email, password: data.password });
-      if ((loginResp as any).requires2FA) {
-        router.push(ROUTES.LOGIN);
-        return;
-      }
+      // 3. Obtener el perfil del usuario usando el token (REST endpoint)
+      const profile = await getProfile();
 
-      const loginData = loginResp as any;
-      storeLogin(loginData.user, loginData.access_token);
+      // 4. Guardar usuario en el store de Zustand
+      storeLogin(profile.user, token);
+
+      // 5. Redirigir a productos
       router.push(ROUTES.PRODUCTS);
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || 'Error al crear la cuenta');

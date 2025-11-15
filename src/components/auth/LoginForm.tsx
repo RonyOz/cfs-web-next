@@ -37,12 +37,13 @@ export const LoginForm = () => {
   const onSubmit = async (data: LoginFormData) => {
     setError('');
     try {
-      // If 2FA is required, ensure code is present
+      // 1. Si se requiere 2FA, verificar que el código esté presente
       if (requires2FA && !data.twoFactorCode) {
         setError('Ingresa el código de autenticación de dos factores');
         return;
       }
 
+      // 2. Preparar payload para login (GraphQL mutation)
       const payload: any = {
         email: data.email,
         password: data.password,
@@ -52,34 +53,32 @@ export const LoginForm = () => {
         payload.twoFactorCode = data.twoFactorCode;
       }
 
+      // 3. Hacer login - el backend devuelve { message, token } o { requires2FA: true }
       const resp = await apiLogin(payload);
 
+      // 4. Si el backend pide 2FA, mostrar el formulario de código
       if ((resp as any).requires2FA) {
         setRequires2FA(true);
         return;
       }
 
-      // Where to redirect after successful login. Prefer `next` query param, otherwise home.
+      // 5. Login exitoso - guardar token temporalmente
+      const token = resp.token;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(TOKEN_KEY, token);
+      }
+
+      // 6. Obtener perfil del usuario (REST endpoint)
+      const profile = await getProfile();
+
+      // 7. Guardar usuario en el store de Zustand
+      storeLogin(profile.user, token);
+
+      // 8. Redirigir al destino (parámetro 'next' o HOME)
       const redirectTo = typeof window !== 'undefined'
         ? (new URLSearchParams(window.location.search).get('next') || ROUTES.HOME)
         : ROUTES.HOME;
-      // If backend returns { message, token }
-      const anyResp = resp as any;
-      const token = (anyResp && (anyResp.token || anyResp.access_token)) as string | undefined;
-      if (token) {
-        // store token temporarily so apiClient includes it in profile request
-        if (typeof window !== 'undefined') {
-          localStorage.setItem(TOKEN_KEY, token);
-        }
 
-        const profile = await getProfile();
-        storeLogin(profile.user, token);
-        router.push(redirectTo);
-        return;
-      }
-
-      const loginData = resp as any;
-      storeLogin(loginData.user, loginData.access_token);
       router.push(redirectTo);
     } catch (err: any) {
       setError(err?.response?.data?.message || err?.message || 'Error al iniciar sesión');
