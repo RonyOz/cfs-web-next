@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { useAuth, useProducts } from '@/lib/hooks';
@@ -8,20 +8,25 @@ import { ProductForm } from '@/components/products';
 import { Button } from '@/components/ui';
 import { ROUTES } from '@/config/constants';
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
+  const [productId, setProductId] = useState<string>('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push(ROUTES.AUTH);
+    params.then(p => setProductId(p.id));
+  }, [params]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !productId) {
+      if (!isAuthenticated) router.push(ROUTES.AUTH);
       return;
     }
 
     const loadProduct = async () => {
       try {
-        await fetchProductById(params.id);
+        await fetchProductById(productId);
       } catch (error) {
         router.push(ROUTES.PRODUCTS);
       }
@@ -33,7 +38,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     return () => {
       setSelectedProduct(null);
     };
-  }, [params.id, isAuthenticated, router, fetchProductById, setSelectedProduct]);
+  }, [productId, isAuthenticated, router, fetchProductById, setSelectedProduct]);
 
   // Validar ownership después de cargar
   useEffect(() => {

@@ -40,10 +40,6 @@ export default function ProductsPage() {
     }
   };
 
-  const handleEdit = (product: Product) => {
-    router.push(`${ROUTES.PRODUCTS}/${product.id}/edit`);
-  };
-
   if (!isAuthenticated) return null;
 
   return (
@@ -114,7 +110,6 @@ export default function ProductsPage() {
                 <ProductCard
                   key={product.id}
                   product={product}
-                  onEdit={handleEdit}
                   onDelete={handleDelete}
                   showActions={true}
                 />

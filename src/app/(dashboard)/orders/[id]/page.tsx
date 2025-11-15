@@ -10,26 +10,31 @@ import { formatPrice, formatDateTime } from '@/lib/utils';
 import { Order } from '@/types';
 import Link from 'next/link';
 
-export default function OrderDetailPage({ params }: { params: { id: string } }) {
+export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { fetchOrderById, deleteOrder } = useOrders();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [orderId, setOrderId] = useState<string>('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push(ROUTES.AUTH);
+    params.then(p => setOrderId(p.id));
+  }, [params]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !orderId) {
+      if (!isAuthenticated) router.push(ROUTES.AUTH);
       return;
     }
     loadOrder();
-  }, [isAuthenticated, params.id]);
+  }, [isAuthenticated, orderId]);
 
   const loadOrder = async () => {
     try {
       setLoading(true);
-      const data = await fetchOrderById(params.id);
+      const data = await fetchOrderById(orderId);
       setOrder(data);
     } catch (err: any) {
       setError(err.message || 'Error al cargar la orden');

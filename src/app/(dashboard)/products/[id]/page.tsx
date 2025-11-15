@@ -8,46 +8,49 @@ import { useAuth, useProducts } from '@/lib/hooks';
 import { useOrderStore } from '@/store';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
-import { Product } from '@/types';
 import Link from 'next/link';
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
+export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { user, isAuthenticated } = useAuth();
-  const { fetchProductById } = useProducts();
+  const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
   const { addToCart } = useOrderStore();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [productId, setProductId] = useState<string>('');
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push(ROUTES.AUTH);
+    params.then(p => setProductId(p.id));
+  }, [params]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !productId) {
+      if (!isAuthenticated) router.push(ROUTES.AUTH);
       return;
     }
     loadProduct();
-  }, [isAuthenticated, params.id]);
+    
+    return () => {
+      setSelectedProduct(null);
+    };
+  }, [isAuthenticated, productId]);
 
   const loadProduct = async () => {
     try {
-      setLoading(true);
-      const data = await fetchProductById(params.id);
-      setProduct(data);
+      setError('');
+      await fetchProductById(productId);
     } catch (err: any) {
       setError(err.message || 'Error al cargar el producto');
-    } finally {
-      setLoading(false);
     }
   };
 
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!selectedProduct) return;
     addToCart({
-      productId: product.id,
-      productName: product.name,
-      price: product.price,
+      productId: selectedProduct.id,
+      productName: selectedProduct.name,
+      price: selectedProduct.price,
       quantity: 1,
-      stock: product.stock,
+      stock: selectedProduct.stock,
     });
     router.push(ROUTES.ORDERS);
   };
@@ -65,7 +68,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     );
   }
 
-  if (error || !product) {
+  if (error || !selectedProduct) {
     return (
       <div className="flex items-center justify-center py-16">
         <div className="text-center">
@@ -80,7 +83,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
     );
   }
 
-  const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
+  const sellerId = typeof selectedProduct.seller === 'object' ? selectedProduct.seller.id : selectedProduct.seller;
   const isOwner = user?.id === sellerId;
 
   return (
@@ -101,28 +104,28 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
         {/* Info */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-100 mb-2">{product.name}</h1>
-          <p className="text-gray-400 mb-6">{product.description}</p>
+          <h1 className="text-3xl font-bold text-gray-100 mb-2">{selectedProduct.name}</h1>
+          <p className="text-gray-400 mb-6">{selectedProduct.description}</p>
 
           <div className="space-y-4 mb-6">
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Precio</span>
-              <span className="text-3xl font-bold text-primary-400">{formatPrice(product.price)}</span>
+              <span className="text-3xl font-bold text-primary-400">{formatPrice(selectedProduct.price)}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Stock disponible</span>
-              <span className="text-lg font-semibold text-gray-100">{product.stock} unidades</span>
+              <span className="text-lg font-semibold text-gray-100">{selectedProduct.stock} unidades</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-gray-400">Vendedor</span>
               <span className="flex items-center gap-2 text-gray-100">
                 <User className="h-4 w-4" />
-                {typeof product.seller === 'object' ? product.seller.username : 'N/A'}
+                {typeof selectedProduct.seller === 'object' ? selectedProduct.seller.username : 'N/A'}
               </span>
             </div>
           </div>
 
-          {!isOwner && product.stock > 0 && (
+          {!isOwner && selectedProduct.stock > 0 && (
             <Button
               variant="primary"
               size="lg"
@@ -134,7 +137,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </Button>
           )}
 
-          {product.stock === 0 && (
+          {selectedProduct.stock === 0 && (
             <div className="p-4 bg-danger-600/20 border border-danger-600 rounded-lg text-center">
               <p className="font-medium text-danger-500">Producto Agotado</p>
             </div>
@@ -148,11 +151,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <p className="text-sm text-gray-400">Publicado</p>
-            <p className="text-gray-100 mt-1">{formatDateTime(product.createdAt)}</p>
+            <p className="text-gray-100 mt-1">{selectedProduct.createdAt ? formatDateTime(selectedProduct.createdAt) : 'N/A'}</p>
           </div>
           <div>
             <p className="text-sm text-gray-400">Última actualización</p>
-            <p className="text-gray-100 mt-1">{formatDateTime(product.updatedAt)}</p>
+            <p className="text-gray-100 mt-1">{selectedProduct.updatedAt ? formatDateTime(selectedProduct.updatedAt) : 'N/A'}</p>
           </div>
         </div>
       </Card>

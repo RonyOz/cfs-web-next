@@ -53,30 +53,26 @@ export default function ProfilePage() {
               <Mail className="h-5 w-5 text-gray-500" />
               <span>{user.email}</span>
             </div>
-            <div className="flex items-center gap-3 text-gray-300">
-              <Calendar className="h-5 w-5 text-gray-500" />
-              <span>Miembro desde {formatDateTime(user.createdAt)}</span>
-            </div>
           </div>
         </Card>
 
         {/* Security Card */}
-        <Card>
+        {/* <Card>
           <h3 className="text-xl font-semibold text-gray-100 mb-4">Seguridad</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-4 bg-dark-900 rounded-lg">
-              <div>
+                            <div>
                 <p className="font-medium text-gray-100">Autenticación de Dos Factores</p>
                 <p className="text-sm text-gray-400 mt-1">
-                  {user.is2FAEnabled ? 'Activada' : 'No configurada'}
+                  {user.twoFactorEnabled ? 'Activada' : 'No configurada'}
                 </p>
               </div>
               <Button
-                variant={user.is2FAEnabled ? 'outline' : 'primary'}
-                size="sm"
-                disabled
+                variant={user.twoFactorEnabled ? 'outline' : 'primary'}
+                size="md"
+                onClick={() => router.push(ROUTES.TWO_FACTOR_SETUP)}
               >
-                {user.is2FAEnabled ? 'Desactivar' : 'Activar'}
+                {user.twoFactorEnabled ? 'Desactivar' : 'Activar'}
               </Button>
             </div>
             <div className="flex items-center justify-between p-4 bg-dark-900 rounded-lg">
@@ -89,7 +85,7 @@ export default function ProfilePage() {
               </Button>
             </div>
           </div>
-        </Card>
+        </Card> */}
 
         {/* Stats Card */}
         <Card>
