@@ -1,0 +1,36 @@
+# Configuración para Render.com
+
+services:
+  # Servicio Web de Next.js
+  - type: web
+    name: cfs-web-next
+    runtime: docker
+    plan: free
+    # region: oregon
+    
+    # Configuración del build
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    
+    # Variables de entorno
+    envVars:
+      - key: NODE_ENV
+        value: production
+      
+      - key: NEXT_PUBLIC_API_URL
+        value: https://cfs-api.onrender.com/api/v1
+      
+      - key: NEXT_PUBLIC_ENVIRONMENT
+        value: production
+      
+      - key: PORT
+        value: 3000
+    
+    # Health check
+    healthCheckPath: /
+    
+    # Auto-deploy desde rama
+    branch: main 
+    
+    # Configuración de build
+    buildCommand: echo "Building..."
