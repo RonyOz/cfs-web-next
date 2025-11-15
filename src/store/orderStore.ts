@@ -3,7 +3,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Order, CreateOrderData, CreateOrderItem } from '@/types';
-import { getOrders, getOrderById, createOrder as apiCreateOrder, deleteOrder as apiDeleteOrder } from '@/lib/api/orders';
+import {
+  getOrders,
+  getMyOrders,
+  getOrderById,
+  createOrder as apiCreateOrder,
+  deleteOrder as apiDeleteOrder
+} from '@/lib/api/orders';
 
 interface CartItem {
   productId: string;
@@ -33,6 +39,7 @@ interface OrderState {
 
   // API Actions
   fetchOrders: () => Promise<void>;
+  fetchMyOrders: () => Promise<void>;
   fetchOrderById: (id: string) => Promise<Order>;
   createOrder: (data: CreateOrderData) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
@@ -87,7 +94,7 @@ export const useOrderStore = create<OrderState>()(
       updateCartItemQuantity: (productId, quantity) => {
         const cart = get().cart;
         const item = cart.find((i) => i.productId === productId);
-        
+
         if (!item) {
           set({ error: 'Producto no encontrado en el carrito' });
           return;
@@ -135,6 +142,17 @@ export const useOrderStore = create<OrderState>()(
           set({ orders, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar órdenes', loading: false });
+          throw error;
+        }
+      },
+
+      fetchMyOrders: async () => {
+        set({ loading: true, error: null });
+        try {
+          const orders = await getMyOrders();
+          set({ orders, loading: false });
+        } catch (error) {
+          set({ error: 'Error al cargar mis órdenes', loading: false });
           throw error;
         }
       },

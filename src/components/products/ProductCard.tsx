@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { Card, Button } from '@/components/ui';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, cn } from '@/lib/utils';
 import { ROUTES } from '@/config/constants';
 import { useAuth } from '@/lib/hooks';
 import { ShoppingCart } from 'lucide-react';
@@ -24,10 +24,11 @@ export const ProductCard = ({
 }: ProductCardProps) => {
   const router = useRouter();
   const { user, isAdmin } = useAuth();
-  
+
   const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
   const isOwner = user?.id === sellerId;
   const canEdit = isOwner || isAdmin;
+  const canAddToCart = !isOwner && onAddToCart && product.stock > 0;
 
   return (
     <Card hover className="h-full flex flex-col">
@@ -43,7 +44,7 @@ export const ProductCard = ({
             {product.name}
           </h3>
         </Link>
-        
+
         <p className="text-sm text-gray-400 mt-2 line-clamp-2">
           {product.description}
         </p>
@@ -52,7 +53,10 @@ export const ProductCard = ({
           <p className="text-2xl font-bold text-primary-400">
             {formatPrice(product.price)}
           </p>
-          <p className="text-sm text-gray-500">
+          <p className={cn(
+            "text-sm font-medium",
+            product.stock > 0 ? "text-success-500" : "text-danger-500"
+          )}>
             Stock: {product.stock}
           </p>
         </div>
@@ -62,10 +66,18 @@ export const ProductCard = ({
         </p>
       </div>
 
+      {/* Stock Warning */}
+      {product.stock === 0 && (
+        <div className="mt-3 p-2 bg-danger-600/20 border border-danger-600 rounded-lg text-center">
+          <p className="text-sm text-danger-500 font-medium">Agotado</p>
+        </div>
+      )}
+
       {/* Actions */}
       {showActions && (
         <div className="mt-4 flex gap-2">
-          {!isOwner && onAddToCart && product.stock > 0 && (
+          {/* Add to Cart Button - Always visible if conditions are met */}
+          {canAddToCart && (
             <Button
               variant="primary"
               size="sm"
@@ -77,11 +89,13 @@ export const ProductCard = ({
             </Button>
           )}
 
+          {/* Edit/Delete buttons for owner or admin */}
           {canEdit && (
             <>
               <Button
                 variant="outline"
                 size="sm"
+                className={canAddToCart ? '' : 'flex-1'}
                 onClick={() => router.push(`${ROUTES.PRODUCTS}/${product.id}/edit`)}
               >
                 Editar
@@ -97,12 +111,6 @@ export const ProductCard = ({
               )}
             </>
           )}
-        </div>
-      )}
-
-      {product.stock === 0 && (
-        <div className="mt-2 p-2 bg-danger-600/20 border border-danger-600 rounded-lg text-center">
-          <p className="text-sm text-danger-500 font-medium">Agotado</p>
         </div>
       )}
     </Card>

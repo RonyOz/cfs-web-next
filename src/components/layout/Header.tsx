@@ -3,13 +3,17 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { User, Menu, X, ShoppingCart } from 'lucide-react';
-import { useAuth } from '@/lib/hooks';
+import { useAuth, useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { Button } from '@/components/ui';
+import { cn } from '@/lib/utils';
 
 export const Header = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { cart } = useOrders();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleLogout = () => {
     logout();
@@ -39,23 +43,23 @@ export const Header = () => {
           {/* Desktop Navigation Links */}
           {isAuthenticated && (
             <div className="hidden md:flex items-center gap-6">
-              <Link 
-                href={ROUTES.PRODUCTS} 
+              <Link
+                href={ROUTES.PRODUCTS}
                 className="text-gray-300 hover:text-primary-400 transition-colors"
               >
                 Productos
               </Link>
-              <Link 
-                href={ROUTES.ORDERS} 
+              <Link
+                href={ROUTES.ORDERS}
                 className="text-gray-300 hover:text-primary-400 transition-colors"
               >
                 Órdenes
               </Link>
-              
+
               {/* Show admin link only for admin users */}
               {isAdmin && (
-                <Link 
-                  href={ROUTES.ADMIN_USERS} 
+                <Link
+                  href={ROUTES.ADMIN_USERS}
                   className="text-gray-300 hover:text-primary-400 transition-colors"
                 >
                   Admin
@@ -66,15 +70,27 @@ export const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
-            {/* TODO: Add cart functionality */}
-            {/* {isAuthenticated && (
-              <Button variant="ghost" size="sm" className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-primary-400 text-dark-900 text-xs flex items-center justify-center font-semibold">
-                  0
-                </span>
-              </Button>
-            )} */}
+            {/* Shopping Cart */}
+            {isAuthenticated && (
+              <Link href={ROUTES.CART}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn(
+                    "relative",
+                    cartItemCount > 0 && "text-primary-400"
+                  )}
+                  title="Ver carrito"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {cartItemCount > 0 && (
+                    <span className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse">
+                      {cartItemCount > 9 ? '9+' : cartItemCount}
+                    </span>
+                  )}
+                </Button>
+              </Link>
+            )}
 
             {isAuthenticated ? (
               <>
@@ -120,23 +136,36 @@ export const Header = () => {
             {/* Mobile Navigation Links */}
             {isAuthenticated && (
               <div className="flex flex-col gap-4 mb-4">
-                <Link 
+                <Link
+                  href={ROUTES.CART}
+                  className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1 flex items-center gap-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <ShoppingCart className="h-4 w-4" />
+                  Carrito
+                  {cartItemCount > 0 && (
+                    <span className="ml-auto bg-primary-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+                      {cartItemCount}
+                    </span>
+                  )}
+                </Link>
+                <Link
                   href={ROUTES.PRODUCTS}
                   className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Productos
                 </Link>
-                <Link 
+                <Link
                   href={ROUTES.ORDERS}
                   className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Órdenes
                 </Link>
-                
+
                 {isAdmin && (
-                  <Link 
+                  <Link
                     href={ROUTES.ADMIN_USERS}
                     className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                     onClick={() => setMobileMenuOpen(false)}
@@ -157,9 +186,9 @@ export const Header = () => {
                       {user?.username ?? 'Usuario'}
                     </Button>
                   </Link>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="w-full"
                     onClick={handleLogout}
                   >

@@ -9,21 +9,21 @@ import { ROUTES } from '@/config/constants';
 export default function OrdersPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { orders, loading, error, fetchOrders, deleteOrder } = useOrders();
+  const { orders, loading, error, fetchMyOrders, deleteOrder } = useOrders();
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push(ROUTES.AUTH);
       return;
     }
-    fetchOrders();
-  }, [isAuthenticated, fetchOrders, router]);
+    fetchMyOrders();
+  }, [isAuthenticated, fetchMyOrders, router]);
 
   const handleCancel = async (orderId: string) => {
     if (window.confirm('¿Estás seguro de cancelar esta orden?')) {
       try {
         await deleteOrder(orderId);
-        fetchOrders();
+        fetchMyOrders();
       } catch (err) {
         alert('Error al cancelar la orden');
       }
