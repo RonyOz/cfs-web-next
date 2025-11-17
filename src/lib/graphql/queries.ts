@@ -68,7 +68,7 @@ export const GET_SELLERS = gql`
 `;
 
 export const GET_SELLER_PROFILE = gql`
-  query GetSellerProfile($id: ID!) {
+  query GetSellerProfile($id: String!) {
     sellerProfile(id: $id) {
       seller {
         id

@@ -96,30 +96,59 @@ export const updateProduct = async (
   id: string,
   data: Partial<ProductFormData>
 ): Promise<Product> => {
-  const input: any = {};
+  try {
+    const input: any = {};
 
-  if (data.name !== undefined) input.name = data.name;
-  if (data.description !== undefined) input.description = data.description;
-  if (data.price !== undefined) input.price = parseFloat(data.price.toString());
-  if (data.stock !== undefined) input.stock = parseInt(data.stock.toString(), 10);
-  if (data.imageUrl !== undefined) input.imageUrl = data.imageUrl;
+    if (data.name !== undefined) input.name = data.name;
+    if (data.description !== undefined) input.description = data.description;
+    if (data.price !== undefined) input.price = parseFloat(data.price.toString());
+    if (data.stock !== undefined) input.stock = parseInt(data.stock.toString(), 10);
+    if (data.imageUrl !== undefined) input.imageUrl = data.imageUrl;
 
-  const { data: result } = await apolloClient.mutate({
-    mutation: UPDATE_PRODUCT_MUTATION,
-    variables: {
-      id,
-      input,
-    },
-  });
+    console.log('🔄 [updateProduct] Updating product with:', { id, input });
 
-  return (result as any).updateProduct;
+    const { data: result } = await apolloClient.mutate({
+      mutation: UPDATE_PRODUCT_MUTATION,
+      variables: {
+        id,
+        input,
+      },
+    }) as { data: { updateProduct: Product } };
+
+    console.log('✅ [updateProduct] Response:', result);
+
+    if (!result || !result.updateProduct) {
+      throw new Error('No se pudo actualizar el producto');
+    }
+
+    return result.updateProduct;
+  } catch (error: any) {
+    console.error('❌ [updateProduct] Error:', error);
+    console.error('❌ [updateProduct] GraphQL Errors:', error?.graphQLErrors);
+    console.error('❌ [updateProduct] Network Error:', error?.networkError);
+    throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al actualizar producto');
+  }
 };
 
 export const deleteProduct = async (id: string): Promise<MessageResponse> => {
-  const { data: result } = await apolloClient.mutate({
-    mutation: DELETE_PRODUCT_MUTATION,
-    variables: { id },
-  });
+  try {
+    console.log('🗑️ [deleteProduct] Deleting product:', id);
 
-  return { message: (result as any).deleteProduct || 'Product deleted successfully' };
+    const { data: result } = await apolloClient.mutate({
+      mutation: DELETE_PRODUCT_MUTATION,
+      variables: { id },
+    }) as { data: { deleteProduct: string } };
+
+    console.log('✅ [deleteProduct] Response:', result);
+
+    if (!result || !result.deleteProduct) {
+      throw new Error('No se pudo eliminar el producto');
+    }
+
+    return { message: result.deleteProduct || 'Product deleted successfully' };
+  } catch (error: any) {
+    console.error('❌ [deleteProduct] Error:', error);
+    console.error('❌ [deleteProduct] GraphQL Errors:', error?.graphQLErrors);
+    throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al eliminar producto');
+  }
 };
