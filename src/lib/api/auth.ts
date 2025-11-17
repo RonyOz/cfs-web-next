@@ -25,12 +25,7 @@ export const signup = async (data: SignupRequest): Promise<any> => {
 };
 
 export const getProfile = async (): Promise<{ user: any }> => {
-  // Debug: Log token before making request
-  const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
-  console.log('[getProfile] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NULL');
-
   const response = await apiClient.get('/auth/profile');
-  console.log('[getProfile] Response:', response.data);
   return { user: response.data };
 };
 

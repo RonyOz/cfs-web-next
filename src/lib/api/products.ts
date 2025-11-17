@@ -105,8 +105,6 @@ export const updateProduct = async (
     if (data.stock !== undefined) input.stock = parseInt(data.stock.toString(), 10);
     if (data.imageUrl !== undefined) input.imageUrl = data.imageUrl;
 
-    console.log('🔄 [updateProduct] Updating product with:', { id, input });
-
     const { data: result } = await apolloClient.mutate({
       mutation: UPDATE_PRODUCT_MUTATION,
       variables: {
@@ -115,31 +113,22 @@ export const updateProduct = async (
       },
     }) as { data: { updateProduct: Product } };
 
-    console.log('✅ [updateProduct] Response:', result);
-
     if (!result || !result.updateProduct) {
       throw new Error('No se pudo actualizar el producto');
     }
 
     return result.updateProduct;
   } catch (error: any) {
-    console.error('❌ [updateProduct] Error:', error);
-    console.error('❌ [updateProduct] GraphQL Errors:', error?.graphQLErrors);
-    console.error('❌ [updateProduct] Network Error:', error?.networkError);
     throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al actualizar producto');
   }
 };
 
 export const deleteProduct = async (id: string): Promise<MessageResponse> => {
   try {
-    console.log('🗑️ [deleteProduct] Deleting product:', id);
-
     const { data: result } = await apolloClient.mutate({
       mutation: DELETE_PRODUCT_MUTATION,
       variables: { id },
     }) as { data: { deleteProduct: string } };
-
-    console.log('✅ [deleteProduct] Response:', result);
 
     if (!result || !result.deleteProduct) {
       throw new Error('No se pudo eliminar el producto');
@@ -147,8 +136,6 @@ export const deleteProduct = async (id: string): Promise<MessageResponse> => {
 
     return { message: result.deleteProduct || 'Product deleted successfully' };
   } catch (error: any) {
-    console.error('❌ [deleteProduct] Error:', error);
-    console.error('❌ [deleteProduct] GraphQL Errors:', error?.graphQLErrors);
     throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al eliminar producto');
   }
 };

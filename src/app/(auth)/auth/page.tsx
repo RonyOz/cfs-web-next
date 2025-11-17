@@ -36,33 +36,24 @@ export default function AuthPage() {
       }
 
       const token = (resp as any).access_token || (resp as any).token;
-      console.log('[handleLogin] Token received:', token ? `${token.substring(0, 20)}...` : 'NULL');
 
       if (token) {
         // Guardar token en localStorage
         localStorage.setItem(TOKEN_KEY, token);
-        console.log('[handleLogin] Token saved to localStorage');
 
         // Pequeño delay para asegurar que localStorage se actualice
         await new Promise(resolve => setTimeout(resolve, 100));
 
         // Obtener perfil del usuario
-        console.log('[handleLogin] Fetching profile...');
         const profile = await getProfile();
-        console.log('[handleLogin] Profile received:', profile);
         
         // El backend devuelve {user: {user: {...}}} - necesitamos extraer el user interno
         const userData = (profile as any).user?.user || (profile as any).user || profile;
-        console.log('[handleLogin] User object (extracted):', userData);
-        console.log('[handleLogin] User role:', userData?.role);
 
-        console.log('[handleLogin] Calling storeLogin...');
         storeLogin(userData, token);
-        console.log('[handleLogin] storeLogin completed, redirecting...');
         router.push(ROUTES.HOME);
       }
     } catch (err: any) {
-      console.error('[handleLogin] Error:', err);
       setError(err?.response?.data?.message || err?.message || 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);
@@ -89,29 +80,27 @@ export default function AuthPage() {
     try {
       const resp = await apiSignup({ email, username, password });
       const token = (resp as any).access_token || (resp as any).token;
-      console.log('[handleSignup] Token received:', token ? `${token.substring(0, 20)}...` : 'NULL');
 
       if (token) {
         // Guardar token en localStorage
         localStorage.setItem(TOKEN_KEY, token);
-        console.log('[handleSignup] Token saved to localStorage');
 
         // Pequeño delay para asegurar que localStorage se actualice
         await new Promise(resolve => setTimeout(resolve, 100));
 
         // Obtener perfil del usuario
-        console.log('[handleSignup] Fetching profile...');
         const profile = await getProfile();
-        console.log('[handleSignup] Profile received:', profile);
+        
+        // El backend devuelve {user: {user: {...}}} - necesitamos extraer el user interno
+        const userData = (profile as any).user?.user || (profile as any).user || profile;
 
-        storeLogin(profile.user, token);
+        storeLogin(userData, token);
         router.push(ROUTES.HOME);
       } else {
         setError('Cuenta creada. Por favor inicia sesión.');
         setActiveTab('login');
       }
     } catch (err: any) {
-      console.error('[handleSignup] Error:', err);
       setError(err?.response?.data?.message || err?.message || 'Error al crear la cuenta');
     } finally {
       setIsLoading(false);

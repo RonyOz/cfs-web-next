@@ -16,14 +16,9 @@ apiClient.interceptors.request.use(
     // Get token from localStorage (client-side only)
     const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
 
-    console.log('[Axios Interceptor] Request URL:', config.url);
-    console.log('[Axios Interceptor] Token:', token ? `${token.substring(0, 20)}...` : 'NULL');
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('[Axios Interceptor] Authorization header set');
-    } else {
-      console.log('[Axios Interceptor] No token or headers to set');
     }
 
     return config;

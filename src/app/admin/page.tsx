@@ -34,31 +34,20 @@ export default function AdminDashboardPage() {
   });
 
   useEffect(() => {
-    console.log('🏠 [Admin Dashboard] useEffect triggered');
-    console.log('🏠 [Admin Dashboard] _hasHydrated:', _hasHydrated);
-    console.log('🏠 [Admin Dashboard] isAuthenticated:', isAuthenticated);
-    console.log('🏠 [Admin Dashboard] isAdmin:', isAdmin);
-    console.log('🏠 [Admin Dashboard] user:', user);
-    
     // Esperar a que el store se hidrate antes de verificar autenticación
     if (!_hasHydrated) {
-      console.log('⏳ [Admin Dashboard] Waiting for store hydration...');
       return;
     }
     
     if (!isAuthenticated) {
-      console.log('❌ [Admin Dashboard] Not authenticated, redirecting to /auth');
       router.push(ROUTES.AUTH);
       return;
     }
     if (!isAdmin) {
-      console.log('❌ [Admin Dashboard] Not admin, redirecting to home');
-      console.log('❌ [Admin Dashboard] User role:', user?.role);
       router.push(ROUTES.HOME);
       toast.error('No tienes permisos de administrador');
       return;
     }
-    console.log('✅ [Admin Dashboard] Access granted, fetching data');
     fetchDashboardData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [_hasHydrated, isAuthenticated, isAdmin]);

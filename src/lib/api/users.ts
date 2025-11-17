@@ -53,14 +53,10 @@ export const createUser = async (input: CreateUserInput): Promise<User> => {
  */
 export const updateUser = async (id: string, input: UpdateUserInput): Promise<User> => {
   try {
-    console.log('🔄 [updateUser] Updating user with:', { id, input });
-    
     const { data } = await apolloClient.mutate({
       mutation: UPDATE_USER_MUTATION,
       variables: { id, input }
     }) as { data: { updateUser: User } };
-
-    console.log('✅ [updateUser] Response:', data);
 
     if (!data || !data.updateUser) {
       throw new Error('No se pudo actualizar el usuario');
@@ -68,9 +64,6 @@ export const updateUser = async (id: string, input: UpdateUserInput): Promise<Us
 
     return data.updateUser;
   } catch (error: any) {
-    console.error('❌ [updateUser] Error:', error);
-    console.error('❌ [updateUser] GraphQL Errors:', error?.graphQLErrors);
-    console.error('❌ [updateUser] Network Error:', error?.networkError);
     throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al actualizar usuario');
   }
 };

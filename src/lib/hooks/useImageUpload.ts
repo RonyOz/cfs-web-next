@@ -19,7 +19,6 @@ export const useImageUpload = () => {
 
     try {
       // PASO 1: Obtener URL firmada del backend
-      console.log('📤 Solicitando URL firmada...');
       const { data } = await apolloClient.mutate({
         mutation: CREATE_UPLOAD_URL_MUTATION,
         variables: {
@@ -31,7 +30,6 @@ export const useImageUpload = () => {
       setProgress(30);
 
       // PASO 2: Subir imagen a Supabase usando SDK
-      console.log('📤 Subiendo imagen a Supabase...');
       const { error: uploadError } = await supabase.storage
         .from('product-images')
         .uploadToSignedUrl(path, token, file);
@@ -41,7 +39,6 @@ export const useImageUpload = () => {
       }
 
       setProgress(100);
-      console.log('✅ Imagen subida exitosamente');
 
       return { publicUrl };
 
