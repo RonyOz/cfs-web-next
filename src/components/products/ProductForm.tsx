@@ -4,8 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product, ProductFormData } from '@/types';
 import { Button, Input, Card } from '@/components/ui';
-import { useProducts } from '@/lib/hooks';
+import { useProducts, useImageUpload } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
+import { Upload, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface ProductFormProps {
   product?: Product | null;
@@ -14,6 +16,7 @@ interface ProductFormProps {
 export const ProductForm = ({ product }: ProductFormProps) => {
   const router = useRouter();
   const { createProduct, updateProduct } = useProducts();
+  const { uploadImage, uploading: uploadingImage, progress } = useImageUpload();
   const isEditMode = !!product;
   
   const [formData, setFormData] = useState<ProductFormData>({
@@ -21,7 +24,10 @@ export const ProductForm = ({ product }: ProductFormProps) => {
     description: product?.description || '',
     price: product?.price || 0,
     stock: product?.stock || 0,
+    imageUrl: product?.imageUrl,
   });
+  const [file, setFile] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(product?.imageUrl || null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -31,6 +37,39 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       ...prev,
       [name]: type === 'number' ? parseFloat(value) || 0 : value
     }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      // Validar tipo de archivo
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(selectedFile.type)) {
+        toast.error('Formato de imagen no válido. Usa JPG, PNG, GIF o WEBP');
+        return;
+      }
+
+      // Validar tamaño (max 5MB)
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast.error('La imagen no debe superar 5MB');
+        return;
+      }
+
+      setFile(selectedFile);
+      
+      // Crear preview local
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFile(null);
+    setPreview(product?.imageUrl || null);
+    setFormData(prev => ({ ...prev, imageUrl: product?.imageUrl }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -53,14 +92,31 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
     setIsLoading(true);
     try {
+      let imageUrl = formData.imageUrl;
+
+      // Si hay una nueva imagen, subirla primero
+      if (file) {
+        toast.loading('Subiendo imagen...', { id: 'upload-image' });
+        const result = await uploadImage(file);
+        imageUrl = result.publicUrl;
+        toast.success('Imagen subida exitosamente', { id: 'upload-image' });
+      }
+
+      // Crear o actualizar producto con la URL de la imagen
+      const productData = { ...formData, imageUrl };
+
       if (isEditMode && product) {
-        await updateProduct(product.id, formData);
+        await updateProduct(product.id, productData);
+        toast.success('Producto actualizado exitosamente');
       } else {
-        await createProduct(formData);
+        await createProduct(productData);
+        toast.success('Producto creado exitosamente');
       }
       router.push(ROUTES.PRODUCTS);
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || 'Error al guardar el producto');
+      const errorMessage = err?.response?.data?.message || err?.message || 'Error al guardar el producto';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -123,6 +179,67 @@ export const ProductForm = ({ product }: ProductFormProps) => {
             onChange={handleChange}
             required
           />
+        </div>
+
+        {/* Image Upload Section */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Imagen del Producto <span className="text-gray-500">(opcional)</span>
+          </label>
+          
+          {preview ? (
+            <div className="relative">
+              <div className="w-full h-48 bg-dark-700 rounded-lg overflow-hidden mb-2">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleRemoveImage}
+                className="gap-2"
+              >
+                <X className="h-4 w-4" />
+                Remover Imagen
+              </Button>
+            </div>
+          ) : (
+            <div className="relative">
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+                id="image-upload"
+              />
+              <label
+                htmlFor="image-upload"
+                className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-dark-700 rounded-lg cursor-pointer hover:border-primary-400 transition-colors bg-dark-900"
+              >
+                <Upload className="h-8 w-8 text-gray-500 mb-2" />
+                <p className="text-sm text-gray-400">Click para subir imagen</p>
+                <p className="text-xs text-gray-500 mt-1">JPG, PNG, GIF o WEBP (Max 5MB)</p>
+              </label>
+            </div>
+          )}
+
+          {uploadingImage && (
+            <div className="mt-2">
+              <div className="w-full bg-dark-700 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-primary-400 h-full transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1 text-center">
+                Subiendo imagen... {progress}%
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex gap-4">

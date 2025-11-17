@@ -6,6 +6,7 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
+  imageUrl?: string;
   seller: {
     id: string;
     username: string;
@@ -19,6 +20,7 @@ export interface ProductFormData {
   description: string;
   price: number;
   stock: number;
+  imageUrl?: string;
 }
 
 export interface ProductFilters {

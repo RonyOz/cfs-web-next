@@ -51,6 +51,7 @@ export const CREATE_PRODUCT_MUTATION = gql`
       description
       price
       stock
+      imageUrl
       seller {
         id
         username
@@ -68,6 +69,7 @@ export const UPDATE_PRODUCT_MUTATION = gql`
       description
       price
       stock
+      imageUrl
       seller {
         id
         username
@@ -109,5 +111,16 @@ export const UPDATE_USER_MUTATION = gql`
 export const DELETE_USER_MUTATION = gql`
   mutation RemoveUser($id: ID!) {
     removeUser(id: $id)
+  }
+`;
+
+export const CREATE_UPLOAD_URL_MUTATION = gql`
+  mutation CreateUploadUrl($input: CreateUploadUrlInput!) {
+    createUploadUrl(input: $input) {
+      uploadUrl
+      token
+      path
+      publicUrl
+    }
   }
 `;
