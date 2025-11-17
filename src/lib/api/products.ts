@@ -84,6 +84,7 @@ export const createProduct = async (data: ProductFormData): Promise<Product> => 
         description: data.description,
         price: parseFloat(data.price.toString()),
         stock: parseInt(data.stock.toString(), 10),
+        imageUrl: data.imageUrl,
       },
     },
   });
@@ -101,6 +102,7 @@ export const updateProduct = async (
   if (data.description !== undefined) input.description = data.description;
   if (data.price !== undefined) input.price = parseFloat(data.price.toString());
   if (data.stock !== undefined) input.stock = parseInt(data.stock.toString(), 10);
+  if (data.imageUrl !== undefined) input.imageUrl = data.imageUrl;
 
   const { data: result } = await apolloClient.mutate({
     mutation: UPDATE_PRODUCT_MUTATION,

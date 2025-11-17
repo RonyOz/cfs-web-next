@@ -32,9 +32,19 @@ export const ProductCard = ({
 
   return (
     <Card hover className="h-full flex flex-col">
-      {/* Product Image Placeholder */}
-      <div className="w-full h-48 bg-dark-700 rounded-lg mb-4 flex items-center justify-center">
-        <p className="text-gray-500 text-sm">Sin imagen</p>
+      {/* Product Image */}
+      <div className="w-full h-48 bg-dark-700 rounded-lg mb-4 overflow-hidden">
+        {product.imageUrl ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <p className="text-gray-500 text-sm">Sin imagen</p>
+          </div>
+        )}
       </div>
 
       {/* Product Info */}

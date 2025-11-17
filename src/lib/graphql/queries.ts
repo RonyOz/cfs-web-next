@@ -9,6 +9,7 @@ export const GET_ALL_PRODUCTS = gql`
       description
       price
       stock
+      imageUrl
       seller {
         id
         username
@@ -26,6 +27,7 @@ export const GET_PRODUCT_BY_ID = gql`
       description
       price
       stock
+      imageUrl
       seller {
         id
         username
@@ -43,6 +45,7 @@ export const GET_MY_PRODUCTS = gql`
       description
       price
       stock
+      imageUrl
     }
   }
 `;

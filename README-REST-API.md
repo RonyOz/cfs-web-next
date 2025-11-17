@@ -1207,10 +1207,4 @@ Desde allí puedes:
    - Las contraseñas se hashean con bcrypt
    - 2FA opcional con TOTP
 
----
 
-## 📞 Soporte
-
-Para más información sobre GraphQL, consulta `README-GRAPHQL.md`.
-
-Para documentación interactiva, visita: `http://localhost:3000/api-docs`
