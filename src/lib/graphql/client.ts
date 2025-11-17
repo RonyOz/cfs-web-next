@@ -5,7 +5,7 @@ import { TOKEN_KEY } from '@/config/constants';
 import { GraphQLError } from 'graphql';
 
 // GraphQL endpoint - replace with your backend URL
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL || 'http://localhost:3000/graphql';
+const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL;
 
 // HTTP Link
 const httpLink = new HttpLink({
