@@ -102,10 +102,11 @@ export const GET_ALL_USERS = gql`
   query GetAllUsers($pagination: PaginationInput) {
     users(pagination: $pagination) {
       id
-      email
       username
+      email
       role
       twoFactorEnabled
+      productsCount
     }
   }
 `;
@@ -114,8 +115,8 @@ export const GET_USER = gql`
   query GetUser($term: String!) {
     user(term: $term) {
       id
-      email
       username
+      email
       role
       twoFactorEnabled
       products {
@@ -123,6 +124,7 @@ export const GET_USER = gql`
         name
         price
         stock
+        imageUrl
       }
     }
   }

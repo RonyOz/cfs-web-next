@@ -98,18 +98,19 @@ export const CREATE_USER_MUTATION = gql`
 `;
 
 export const UPDATE_USER_MUTATION = gql`
-  mutation UpdateUser($id: ID!, $input: UpdateUserInput!) {
+  mutation UpdateUser($id: String!, $input: UpdateUserInput!) {
     updateUser(id: $id, input: $input) {
       id
       email
       username
       role
+      twoFactorEnabled
     }
   }
 `;
 
 export const DELETE_USER_MUTATION = gql`
-  mutation RemoveUser($id: ID!) {
+  mutation RemoveUser($id: String!) {
     removeUser(id: $id)
   }
 `;

@@ -1,62 +1,102 @@
-/**
- * User API Functions
- * All user-related API calls
- * 
- * TODO: Implement all function bodies
- * TODO: Add proper error handling
- * TODO: Add admin-only validation
- */
-
+import apolloClient from '@/lib/graphql/client';
+import { GET_ALL_USERS, GET_USER } from '@/lib/graphql/queries';
+import { 
+  CREATE_USER_MUTATION, 
+  UPDATE_USER_MUTATION, 
+  DELETE_USER_MUTATION 
+} from '@/lib/graphql/mutations';
 import apiClient from './client';
-import { User, MessageResponse } from '@/types';
+import { User, CreateUserInput, UpdateUserInput } from '@/types';
 
 /**
- * Get all users
- * GET /users
- * 
- * Note: Admin only
+ * Get all users (admin only)
  */
-export const getAllUsers = async (): Promise<User[]> => {
-  // TODO: Implement get all users logic
-  // Check if user is admin before calling
-  // const response = await apiClient.get('/users');
-  // return response.data;
-  throw new Error('Not implemented');
+export const getAllUsers = async (pagination?: { limit?: number; offset?: number }): Promise<User[]> => {
+  const { data } = await apolloClient.query({
+    query: GET_ALL_USERS,
+    variables: {
+      pagination: pagination || { limit: 100, offset: 0 }
+    },
+    fetchPolicy: 'network-only'
+  });
+
+  return data.users;
 };
 
 /**
- * Get authenticated user profile
- * GET /users/me
+ * Get user by ID or username
  */
-export const getCurrentUser = async (): Promise<User> => {
-  // TODO: Implement get current user logic
-  // const response = await apiClient.get('/users/me');
-  // return response.data;
-  throw new Error('Not implemented');
+export const getUserById = async (term: string): Promise<User> => {
+  const { data } = await apolloClient.query({
+    query: GET_USER,
+    variables: { term },
+    fetchPolicy: 'network-only'
+  });
+
+  return data.user;
 };
 
 /**
- * Get user by ID
- * GET /users/:id
+ * Create new user (admin only)
  */
-export const getUserById = async (id: string): Promise<User> => {
-  // TODO: Implement get user by ID logic
-  // const response = await apiClient.get(`/users/${id}`);
-  // return response.data;
-  throw new Error('Not implemented');
+export const createUser = async (input: CreateUserInput): Promise<User> => {
+  const { data } = await apolloClient.mutate({
+    mutation: CREATE_USER_MUTATION,
+    variables: { input }
+  });
+
+  return data.createUser;
 };
 
 /**
- * Run database seed
- * POST /seed/run
- * 
- * Note: Admin only
- * Creates sample users, products, and orders for testing
+ * Update user (admin only)
  */
-export const runSeed = async (): Promise<MessageResponse> => {
-  // TODO: Implement seed logic
-  // Check if user is admin before calling
-  // const response = await apiClient.post('/seed/run');
-  // return response.data;
-  throw new Error('Not implemented');
+export const updateUser = async (id: string, input: UpdateUserInput): Promise<User> => {
+  try {
+    console.log('🔄 [updateUser] Updating user with:', { id, input });
+    
+    const { data } = await apolloClient.mutate({
+      mutation: UPDATE_USER_MUTATION,
+      variables: { id, input }
+    }) as { data: { updateUser: User } };
+
+    console.log('✅ [updateUser] Response:', data);
+
+    if (!data || !data.updateUser) {
+      throw new Error('No se pudo actualizar el usuario');
+    }
+
+    return data.updateUser;
+  } catch (error: any) {
+    console.error('❌ [updateUser] Error:', error);
+    console.error('❌ [updateUser] GraphQL Errors:', error?.graphQLErrors);
+    console.error('❌ [updateUser] Network Error:', error?.networkError);
+    throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al actualizar usuario');
+  }
 };
+
+/**
+ * Delete user (admin only)
+ */
+export const deleteUser = async (id: string): Promise<boolean> => {
+  const { data } = await apolloClient.mutate({
+    mutation: DELETE_USER_MUTATION,
+    variables: { id }
+  });
+
+  return data.removeUser;
+};
+
+/**
+ * Seed database with initial data (development only)
+ */
+export const runSeed = async (): Promise<void> => {
+  try {
+    const response = await apiClient.get('/seed');
+    return response.data;
+  } catch (error) {
+    console.error('Error running seed:', error);
+    throw error;
+  }
+};
+

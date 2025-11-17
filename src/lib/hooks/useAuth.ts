@@ -7,6 +7,7 @@ export const useAuth = () => {
   const token = useAuthStore((state) => state.token);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isAdmin = useAuthStore((state) => state.isAdmin);
+  const _hasHydrated = useAuthStore((state) => state._hasHydrated);
   const login = useAuthStore((state) => state.login);
   const logout = useAuthStore((state) => state.logout);
   const setUser = useAuthStore((state) => state.setUser);
@@ -16,6 +17,7 @@ export const useAuth = () => {
     token,
     isAuthenticated,
     isAdmin,
+    _hasHydrated,
     login,
     logout,
     setUser,

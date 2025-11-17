@@ -11,6 +11,8 @@ export const useOrders = () => {
   const fetchMyOrders = useOrderStore((state) => state.fetchMyOrders);
   const fetchOrderById = useOrderStore((state) => state.fetchOrderById);
   const createOrder = useOrderStore((state) => state.createOrder);
+  const updateOrderStatus = useOrderStore((state) => state.updateOrderStatus);
+  const cancelOrder = useOrderStore((state) => state.cancelOrder);
   const deleteOrder = useOrderStore((state) => state.deleteOrder);
   const addToCart = useOrderStore((state) => state.addToCart);
   const removeFromCart = useOrderStore((state) => state.removeFromCart);
@@ -27,6 +29,8 @@ export const useOrders = () => {
     fetchMyOrders,
     fetchOrderById,
     createOrder,
+    updateOrderStatus,
+    cancelOrder,
     deleteOrder,
     addToCart,
     removeFromCart,

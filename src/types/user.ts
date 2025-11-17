@@ -5,7 +5,22 @@ export interface User {
   email: string;
   username: string;
   role: UserRole;
-  twoFactorEnabled: boolean;
+  twoFactorEnabled?: boolean;
+  productsCount?: number;
+}
+
+export interface CreateUserInput {
+  email: string;
+  username: string;
+  password: string;
+  role?: UserRole;
+}
+
+export interface UpdateUserInput {
+  email?: string;
+  username?: string;
+  password?: string;
+  role?: UserRole;
 }
 
 export interface UserWithoutPassword extends Omit<User, 'password'> {}

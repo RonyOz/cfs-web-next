@@ -50,8 +50,15 @@ export default function AuthPage() {
         console.log('[handleLogin] Fetching profile...');
         const profile = await getProfile();
         console.log('[handleLogin] Profile received:', profile);
+        
+        // El backend devuelve {user: {user: {...}}} - necesitamos extraer el user interno
+        const userData = (profile as any).user?.user || (profile as any).user || profile;
+        console.log('[handleLogin] User object (extracted):', userData);
+        console.log('[handleLogin] User role:', userData?.role);
 
-        storeLogin(profile.user, token);
+        console.log('[handleLogin] Calling storeLogin...');
+        storeLogin(userData, token);
+        console.log('[handleLogin] storeLogin completed, redirecting...');
         router.push(ROUTES.HOME);
       }
     } catch (err: any) {

@@ -1,12 +1,18 @@
 import { Product } from './product';
 import { User } from './user';
 
-export type OrderStatus = 'pending' | 'completed' | 'cancelled';
+export enum OrderStatus {
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  DELIVERED = 'delivered',
+  CANCELED = 'canceled'
+}
 
 export interface OrderItem {
   id: string;
   quantity: number;
   price: number;
+  priceAtPurchase: number;
   product: Product;
 }
 

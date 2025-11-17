@@ -8,8 +8,10 @@ import {
   getMyOrders,
   getOrderById,
   createOrder as apiCreateOrder,
-  deleteOrder as apiDeleteOrder
+  deleteOrder as apiDeleteOrder,
+  updateOrderStatus as apiUpdateOrderStatus
 } from '@/lib/api/orders';
+import { OrderStatus } from '@/types';
 
 interface CartItem {
   productId: string;
@@ -42,6 +44,8 @@ interface OrderState {
   fetchMyOrders: () => Promise<void>;
   fetchOrderById: (id: string) => Promise<Order>;
   createOrder: (data: CreateOrderData) => Promise<void>;
+  updateOrderStatus: (id: string, status: OrderStatus) => Promise<void>;
+  cancelOrder: (id: string) => Promise<void>;
   deleteOrder: (id: string) => Promise<void>;
 }
 
@@ -180,6 +184,36 @@ export const useOrderStore = create<OrderState>()(
           }));
         } catch (error: any) {
           const errorMessage = error.response?.data?.message || 'Error al crear orden';
+          set({ error: errorMessage, loading: false });
+          throw error;
+        }
+      },
+
+      updateOrderStatus: async (id, status) => {
+        set({ loading: true, error: null });
+        try {
+          const updatedOrder = await apiUpdateOrderStatus(id, { status });
+          set((state) => ({
+            orders: state.orders.map((o) => (o.id === id ? updatedOrder : o)),
+            loading: false,
+          }));
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Error al actualizar estado';
+          set({ error: errorMessage, loading: false });
+          throw error;
+        }
+      },
+
+      cancelOrder: async (id) => {
+        set({ loading: true, error: null });
+        try {
+          await apiDeleteOrder(id);
+          set((state) => ({
+            orders: state.orders.filter((o) => o.id !== id),
+            loading: false,
+          }));
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.message || 'Error al cancelar orden';
           set({ error: errorMessage, loading: false });
           throw error;
         }
