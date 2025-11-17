@@ -18,6 +18,7 @@ export const metadata: Metadata = {
   description: "Toda la comida del campus en un solo lugar. Explora, pide o comparte comida cuando más la necesitas.",
   icons: {
     icon: "/favicon.png",
+    shortcut: "/favicon.png",
     apple: "/favicon.png",
   },
   openGraph: {
