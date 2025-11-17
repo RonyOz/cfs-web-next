@@ -12,8 +12,9 @@ export const PAGE_SIZE_OPTIONS = [10, 20, 50];
 // Order Status
 export const ORDER_STATUS = {
   PENDING: 'pending',
-  COMPLETED: 'completed',
-  CANCELLED: 'cancelled',
+  ACCEPTED: 'accepted',
+  DELIVERED: 'delivered',
+  CANCELED: 'canceled',
 } as const;
 
 // User Roles

@@ -56,7 +56,7 @@ export const OrdersTable = ({
   const [actioningId, setActioningId] = useState<string | null>(null);
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
-    if (window.confirm(`¿Cambiar estado de la orden a "${getStatusText(newStatus)}"?`)) {
+    if (window.confirm(`¿Cambiar estado de la orden a "${getStatusText(newStatus as OrderStatus)}"?`)) {
       setActioningId(orderId);
       await onUpdateStatus(orderId, newStatus);
       setActioningId(null);

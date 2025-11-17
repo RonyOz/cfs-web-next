@@ -63,18 +63,18 @@ export const OrderList = ({ orders, onCancel, showActions = true, loading = fals
           Pendientes ({orders.filter(o => o.status === ORDER_STATUS.PENDING).length})
         </Button>
         <Button
-          variant={statusFilter === ORDER_STATUS.COMPLETED ? 'primary' : 'outline'}
+          variant={statusFilter === ORDER_STATUS.DELIVERED ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => setStatusFilter(ORDER_STATUS.COMPLETED)}
+          onClick={() => setStatusFilter(ORDER_STATUS.DELIVERED)}
         >
-          Completadas ({orders.filter(o => o.status === ORDER_STATUS.COMPLETED).length})
+          Completadas ({orders.filter(o => o.status === ORDER_STATUS.DELIVERED).length})
         </Button>
         <Button
-          variant={statusFilter === ORDER_STATUS.CANCELLED ? 'primary' : 'outline'}
+          variant={statusFilter === ORDER_STATUS.CANCELED ? 'primary' : 'outline'}
           size="sm"
-          onClick={() => setStatusFilter(ORDER_STATUS.CANCELLED)}
+          onClick={() => setStatusFilter(ORDER_STATUS.CANCELED)}
         >
-          Canceladas ({orders.filter(o => o.status === ORDER_STATUS.CANCELLED).length})
+          Canceladas ({orders.filter(o => o.status === ORDER_STATUS.CANCELED).length})
         </Button>
       </div>
 

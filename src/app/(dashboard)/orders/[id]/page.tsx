@@ -7,7 +7,7 @@ import { Button, Card } from '@/components/ui';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
-import { Order } from '@/types';
+import { Order, OrderStatus } from '@/types';
 import Link from 'next/link';
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -122,8 +122,9 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <div className="flex items-center gap-3">
           {getStatusIcon(order.status)}
           <span className={`text-lg font-semibold ${
-            order.status === 'pending' ? 'text-warning-500' :
-            order.status === 'completed' ? 'text-success-500' :
+            order.status === OrderStatus.PENDING ? 'text-warning-500' :
+            order.status === OrderStatus.DELIVERED ? 'text-success-500' :
+            order.status === OrderStatus.ACCEPTED ? 'text-primary-500' :
             'text-danger-500'
           }`}>
             {getStatusText(order.status)}

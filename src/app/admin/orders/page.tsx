@@ -28,7 +28,7 @@ export default function AdminOrdersPage() {
       toast.error('No tienes permisos de administrador');
       return;
     }
-    fetchOrders(true); // true = fetch all orders (admin)
+    fetchOrders(); // Admin obtiene todas las órdenes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isAdmin]);
 
@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
     try {
       await updateOrderStatus(orderId, status as OrderStatus);
       toast.success(`Estado actualizado a "${status}"`);
-      await fetchOrders(true);
+      await fetchOrders();
     } catch (error: any) {
       toast.error(error?.message || 'Error al actualizar estado');
     }
@@ -51,7 +51,7 @@ export default function AdminOrdersPage() {
     try {
       await cancelOrder(orderId);
       toast.success('Orden cancelada y stock restaurado');
-      await fetchOrders(true);
+      await fetchOrders();
     } catch (error: any) {
       toast.error(error?.message || 'Error al cancelar orden');
     }

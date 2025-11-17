@@ -18,7 +18,7 @@ export const getAllUsers = async (pagination?: { limit?: number; offset?: number
       pagination: pagination || { limit: 100, offset: 0 }
     },
     fetchPolicy: 'network-only'
-  });
+  }) as { data: { users: User[] } };
 
   return data.users;
 };
@@ -31,7 +31,7 @@ export const getUserById = async (term: string): Promise<User> => {
     query: GET_USER,
     variables: { term },
     fetchPolicy: 'network-only'
-  });
+  }) as { data: { user: User } };
 
   return data.user;
 };
@@ -43,7 +43,7 @@ export const createUser = async (input: CreateUserInput): Promise<User> => {
   const { data } = await apolloClient.mutate({
     mutation: CREATE_USER_MUTATION,
     variables: { input }
-  });
+  }) as { data: { createUser: User } };
 
   return data.createUser;
 };
@@ -75,7 +75,7 @@ export const deleteUser = async (id: string): Promise<boolean> => {
   const { data } = await apolloClient.mutate({
     mutation: DELETE_USER_MUTATION,
     variables: { id }
-  });
+  }) as { data: { removeUser: boolean } };
 
   return data.removeUser;
 };

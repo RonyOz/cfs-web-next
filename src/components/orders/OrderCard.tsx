@@ -27,14 +27,21 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
         border: 'border-warning-600',
         label: 'Pendiente',
       },
-      [ORDER_STATUS.COMPLETED]: {
+      [ORDER_STATUS.ACCEPTED]: {
+        icon: Clock,
+        color: 'text-primary-500',
+        bg: 'bg-primary-600/20',
+        border: 'border-primary-600',
+        label: 'Aceptado',
+      },
+      [ORDER_STATUS.DELIVERED]: {
         icon: CheckCircle,
         color: 'text-success-500',
         bg: 'bg-success-600/20',
         border: 'border-success-600',
-        label: 'Completado',
+        label: 'Entregado',
       },
-      [ORDER_STATUS.CANCELLED]: {
+      [ORDER_STATUS.CANCELED]: {
         icon: XCircle,
         color: 'text-danger-500',
         bg: 'bg-danger-600/20',
