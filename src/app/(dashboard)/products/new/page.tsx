@@ -9,8 +9,6 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
 
-export const dynamic = 'force-dynamic';
-
 export default function NewProductPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
