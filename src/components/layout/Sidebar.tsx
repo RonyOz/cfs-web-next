@@ -32,9 +32,9 @@ export const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 min-h-screen">
+    <aside className="w-64 bg-dark-800 border-r border-dark-700 min-h-screen">
       <div className="p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">
+        <h2 className="text-lg font-semibold text-gray-100 mb-6">
           Panel de Administración
         </h2>
 
@@ -49,8 +49,8 @@ export const Sidebar = () => {
                 className={cn(
                   'block px-4 py-2 rounded-lg text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-primary-50 text-primary-700'
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                    : 'text-gray-300 hover:bg-dark-700 hover:text-gray-100'
                 )}
               >
                 {link.label}
