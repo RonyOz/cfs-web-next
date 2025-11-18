@@ -107,6 +107,7 @@ export default function AuthPage() {
     const formData = new FormData(e.currentTarget);
     const username = formData.get('username') as string;
     const email = formData.get('email') as string;
+    const phoneNumber = formData.get('phoneNumber') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
 
@@ -117,7 +118,13 @@ export default function AuthPage() {
     }
 
     try {
-      const resp = await apiSignup({ email, username, password });
+      if (!phoneNumber) {
+        setError('El número de teléfono es obligatorio');
+        setIsLoading(false);
+        return;
+      }
+
+      const resp = await apiSignup({ email, username, password, phoneNumber });
       const token = (resp as any).access_token || (resp as any).token;
 
       if (!token) {
@@ -296,6 +303,15 @@ export default function AuthPage() {
                   type="email"
                   placeholder="tu@universidad.edu"
                   required
+                />
+
+                <Input
+                  label="Número de teléfono"
+                  name="phoneNumber"
+                  type="tel"
+                  placeholder="+57 300 000 0000"
+                  required
+                  minLength={7}
                 />
 
                 <Input
