@@ -169,8 +169,18 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Image */}
-        <div className="h-96 bg-dark-800 rounded-lg flex items-center justify-center border border-dark-700">
-          <Package className="h-24 w-24 text-gray-600" />
+        <div className="h-96 bg-dark-800 rounded-lg overflow-hidden border border-dark-700">
+          {selectedProduct.imageUrl ? (
+            <img 
+              src={selectedProduct.imageUrl} 
+              alt={selectedProduct.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="h-24 w-24 text-gray-600" />
+            </div>
+          )}
         </div>
 
         {/* Info */}
