@@ -76,7 +76,7 @@ export default function SellerOrdersPage() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
           <ShoppingBag className="h-8 w-8 text-primary-400" />
-          Mis Pedidos
+          Mis Ventas
         </h1>
         <p className="text-gray-400 mt-2">
           Gestiona los pedidos de tus productos

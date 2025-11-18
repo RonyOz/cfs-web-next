@@ -55,7 +55,7 @@ export const Header = () => {
                 href={ROUTES.SELLER_ORDERS}
                 className="text-gray-300 hover:text-primary-400 transition-colors"
               >
-                Pedidos
+                Ventas
               </Link>
 
               {/* Show admin links only for admin users */}
@@ -137,7 +137,7 @@ export const Header = () => {
                   className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Pedidos
+                  Ventas
                 </Link>
 
                 {isAdmin && (
