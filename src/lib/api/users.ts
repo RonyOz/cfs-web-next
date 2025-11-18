@@ -1,3 +1,4 @@
+import apiClient from '@/lib/api/client';
 import apolloClient from '@/lib/graphql/client';
 import {
   GET_ALL_USERS,
@@ -56,6 +57,10 @@ export const createUser = async (input: CreateUserInput): Promise<User> => {
  */
 export const updateUser = async (id: string, input: UpdateUserInput): Promise<User> => {
   try {
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('[api/updateUser] sending payload', { id, input });
+    }
+
     const { data } = await apolloClient.mutate({
       mutation: UPDATE_USER_MUTATION,
       variables: { id, input }
@@ -65,8 +70,15 @@ export const updateUser = async (id: string, input: UpdateUserInput): Promise<Us
       throw new Error('No se pudo actualizar el usuario');
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      console.info('[api/updateUser] response', data.updateUser);
+    }
+
     return data.updateUser;
   } catch (error: any) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[api/updateUser] error', error);
+    }
     throw new Error(error?.graphQLErrors?.[0]?.message || error?.message || 'Error al actualizar usuario');
   }
 };
@@ -94,5 +106,21 @@ export const getSellerProfile = async (id: string): Promise<User> => {
   }) as { data: { sellerProfile: User } };
 
   return data.sellerProfile;
+};
+
+/**
+ * Update own profile via REST (auth users)
+ */
+export const updateMyProfile = async (id: string, input: UpdateUserInput): Promise<User> => {
+  try {
+    const { data } = await apiClient.put<User>(`/users/${id}`, input);
+    return data;
+  } catch (error: any) {
+    const message =
+      error?.response?.data?.message ||
+      error?.message ||
+      'Error al actualizar tu perfil';
+    throw new Error(Array.isArray(message) ? message[0] : message);
+  }
 };
 
