@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Package, MapPin as MapPinIcon, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Package, MapPin as MapPinIcon, Calendar, Clock, CheckCircle, XCircle, CreditCard } from 'lucide-react';
 import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { Order, OrderStatus } from '@/types';
@@ -163,14 +163,23 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         </div>
       </Card>
 
-      {/* Meeting Place */}
-      <Card className="mb-6">
-        <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-2">
-          <MapPinIcon className="h-5 w-5 text-primary-400" />
-          Lugar de Encuentro
-        </h2>
-        <p className="text-gray-300">{order.meetingPlace}</p>
-      </Card>
+      {/* Meeting Place & Payment Method */}
+      <div className="grid gap-6 mb-6 md:grid-cols-2">
+        <Card>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-2">
+            <MapPinIcon className="h-5 w-5 text-primary-400" />
+            Lugar de Encuentro
+          </h2>
+          <p className="text-gray-300">{order.meetingPlace}</p>
+        </Card>
+        <Card>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-primary-400" />
+            Método de Pago
+          </h2>
+          <p className="text-gray-300">{order.paymentMethod}</p>
+        </Card>
+      </div>
 
       {/* Summary */}
       <Card className="mb-6">

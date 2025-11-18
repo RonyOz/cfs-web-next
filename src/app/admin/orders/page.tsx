@@ -182,6 +182,10 @@ export default function AdminOrdersPage() {
                   <p className="text-sm text-gray-100">{selectedOrder.meetingPlace}</p>
                 </div>
                 <div>
+                  <p className="text-sm text-gray-400">Método de Pago</p>
+                  <p className="text-sm text-gray-100">{selectedOrder.paymentMethod}</p>
+                </div>
+                <div>
                   <p className="text-sm text-gray-400">Email</p>
                   <p className="text-sm text-gray-100">
                     {'email' in selectedOrder.buyer ? selectedOrder.buyer.email : 'N/A'}

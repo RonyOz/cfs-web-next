@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Button, Card, Input } from '@/components/ui';
 import { formatPrice } from '@/lib/utils';
 import { useOrders } from '@/lib/hooks';
-import { ROUTES } from '@/config/constants';
-import { Trash2, ShoppingCart, AlertCircle, MapPin, X } from 'lucide-react';
+import { ROUTES, PAYMENT_METHOD_OPTIONS, PAYMENT_METHODS } from '@/config/constants';
+import { Trash2, ShoppingCart, AlertCircle, MapPin, X, CreditCard } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const Cart = () => {
@@ -16,6 +16,8 @@ export const Cart = () => {
   const [showMeetingPlaceModal, setShowMeetingPlaceModal] = useState(false);
   const [meetingPlace, setMeetingPlace] = useState('');
   const [meetingPlaceError, setMeetingPlaceError] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS.EFECTIVO);
+  const [paymentMethodError, setPaymentMethodError] = useState('');
 
   const {
     cart,
@@ -42,6 +44,7 @@ export const Cart = () => {
 
   const handleCheckout = async () => {
     setMeetingPlaceError('');
+    setPaymentMethodError('');
     
     // Validar meetingPlace
     if (!meetingPlace.trim()) {
@@ -50,6 +53,16 @@ export const Cart = () => {
     }
     if (meetingPlace.length > 255) {
       setMeetingPlaceError('El lugar de encuentro no puede exceder 255 caracteres');
+      return;
+    }
+
+    // Validar paymentMethod
+    if (!paymentMethod.trim()) {
+      setPaymentMethodError('El método de pago es obligatorio');
+      return;
+    }
+    if (paymentMethod.length > 100) {
+      setPaymentMethodError('El método de pago no puede exceder 100 caracteres');
       return;
     }
 
@@ -69,6 +82,7 @@ export const Cart = () => {
           quantity: item.quantity,
         })),
         meetingPlace: meetingPlace.trim(),
+        paymentMethod: paymentMethod.trim(),
       };
 
       await createOrder(orderData);
@@ -85,6 +99,7 @@ export const Cart = () => {
 
       setShowMeetingPlaceModal(false);
       setMeetingPlace('');
+      setPaymentMethod(PAYMENT_METHODS.EFECTIVO);
       
       setTimeout(() => {
         router.push(ROUTES.ORDERS);
@@ -354,6 +369,8 @@ export const Cart = () => {
                   setShowMeetingPlaceModal(false);
                   setMeetingPlace('');
                   setMeetingPlaceError('');
+                  setPaymentMethod(PAYMENT_METHODS.EFECTIVO);
+                  setPaymentMethodError('');
                 }}
                 className="text-gray-400 hover:text-gray-100 transition-colors"
                 disabled={isCheckingOut}
@@ -363,19 +380,45 @@ export const Cart = () => {
             </div>
 
             <p className="text-sm text-gray-400 mb-4">
-              Indica el lugar donde deseas recibir tu pedido
+              Completa los siguientes datos para finalizar tu compra
             </p>
 
-            <Input
-              label="Lugar de Encuentro"
-              placeholder="Ej: Edificio 320, Salón 201"
-              value={meetingPlace}
-              onChange={(e) => setMeetingPlace(e.target.value)}
-              error={meetingPlaceError}
-              disabled={isCheckingOut}
-              maxLength={255}
-              prefixIcon={<MapPin className="h-4 w-4" />}
-            />
+            <div className="space-y-4">
+              <Input
+                label="Lugar de Encuentro"
+                placeholder="Ej: Edificio 320, Salón 201"
+                value={meetingPlace}
+                onChange={(e) => setMeetingPlace(e.target.value)}
+                error={meetingPlaceError}
+                disabled={isCheckingOut}
+                maxLength={255}
+                prefixIcon={<MapPin className="h-4 w-4" />}
+              />
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Método de Pago
+                </label>
+                <div className="relative">
+                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <select
+                    value={paymentMethod}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                    disabled={isCheckingOut}
+                    className="w-full pl-10 pr-4 py-2.5 bg-dark-800 border border-dark-600 rounded-lg text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {PAYMENT_METHOD_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {paymentMethodError && (
+                  <p className="mt-1 text-sm text-danger-500">{paymentMethodError}</p>
+                )}
+              </div>
+            </div>
 
             <div className="mt-6 flex gap-3">
               <Button
@@ -384,6 +427,8 @@ export const Cart = () => {
                   setShowMeetingPlaceModal(false);
                   setMeetingPlace('');
                   setMeetingPlaceError('');
+                  setPaymentMethod(PAYMENT_METHODS.EFECTIVO);
+                  setPaymentMethodError('');
                 }}
                 disabled={isCheckingOut}
                 className="flex-1"

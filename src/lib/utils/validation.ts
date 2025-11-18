@@ -49,6 +49,7 @@ export const createOrderItemSchema = z.object({
 export const createOrderSchema = z.object({
   items: z.array(createOrderItemSchema).min(1, 'Debes agregar al menos un producto'),
   meetingPlace: z.string().min(1, 'El lugar de encuentro es obligatorio').max(255, 'El lugar de encuentro no puede exceder 255 caracteres'),
+  paymentMethod: z.string().min(1, 'El método de pago es obligatorio').max(100, 'El método de pago no puede exceder 100 caracteres'),
 });
 
 // Type inference from schemas

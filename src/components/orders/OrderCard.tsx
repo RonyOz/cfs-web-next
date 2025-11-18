@@ -6,7 +6,7 @@ import { Card, Button } from '@/components/ui';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 import { ROUTES, ORDER_STATUS } from '@/config/constants';
 import { useAuth } from '@/lib/hooks';
-import { Package, Clock, CheckCircle, XCircle, MapPin } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, MapPin, CreditCard } from 'lucide-react';
 
 interface OrderCardProps {
   order: Order;
@@ -74,13 +74,24 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
         </span>
       </div>
 
-      {/* Meeting Place */}
-      <div className="mb-4 p-3 bg-dark-700/50 rounded-lg border border-dark-600">
-        <div className="flex items-start gap-2">
-          <MapPin className="h-4 w-4 text-primary-400 mt-0.5 shrink-0" />
-          <div className="flex-1">
-            <p className="text-xs text-gray-400 mb-1">Lugar de Encuentro</p>
-            <p className="text-sm text-gray-200">{order.meetingPlace}</p>
+      {/* Meeting Place & Payment Method */}
+      <div className="mb-4 space-y-2">
+        <div className="p-3 bg-dark-700/50 rounded-lg border border-dark-600">
+          <div className="flex items-start gap-2">
+            <MapPin className="h-4 w-4 text-primary-400 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-xs text-gray-400 mb-1">Lugar de Encuentro</p>
+              <p className="text-sm text-gray-200">{order.meetingPlace}</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-3 bg-dark-700/50 rounded-lg border border-dark-600">
+          <div className="flex items-start gap-2">
+            <CreditCard className="h-4 w-4 text-primary-400 mt-0.5 shrink-0" />
+            <div className="flex-1">
+              <p className="text-xs text-gray-400 mb-1">Método de Pago</p>
+              <p className="text-sm text-gray-200">{order.paymentMethod}</p>
+            </div>
           </div>
         </div>
       </div>

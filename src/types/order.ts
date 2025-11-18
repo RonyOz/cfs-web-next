@@ -8,6 +8,14 @@ export enum OrderStatus {
   CANCELED = 'canceled'
 }
 
+export enum PaymentMethod {
+  EFECTIVO = 'Efectivo',
+  NEQUI = 'Nequi',
+  DAVIPLATA = 'Daviplata',
+  TRANSFERENCIA = 'Transferencia bancaria',
+  OTRO = 'Otro'
+}
+
 export interface OrderItem {
   id: string;
   quantity: number;
@@ -21,6 +29,7 @@ export interface Order {
   total: number;
   status: OrderStatus;
   meetingPlace: string;
+  paymentMethod: string;
   createdAt: string;
   updatedAt?: string;
   buyer: {
@@ -38,6 +47,7 @@ export interface CreateOrderItem {
 export interface CreateOrderData {
   items: CreateOrderItem[];
   meetingPlace: string;
+  paymentMethod: string;
 }
 
 export interface UpdateOrderData {

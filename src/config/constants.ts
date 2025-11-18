@@ -17,6 +17,23 @@ export const ORDER_STATUS = {
   CANCELED: 'canceled',
 } as const;
 
+// Payment Methods
+export const PAYMENT_METHODS = {
+  EFECTIVO: 'Efectivo',
+  NEQUI: 'Nequi',
+  DAVIPLATA: 'Daviplata',
+  TRANSFERENCIA: 'Transferencia bancaria',
+  OTRO: 'Otro',
+} as const;
+
+export const PAYMENT_METHOD_OPTIONS = [
+  { value: PAYMENT_METHODS.EFECTIVO, label: 'Efectivo' },
+  { value: PAYMENT_METHODS.NEQUI, label: 'Nequi' },
+  { value: PAYMENT_METHODS.DAVIPLATA, label: 'Daviplata' },
+  { value: PAYMENT_METHODS.TRANSFERENCIA, label: 'Transferencia bancaria' },
+  { value: PAYMENT_METHODS.OTRO, label: 'Otro' },
+] as const;
+
 // User Roles
 export const USER_ROLES = {
   USER: 'user',
