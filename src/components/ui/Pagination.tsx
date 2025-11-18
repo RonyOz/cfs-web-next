@@ -96,50 +96,57 @@ export const Pagination = ({
       </div>
 
       {/* Controles de navegación */}
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage - 1)}
-          disabled={!canGoPrevious}
-          className="gap-1"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Anterior
-        </Button>
+      <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-2">
+        <div className="flex items-center gap-2 order-2 sm:order-1">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={!canGoPrevious}
+            className="gap-1"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden xs:inline">Anterior</span>
+          </Button>
 
-        <div className="flex items-center gap-1">
-          {getPageNumbers().map((page, index) => (
-            typeof page === 'number' ? (
-              <button
-                key={index}
-                onClick={() => onPageChange(page)}
-                className={`min-w-10 h-10 px-3 rounded text-sm font-medium transition-colors ${
-                  currentPage === page
-                    ? 'bg-primary-500 text-white'
-                    : 'text-gray-300 hover:bg-dark-700 hover:text-gray-100'
-                }`}
-              >
-                {page}
-              </button>
-            ) : (
-              <span key={index} className="px-2 text-gray-500">
-                {page}
-              </span>
-            )
-          ))}
+          <div className="hidden sm:flex items-center gap-1">
+            {getPageNumbers().map((page, index) => (
+              typeof page === 'number' ? (
+                <button
+                  key={index}
+                  onClick={() => onPageChange(page)}
+                  className={`min-w-10 h-10 px-3 rounded text-sm font-medium transition-colors ${
+                    currentPage === page
+                      ? 'bg-primary-500 text-white'
+                      : 'text-gray-300 hover:bg-dark-700 hover:text-gray-100'
+                  }`}
+                >
+                  {page}
+                </button>
+              ) : (
+                <span key={index} className="px-2 text-gray-500">
+                  {page}
+                </span>
+              )
+            ))}
+          </div>
+
+          {/* Indicador de página para móviles */}
+          <div className="sm:hidden flex items-center px-3 text-sm text-gray-400">
+            Página {currentPage} de {totalPages}
+          </div>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={!canGoNext}
+            className="gap-1"
+          >
+            <span className="hidden xs:inline">Siguiente</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => onPageChange(currentPage + 1)}
-          disabled={!canGoNext}
-          className="gap-1"
-        >
-          Siguiente
-          <ChevronRight className="h-4 w-4" />
-        </Button>
       </div>
     </div>
   );

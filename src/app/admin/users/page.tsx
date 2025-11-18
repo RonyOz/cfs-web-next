@@ -141,22 +141,22 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
-            <Users className="h-8 w-8 text-primary-400" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2 sm:gap-3">
+            <Users className="h-6 w-6 sm:h-8 sm:w-8 text-primary-400" />
             Gestión de Usuarios
           </h1>
-          <p className="text-gray-400 mt-2">
+          <p className="text-sm sm:text-base text-gray-400 mt-2">
             Administra todos los usuarios del sistema
           </p>
         </div>
         <Button
           variant="primary"
           onClick={handleCreateUser}
-          className="gap-2"
+          className="gap-2 w-full sm:w-auto"
         >
           <Plus className="h-4 w-4" />
           Crear Usuario

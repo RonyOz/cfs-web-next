@@ -99,14 +99,14 @@ export default function AdminDashboardPage() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
-          <TrendingUp className="h-8 w-8 text-primary-400" />
-          Dashboard del Administrador
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2 sm:gap-3">
+          <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-primary-400" />
+          <span className="leading-tight">Dashboard del Administrador</span>
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-sm sm:text-base text-gray-400 mt-2">
           Vista general del sistema Campus Food Sharing
         </p>
       </div>

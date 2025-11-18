@@ -23,25 +23,25 @@ export default function ProfilePage() {
   if (!isAuthenticated || !user) return null;
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100">Mi Perfil</h1>
-        <p className="mt-1 text-gray-400">Administra tu información personal</p>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-100">Mi Perfil</h1>
+        <p className="mt-1 text-sm sm:text-base text-gray-400">Administra tu información personal</p>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* User Info Card */}
         <Card>
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="h-20 w-20 rounded-full bg-primary-400 flex items-center justify-center">
-                <User className="h-10 w-10 text-dark-900" />
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-primary-400 flex items-center justify-center shrink-0">
+                <User className="h-8 w-8 sm:h-10 sm:w-10 text-dark-900" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-100">{user.username}</h2>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-100">{user.username}</h2>
                 {isAdmin && (
-                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 rounded-full bg-primary-400/20 text-primary-400 text-sm">
+                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 rounded-full bg-primary-400/20 text-primary-400 text-xs sm:text-sm">
                     <Shield className="h-3 w-3" />
                     Administrador
                   </span>

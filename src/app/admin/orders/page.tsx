@@ -34,22 +34,6 @@ export default function AdminOrdersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isAdmin]);
   
-  // Log de depuración cuando cambian las órdenes
-  useEffect(() => {
-    if (orders.length > 0) {
-      console.log('🛒 [Admin Orders] Total órdenes:', orders.length);
-      console.log('🛒 [Admin Orders] Primera orden:', orders[0]);
-      if (orders[0].items && orders[0].items.length > 0) {
-        console.log('🛒 [Admin Orders] Primer item de primera orden:', orders[0].items[0]);
-        console.log('🛒 [Admin Orders] Estructura item:', {
-          id: orders[0].items[0].id,
-          quantity: orders[0].items[0].quantity,
-          price: orders[0].items[0].price,
-          priceAtPurchase: orders[0].items[0].priceAtPurchase,
-        });
-      }
-    }
-  }, [orders]);
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -106,26 +90,19 @@ export default function AdminOrdersPage() {
     .filter((o) => o.status === OrderStatus.DELIVERED)
     .reduce((sum, o) => {
       const orderTotal = parseFloat(o.total as any) || 0;
-      console.log('💰 [Admin Orders] Revenue calc:', { 
-        orderId: o.id.slice(0, 8), 
-        total: o.total, 
-        orderTotal,
-        sum
-      });
       return sum + orderTotal;
     }, 0);
   
-  console.log('💰 [Admin Orders] Total Revenue:', totalRevenue);
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
+    <div className="w-full max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
-          <ShoppingBag className="h-8 w-8 text-primary-400" />
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 flex items-center gap-2 sm:gap-3">
+          <ShoppingBag className="h-6 w-6 sm:h-8 sm:w-8 text-primary-400" />
           Gestión de Órdenes
         </h1>
-        <p className="text-gray-400 mt-2">
+        <p className="text-sm sm:text-base text-gray-400 mt-2">
           Administra todas las órdenes del sistema
         </p>
       </div>
@@ -228,15 +205,6 @@ export default function AdminOrdersPage() {
                 {selectedOrder.items.map((item) => {
                   // Usar priceAtPurchase si existe, sino price como fallback
                   const itemPrice = item.priceAtPurchase ?? item.price ?? 0;
-                  
-                  console.log(`🛒 [Admin Orders Modal] Item:`, {
-                    id: item.id,
-                    product: item.product.name,
-                    priceAtPurchase: item.priceAtPurchase,
-                    price: item.price,
-                    itemPrice,
-                    quantity: item.quantity,
-                  });
                   
                   return (
                     <div

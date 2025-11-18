@@ -57,8 +57,8 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
 
   return (
     <Card hover>
-      <div className="flex justify-between items-start mb-4">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
+        <div className="flex-1">
           <Link href={ROUTES.ORDER_DETAIL(order.id)}>
             <h3 className="text-lg font-semibold text-gray-100 hover:text-primary-400 transition-colors">
               Orden #{order.id.slice(0, 8)}
@@ -68,7 +68,7 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
             {formatDateTime(order.createdAt)}
           </p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.border} border`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.border} border w-fit`}>
           <StatusIcon className="h-3.5 w-3.5" />
           <span className={statusConfig.color}>{statusConfig.label}</span>
         </span>
