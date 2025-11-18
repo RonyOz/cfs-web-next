@@ -58,120 +58,123 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
     <Card className="overflow-hidden">
       <div className="overflow-x-auto -mx-4 sm:mx-0">
         <div className="inline-block min-w-full align-middle">
-        <table className="min-w-full">
-          <thead>
-            <tr className="border-b border-dark-700">
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Usuario
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Contacto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Rol
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                2FA
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Productos
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-dark-700">
-            {users.map((user) => (
-              <tr key={user.id} className="hover:bg-dark-700/50 transition-colors">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    type="button"
-                    className="flex items-center gap-2 text-left hover:text-primary-400 transition-colors"
-                    onClick={() => onViewProfile?.(user.id)}
-                  >
-                    <div className="h-8 w-8 rounded-full bg-primary-400/20 flex items-center justify-center">
-                      <span className="text-sm font-medium text-primary-400">
-                        {user.username.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                    <span className="text-sm font-medium text-gray-100 underline-offset-2">
-                      {user.username}
-                    </span>
-                  </button>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div>
-                    <p className="text-sm text-gray-100">{user.email}</p>
-                    <p className="text-xs text-gray-500">
-                      {user.phoneNumber }
-                    </p>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={cn(
-                      'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium',
-                      user.role === 'admin'
-                        ? 'bg-primary-400/20 text-primary-400'
-                        : 'bg-gray-600/20 text-gray-400'
-                    )}
-                  >
-                    {user.role === 'admin' && <Shield className="h-3 w-3" />}
-                    {user.role === 'admin' ? 'Administrador' : 'Usuario'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={cn(
-                      'inline-flex px-2 py-1 rounded text-xs font-medium',
-                      user.twoFactorEnabled
-                        ? 'bg-success-500/20 text-success-500'
-                        : 'bg-gray-600/20 text-gray-500'
-                    )}
-                  >
-                    {user.twoFactorEnabled ? 'Habilitado' : 'Deshabilitado'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-400">
-                    {user.productsCount ?? user.products?.length ?? 0}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right">
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
+          <table className="min-w-full">
+            <thead>
+              <tr className="border-b border-dark-700">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Usuario
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Teléfono
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Rol
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  2FA
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Productos
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-dark-700">
+              {users.map((user) => (
+                <tr key={user.id} className="hover:bg-dark-700/50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <button
+                      type="button"
+                      className="flex items-center gap-2 text-left hover:text-primary-400 transition-colors"
                       onClick={() => onViewProfile?.(user.id)}
                     >
-                      Ver perfil
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onEdit(user)}
-                      className="gap-1"
+                      <div className="h-8 w-8 rounded-full bg-primary-400/20 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary-400">
+                          {user.username.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-100 underline-offset-2">
+                        {user.username}
+                      </span>
+                    </button>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-gray-400">{user.email}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-gray-400">
+                      {user.phoneNumber || '-'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={cn(
+                        'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium',
+                        user.role === 'admin'
+                          ? 'bg-primary-400/20 text-primary-400'
+                          : 'bg-gray-600/20 text-gray-400'
+                      )}
                     >
-                      <Edit className="h-3 w-3" />
-                      Editar
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => handleDelete(user.id)}
-                      isLoading={deletingId === user.id}
-                      className="gap-1"
+                      {user.role === 'admin' && <Shield className="h-3 w-3" />}
+                      {user.role === 'admin' ? 'Administrador' : 'Usuario'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={cn(
+                        'inline-flex px-2 py-1 rounded text-xs font-medium',
+                        user.twoFactorEnabled
+                          ? 'bg-success-500/20 text-success-500'
+                          : 'bg-gray-600/20 text-gray-500'
+                      )}
                     >
-                      <Trash2 className="h-3 w-3" />
-                      Eliminar
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {user.twoFactorEnabled ? 'Habilitado' : 'Deshabilitado'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className="text-sm text-gray-400">
+                      {user.productsCount ?? user.products?.length ?? 0}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onViewProfile?.(user.id)}
+                      >
+                        Ver perfil
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(user)}
+                        className="gap-1"
+                      >
+                        <Edit className="h-3 w-3" />
+                        Editar
+                      </Button>
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDelete(user.id)}
+                        isLoading={deletingId === user.id}
+                        className="gap-1"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                        Eliminar
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
