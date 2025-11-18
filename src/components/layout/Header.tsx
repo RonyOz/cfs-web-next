@@ -56,15 +56,22 @@ export const Header = () => {
                 Órdenes
               </Link>
 
-              {/* Show admin link only for admin users */}
+              {/* Show admin links only for admin users */}
               {isAdmin && (
-                <a
-                  href="http://localhost:3001/admin/"
-                  className="text-gray-300 hover:text-primary-400 transition-colors"
-                  rel="noopener noreferrer"
-                >
-                  Admin
-                </a>
+                <>
+                  <Link
+                    href={ROUTES.ADMIN_DASHBOARD}
+                    className="text-gray-300 hover:text-primary-400 transition-colors"
+                  >
+                    Admin
+                  </Link>
+                  <Link
+                    href={ROUTES.ADMIN_USERS}
+                    className="text-gray-300 hover:text-primary-400 transition-colors"
+                  >
+                    Usuarios
+                  </Link>
+                </>
               )}
             </div>
           )}
@@ -166,15 +173,22 @@ export const Header = () => {
                 </Link>
 
                 {isAdmin && (
-                  <a
-                    href="http://localhost:3001/admin/"
-                    className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
-                    onClick={() => setMobileMenuOpen(false)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Admin
-                  </a>
+                  <>
+                    <Link
+                      href={ROUTES.ADMIN_DASHBOARD}
+                      className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Admin
+                    </Link>
+                    <Link
+                      href={ROUTES.ADMIN_USERS}
+                      className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Usuarios
+                    </Link>
+                  </>
                 )}
               </div>
             )}

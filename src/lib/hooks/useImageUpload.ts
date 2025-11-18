@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import apolloClient from '@/lib/graphql/client';
 import { CREATE_UPLOAD_URL_MUTATION } from '@/lib/graphql/mutations';
-import { supabase } from '@/lib/supabase';
+import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase';
 
 interface UploadResult {
   publicUrl: string;
@@ -18,6 +18,14 @@ export const useImageUpload = () => {
     setProgress(0);
 
     try {
+      if (!isSupabaseConfigured()) {
+        throw new Error(
+          'Supabase no esta configurado. Define NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY para habilitar las cargas de imagenes.',
+        );
+      }
+
+      const supabase = getSupabaseClient();
+
       // PASO 1: Obtener URL firmada del backend
       const { data } = await apolloClient.mutate({
         mutation: CREATE_UPLOAD_URL_MUTATION,

@@ -11,9 +11,10 @@ interface UserTableProps {
   onEdit: (user: User) => void;
   onDelete: (userId: string) => void;
   isLoading?: boolean;
+  onViewProfile?: (userId: string) => void;
 }
 
-export const UserTable = ({ users, onEdit, onDelete, isLoading }: UserTableProps) => {
+export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }: UserTableProps) => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const handleDelete = async (userId: string) => {
@@ -75,14 +76,20 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading }: UserTableProps
             {users.map((user) => (
               <tr key={user.id} className="hover:bg-dark-700/50 transition-colors">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 text-left hover:text-primary-400 transition-colors"
+                    onClick={() => onViewProfile?.(user.id)}
+                  >
                     <div className="h-8 w-8 rounded-full bg-primary-400/20 flex items-center justify-center">
                       <span className="text-sm font-medium text-primary-400">
                         {user.username.charAt(0).toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-sm font-medium text-gray-100">{user.username}</span>
-                  </div>
+                    <span className="text-sm font-medium text-gray-100 underline-offset-2">
+                      {user.username}
+                    </span>
+                  </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className="text-sm text-gray-400">{user.email}</span>
@@ -119,6 +126,13 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading }: UserTableProps
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onViewProfile?.(user.id)}
+                    >
+                      Ver perfil
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
