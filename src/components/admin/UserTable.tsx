@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { User } from '@/types';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { Edit, Trash2, Shield, User as UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -16,13 +16,21 @@ interface UserTableProps {
 
 export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }: UserTableProps) => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    userId: string | null;
+  }>({ isOpen: false, userId: null });
 
-  const handleDelete = async (userId: string) => {
-    if (window.confirm('¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer.')) {
-      setDeletingId(userId);
-      await onDelete(userId);
-      setDeletingId(null);
-    }
+  const handleDelete = (userId: string) => {
+    setConfirmDialog({ isOpen: true, userId });
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmDialog.userId) return;
+    setDeletingId(confirmDialog.userId);
+    await onDelete(confirmDialog.userId);
+    setDeletingId(null);
+    setConfirmDialog({ isOpen: false, userId: null });
   };
 
   if (isLoading) {
@@ -159,6 +167,18 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
           </tbody>
         </table>
       </div>
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Eliminar Usuario"
+        message="¿Estás seguro de eliminar este usuario? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, userId: null })}
+      />
     </Card>
   );
 };

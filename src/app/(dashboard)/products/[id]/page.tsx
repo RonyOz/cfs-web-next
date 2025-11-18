@@ -8,6 +8,7 @@ import { useAuth, useProducts, useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -49,7 +50,10 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     if (!selectedProduct || purchasing) return;
     
     if (quantity <= 0 || quantity > selectedProduct.stock) {
-      alert('Cantidad inválida');
+      toast.error('Cantidad inválida', {
+        duration: 3000,
+        position: 'top-center',
+      });
       return;
     }
     
@@ -63,10 +67,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           },
         ],
       });
-      alert('Orden creada exitosamente');
+      toast.success('Orden creada exitosamente', {
+        duration: 3000,
+        position: 'top-center',
+      });
       router.push(ROUTES.ORDERS);
     } catch (err: any) {
-      alert(err.message || 'Error al crear la orden');
+      toast.error(err.message || 'Error al crear la orden', {
+        duration: 4000,
+        position: 'top-center',
+      });
     } finally {
       setPurchasing(false);
     }

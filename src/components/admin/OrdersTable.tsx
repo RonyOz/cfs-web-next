@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Order, OrderStatus } from '@/types';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { Eye, XCircle, Package } from 'lucide-react';
 import { cn, formatPrice } from '@/lib/utils';
 import { format } from 'date-fns';
@@ -54,21 +54,43 @@ export const OrdersTable = ({
   isLoading,
 }: OrdersTableProps) => {
   const [actioningId, setActioningId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    type: 'status' | 'cancel' | null;
+    orderId: string | null;
+    newStatus?: string;
+  }>({ isOpen: false, type: null, orderId: null });
 
-  const handleStatusChange = async (orderId: string, newStatus: string) => {
-    if (window.confirm(`¿Cambiar estado de la orden a "${getStatusText(newStatus as OrderStatus)}"?`)) {
-      setActioningId(orderId);
-      await onUpdateStatus(orderId, newStatus);
-      setActioningId(null);
-    }
+  const handleStatusChange = (orderId: string, newStatus: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'status',
+      orderId,
+      newStatus,
+    });
   };
 
-  const handleCancel = async (orderId: string) => {
-    if (window.confirm('¿Cancelar esta orden? Se restaurará el stock.')) {
-      setActioningId(orderId);
-      await onCancelOrder(orderId);
-      setActioningId(null);
+  const handleCancel = (orderId: string) => {
+    setConfirmDialog({
+      isOpen: true,
+      type: 'cancel',
+      orderId,
+    });
+  };
+
+  const confirmAction = async () => {
+    if (!confirmDialog.orderId) return;
+    
+    setActioningId(confirmDialog.orderId);
+    
+    if (confirmDialog.type === 'status' && confirmDialog.newStatus) {
+      await onUpdateStatus(confirmDialog.orderId, confirmDialog.newStatus);
+    } else if (confirmDialog.type === 'cancel') {
+      await onCancelOrder(confirmDialog.orderId);
     }
+    
+    setActioningId(null);
+    setConfirmDialog({ isOpen: false, type: null, orderId: null });
   };
 
   if (isLoading) {
@@ -210,6 +232,26 @@ export const OrdersTable = ({
           </tbody>
         </table>
       </div>
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={
+          confirmDialog.type === 'status'
+            ? 'Cambiar Estado'
+            : 'Cancelar Orden'
+        }
+        message={
+          confirmDialog.type === 'status'
+            ? `¿Cambiar estado de la orden a "${confirmDialog.newStatus ? getStatusText(confirmDialog.newStatus as OrderStatus) : ''}"?`
+            : '¿Cancelar esta orden? Se restaurará el stock.'
+        }
+        confirmText={confirmDialog.type === 'status' ? 'Cambiar' : 'Cancelar Orden'}
+        cancelText="Volver"
+        variant={confirmDialog.type === 'cancel' ? 'danger' : 'warning'}
+        onConfirm={confirmAction}
+        onCancel={() => setConfirmDialog({ isOpen: false, type: null, orderId: null })}
+      />
     </Card>
   );
 };

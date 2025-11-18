@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, AlertCircle } from 'lucide-react';
-import { Button, Input } from '@/components/ui';
-import { ProductCard } from '@/components/products';
+import { Package, Plus, Search, AlertCircle } from 'lucide-react';
+import { Button, ConfirmDialog, Input } from '@/components/ui';
 import { useAuth, useProducts } from '@/lib/hooks';
+import { ProductCard } from '@/components/products';
 import { ROUTES } from '@/config/constants';
+import toast from 'react-hot-toast';
 import { Product } from '@/types';
 
 export default function ProductsPage() {
@@ -35,13 +36,30 @@ export default function ProductsPage() {
            product.description.toLowerCase().includes(query);
   });
 
-  const handleDelete = async (productId: string) => {
-    if (confirm('¿Estás seguro de eliminar este producto?')) {
-      try {
-        await deleteProduct(productId);
-      } catch (err) {
-        alert('Error al eliminar el producto');
-      }
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    productId: string | null;
+  }>({ isOpen: false, productId: null });
+
+  const handleDelete = (productId: string) => {
+    setConfirmDialog({ isOpen: true, productId });
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmDialog.productId) return;
+    try {
+      await deleteProduct(confirmDialog.productId);
+      toast.success('Producto eliminado exitosamente', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } catch (err) {
+      toast.error('Error al eliminar el producto', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } finally {
+      setConfirmDialog({ isOpen: false, productId: null });
     }
   };
 
@@ -144,6 +162,18 @@ export default function ProductsPage() {
           )}
         </>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Eliminar Producto"
+        message="¿Estás seguro de eliminar este producto? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, productId: null })}
+      />
     </div>
   );
 }

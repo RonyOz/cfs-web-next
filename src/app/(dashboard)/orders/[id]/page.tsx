@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Package, Clock, CheckCircle, XCircle } from 'lucide-react';
-import { Button, Card } from '@/components/ui';
+import { ArrowLeft, Package, MapPin, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { useAuth, useOrders } from '@/lib/hooks';
+import { Order, OrderStatus } from '@/types';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
-import { Order, OrderStatus } from '@/types';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -17,6 +18,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [orderId, setOrderId] = useState<string>('');
 
   useEffect(() => {
@@ -61,13 +63,20 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
   const handleCancelOrder = async () => {
     if (!order || order.status !== 'pending') return;
-    if (confirm('¿Estás seguro de cancelar esta orden?')) {
-      try {
-        await deleteOrder(order.id);
-        router.push(ROUTES.ORDERS);
-      } catch (err) {
-        alert('Error al cancelar la orden');
-      }
+    try {
+      await deleteOrder(order.id);
+      toast.success('Orden cancelada exitosamente', {
+        duration: 3000,
+        position: 'top-center',
+      });
+      router.push(ROUTES.ORDERS);
+    } catch (err) {
+      toast.error('Error al cancelar la orden', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } finally {
+      setShowCancelDialog(false);
     }
   };
 
@@ -213,11 +222,23 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           variant="danger"
           size="lg"
           className="w-full"
-          onClick={handleCancelOrder}
+          onClick={() => setShowCancelDialog(true)}
         >
           Cancelar Orden
         </Button>
       )}
+
+      {/* Confirm Cancel Dialog */}
+      <ConfirmDialog
+        isOpen={showCancelDialog}
+        title="Cancelar Orden"
+        message="¿Estás seguro de cancelar esta orden? Esta acción no se puede deshacer."
+        confirmText="Cancelar Orden"
+        cancelText="Volver"
+        variant="danger"
+        onConfirm={handleCancelOrder}
+        onCancel={() => setShowCancelDialog(false)}
+      />
     </div>
   );
 }

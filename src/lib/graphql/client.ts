@@ -57,9 +57,6 @@ const errorLink = onError((errorResponse: any) => {
 
                 case 'FORBIDDEN':
                     console.error('Forbidden - insufficient permissions');
-                    if (typeof window !== 'undefined') {
-                        alert('No tienes permisos para realizar esta acción');
-                    }
                     break;
 
                 case 'NOT_FOUND':
@@ -78,9 +75,6 @@ const errorLink = onError((errorResponse: any) => {
 
     if (networkError) {
         console.error(`[Network error]: ${networkError}`);
-        if (typeof window !== 'undefined') {
-            alert('Error de conexión. Por favor, intenta más tarde.');
-        }
     }
 });
 

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types';
-import { Button, Card, Input } from '@/components/ui';
+import { Button, Card, Input, ConfirmDialog } from '@/components/ui';
 import { Package, Search, Edit, Trash2 } from 'lucide-react';
 import { useAuth, useProducts } from '@/lib/hooks';
 import toast from 'react-hot-toast';
@@ -15,7 +15,12 @@ export default function AdminProductsPage() {
   const { isAdmin, isAuthenticated } = useAuth();
   const { products, loading, error, fetchProducts, deleteProduct } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    productId: string | null;
+  }>({ isOpen: false, productId: null });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -36,17 +41,29 @@ export default function AdminProductsPage() {
     (typeof product.seller === 'object' && product.seller.username?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const handleDelete = async (productId: string) => {
-    if (window.confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')) {
-      try {
-        setDeletingId(productId);
-        await deleteProduct(productId);
-        toast.success('Producto eliminado exitosamente');
-      } catch (error: any) {
-        toast.error(error?.message || 'Error al eliminar producto');
-      } finally {
-        setDeletingId(null);
-      }
+  const handleDelete = (productId: string) => {
+    setConfirmDialog({ isOpen: true, productId });
+  };
+
+  const confirmDelete = async () => {
+    if (!confirmDialog.productId) return;
+    try {
+      setDeletingId(confirmDialog.productId);
+      await deleteProduct(confirmDialog.productId);
+      await fetchProducts();
+      toast.success('Producto eliminado exitosamente', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error('Error al eliminar el producto', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } finally {
+      setDeletingId(null);
+      setConfirmDialog({ isOpen: false, productId: null });
     }
   };
 
@@ -201,6 +218,18 @@ export default function AdminProductsPage() {
           </div>
         </Card>
       )}
+
+      {/* Confirm Delete Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Eliminar Producto"
+        message="¿Eliminar este producto? Esta acción no se puede deshacer."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        onConfirm={confirmDelete}
+        onCancel={() => setConfirmDialog({ isOpen: false, productId: null })}
+      />
     </div>
   );
 }

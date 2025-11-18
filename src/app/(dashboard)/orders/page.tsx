@@ -1,15 +1,21 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { OrderList } from '@/components/orders';
 import { ROUTES } from '@/config/constants';
+import { ConfirmDialog } from '@/components/ui';
+import toast from 'react-hot-toast';
 
 export default function OrdersPage() {
   const router = useRouter();
   const { isAuthenticated, _hasHydrated } = useAuth();
   const { orders, loading, error, fetchMyOrders, deleteOrder } = useOrders();
+  const [confirmDialog, setConfirmDialog] = useState<{
+    isOpen: boolean;
+    orderId: string | null;
+  }>({ isOpen: false, orderId: null });
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -21,14 +27,26 @@ export default function OrdersPage() {
     fetchMyOrders();
   }, [isAuthenticated, _hasHydrated]);
 
-  const handleCancel = async (orderId: string) => {
-    if (window.confirm('¿Estás seguro de cancelar esta orden?')) {
-      try {
-        await deleteOrder(orderId);
-        fetchMyOrders();
-      } catch (err) {
-        alert('Error al cancelar la orden');
-      }
+  const handleCancel = (orderId: string) => {
+    setConfirmDialog({ isOpen: true, orderId });
+  };
+
+  const confirmCancel = async () => {
+    if (!confirmDialog.orderId) return;
+    try {
+      await deleteOrder(confirmDialog.orderId);
+      fetchMyOrders();
+      toast.success('Orden cancelada exitosamente', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } catch (err) {
+      toast.error('Error al cancelar la orden', {
+        duration: 3000,
+        position: 'top-center',
+      });
+    } finally {
+      setConfirmDialog({ isOpen: false, orderId: null });
     }
   };
 
@@ -55,6 +73,18 @@ export default function OrdersPage() {
         orders={orders}
         onCancel={handleCancel}
         loading={loading}
+      />
+
+      {/* Confirm Cancel Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title="Cancelar Orden"
+        message="¿Estás seguro de cancelar esta orden? Esta acción no se puede deshacer."
+        confirmText="Cancelar Orden"
+        cancelText="Volver"
+        variant="danger"
+        onConfirm={confirmCancel}
+        onCancel={() => setConfirmDialog({ isOpen: false, orderId: null })}
       />
     </div>
   );
