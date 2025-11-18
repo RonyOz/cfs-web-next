@@ -9,7 +9,6 @@ import {
   UPDATE_USER_MUTATION, 
   DELETE_USER_MUTATION 
 } from '@/lib/graphql/mutations';
-import apiClient from './client';
 import { User, CreateUserInput, UpdateUserInput } from '@/types';
 
 /**
@@ -95,18 +94,5 @@ export const getSellerProfile = async (id: string): Promise<User> => {
   }) as { data: { sellerProfile: User } };
 
   return data.sellerProfile;
-};
-
-/**
- * Seed database with initial data (development only)
- */
-export const runSeed = async (): Promise<void> => {
-  try {
-    const response = await apiClient.get('/seed');
-    return response.data;
-  } catch (error) {
-    console.error('Error running seed:', error);
-    throw error;
-  }
 };
 

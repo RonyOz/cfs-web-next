@@ -58,13 +58,6 @@ export const Sidebar = () => {
             );
           })}
         </nav>
-
-        {/* TODO: Add admin actions */}
-        <div className="mt-8 pt-8 border-t border-gray-200">
-          <button className="w-full px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg">
-            Ejecutar Seed
-          </button>
-        </div>
       </div>
     </aside>
   );
