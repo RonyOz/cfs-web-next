@@ -65,12 +65,6 @@ export const Header = () => {
                   >
                     Admin
                   </Link>
-                  <Link
-                    href={ROUTES.ADMIN_USERS}
-                    className="text-gray-300 hover:text-primary-400 transition-colors"
-                  >
-                    Usuarios
-                  </Link>
                 </>
               )}
             </div>
