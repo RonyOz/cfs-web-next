@@ -6,7 +6,7 @@ import { ArrowLeft, ShoppingCart, User, Package, MapPin, X, CreditCard } from 'l
 import { Button, Card, Input } from '@/components/ui';
 import { useAuth, useProducts, useOrders } from '@/lib/hooks';
 import { ROUTES, PAYMENT_METHOD_OPTIONS, PAYMENT_METHODS } from '@/config/constants';
-import { formatPrice, formatDateTime } from '@/lib/utils';
+import { formatPrice, formatDateTime, capitalizeFirstLetter } from '@/lib/utils';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -187,11 +187,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <span className="text-gray-400">Stock disponible</span>
               <span className="text-lg font-semibold text-gray-100">{selectedProduct.stock} unidades</span>
             </div>
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pb-4 border-b border-dark-700">
               <span className="text-gray-400">Vendedor</span>
               <span className="flex items-center gap-2 text-gray-100">
                 <User className="h-4 w-4" />
-                {typeof selectedProduct.seller === 'object' ? selectedProduct.seller.username : 'N/A'}
+                {typeof selectedProduct.seller === 'object' ? capitalizeFirstLetter(selectedProduct.seller.username) : 'N/A'}
               </span>
             </div>
           </div>

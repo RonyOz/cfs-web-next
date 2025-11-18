@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Product } from '@/types';
 import { Card, Button } from '@/components/ui';
-import { formatPrice, cn } from '@/lib/utils';
+import { formatPrice, cn, capitalizeFirstLetter } from '@/lib/utils';
 import { ROUTES } from '@/config/constants';
 import { useAuth } from '@/lib/hooks';
 import { ShoppingCart } from 'lucide-react';
@@ -72,7 +72,7 @@ export const ProductCard = ({
         </div>
 
         <p className="text-xs text-gray-500 mt-3">
-          Vendedor: {typeof product.seller === 'object' ? product.seller.username : 'N/A'}
+          Vendedor: {typeof product.seller === 'object' ? capitalizeFirstLetter(product.seller.username) : 'N/A'}
         </p>
       </div>
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Package, Plus, Search, AlertCircle } from 'lucide-react';
+import { Package, Plus, Search, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button, ConfirmDialog, Input } from '@/components/ui';
 import { useAuth, useProducts } from '@/lib/hooks';
 import { ProductCard } from '@/components/products';
@@ -13,7 +13,17 @@ import { Product } from '@/types';
 export default function ProductsPage() {
   const router = useRouter();
   const { user, isAuthenticated, _hasHydrated } = useAuth();
-  const { products, loading, error, fetchProducts, deleteProduct } = useProducts();
+  const { 
+    products, 
+    loading, 
+    error, 
+    currentPage, 
+    itemsPerPage, 
+    hasMore,
+    fetchProducts, 
+    deleteProduct,
+    setCurrentPage 
+  } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -26,8 +36,26 @@ export default function ProductsPage() {
       router.push(ROUTES.AUTH);
       return;
     }
-    fetchProducts();
-  }, [isAuthenticated, _hasHydrated]);
+    
+    loadProducts();
+  }, [isAuthenticated, _hasHydrated, currentPage]);
+
+  const loadProducts = () => {
+    const offset = (currentPage - 1) * itemsPerPage;
+    fetchProducts(undefined, { limit: itemsPerPage, offset });
+  };
+
+  const handleNextPage = () => {
+    if (hasMore) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
 
   const filteredProducts = products.filter(product => {
     if (!searchQuery) return true;
@@ -70,7 +98,7 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-100">Mis Productos</h1>
+          <h1 className="text-3xl font-bold text-gray-100">Lista de Productos</h1>
           <p className="mt-1 text-gray-400">
             {filteredProducts.length} productos encontrados
           </p>
@@ -128,16 +156,48 @@ export default function ProductsPage() {
       {!loading && !error && (
         <>
           {filteredProducts.length > 0 ? (
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onDelete={handleDelete}
-                  showActions={true}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredProducts.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    onDelete={handleDelete}
+                    showActions={true}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {!searchQuery && (
+                <div className="mt-8 flex items-center justify-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 1}
+                    className="gap-2"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                    Anterior
+                  </Button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-400">Página</span>
+                    <span className="text-lg font-semibold text-primary-400">{currentPage}</span>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="md"
+                    onClick={handleNextPage}
+                    disabled={!hasMore}
+                    className="gap-2"
+                  >
+                    Siguiente
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="flex items-center justify-center py-16">
               <div className="text-center">

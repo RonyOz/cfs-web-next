@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Package, MapPin as MapPinIcon, Calendar, Clock, CheckCircle, XCircle, CreditCard } from 'lucide-react';
+import { ArrowLeft, Package, MapPin as MapPinIcon, Calendar, Clock, CheckCircle, XCircle, CreditCard, User, Phone } from 'lucide-react';
 import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { Order, OrderStatus } from '@/types';
 import { ROUTES } from '@/config/constants';
-import { formatPrice, formatDateTime, getStatusText } from '@/lib/utils';
+import { formatPrice, formatDateTime, getStatusText, capitalizeFirstLetter } from '@/lib/utils';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -180,6 +180,50 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           <p className="text-gray-300">{order.paymentMethod}</p>
         </Card>
       </div>
+
+      {/* Seller Info */}
+      <Card className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-2">
+          <User className="h-5 w-5 text-primary-400" />
+          Vendedor
+        </h2>
+        <div className="space-y-2">
+          {order.items && order.items.length > 0 && order.items.map((item, index) => {
+            const seller = typeof item.product === 'object' && typeof item.product.seller === 'object' 
+              ? item.product.seller 
+              : null;
+            
+            if (!seller) return null;
+            
+            return (
+              <div key={index} className="p-4 bg-dark-900 rounded-lg border border-dark-700 hover:border-primary-400/50 transition-all duration-300">
+                <p className="text-xs text-gray-500 mb-2">Producto: {typeof item.product === 'object' ? item.product.name : 'N/A'}</p>
+                <Link 
+                  href={`/admin/users/${seller.id}`}
+                  className="text-gray-100 font-medium hover:text-primary-400 transition-colors duration-300 flex items-center gap-2 group"
+                >
+                  <User className="h-4 w-4 text-primary-400 group-hover:scale-110 transition-transform" />
+                  {capitalizeFirstLetter(seller.username)}
+                </Link>
+                {seller.phoneNumber && (
+                  <div className="flex items-center gap-2 mt-2 text-sm text-gray-400">
+                    <Phone className="h-4 w-4 text-primary-400" />
+                    <a 
+                      href={`tel:${seller.phoneNumber}`}
+                      className="hover:text-primary-400 transition-colors duration-300"
+                    >
+                      {seller.phoneNumber}
+                    </a>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          {(!order.items || order.items.length === 0 || !order.items.some(item => typeof item.product === 'object' && typeof item.product.seller === 'object')) && (
+            <p className="text-gray-400 text-center py-2">Información del vendedor no disponible</p>
+          )}
+        </div>
+      </Card>
 
       {/* Summary */}
       <Card className="mb-6">

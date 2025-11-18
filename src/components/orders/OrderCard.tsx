@@ -6,7 +6,8 @@ import { Card, Button } from '@/components/ui';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 import { ROUTES, ORDER_STATUS } from '@/config/constants';
 import { useAuth } from '@/lib/hooks';
-import { Package, Clock, CheckCircle, XCircle, MapPin, CreditCard } from 'lucide-react';
+import { Package, Clock, CheckCircle, XCircle, MapPin, CreditCard, Eye } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface OrderCardProps {
   order: Order;
@@ -15,6 +16,7 @@ interface OrderCardProps {
 }
 
 export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProps) => {
+  const router = useRouter();
   const { user, isAdmin } = useAuth();
   const canCancel = (user?.id === order.buyer.id || isAdmin) && order.status === ORDER_STATUS.PENDING;
 
@@ -120,16 +122,27 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
       </div>
 
       {/* Actions */}
-      {showActions && onCancel && canCancel && (
-        <div className="mt-4">
+      {showActions && (
+        <div className="mt-4 flex gap-3">
           <Button
-            variant="danger"
+            variant="outline"
             size="sm"
-            className="w-full"
-            onClick={() => onCancel(order.id)}
+            className="flex-1"
+            onClick={() => router.push(ROUTES.ORDER_DETAIL(order.id))}
           >
-            Cancelar Orden
+            <Eye className="h-4 w-4" />
+            Ver Detalles
           </Button>
+          {onCancel && canCancel && (
+            <Button
+              variant="danger"
+              size="sm"
+              className="flex-1"
+              onClick={() => onCancel(order.id)}
+            >
+              Cancelar
+            </Button>
+          )}
         </div>
       )}
     </Card>

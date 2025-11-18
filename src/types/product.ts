@@ -10,6 +10,7 @@ export interface Product {
   seller: {
     id: string;
     username: string;
+    phoneNumber?: string | null;
   } | User;
   createdAt?: string;
   updatedAt?: string;

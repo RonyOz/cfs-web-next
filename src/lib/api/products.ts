@@ -11,14 +11,21 @@ import {
 } from '@/lib/graphql/mutations';
 import { Product, ProductFormData, ProductFilters, MessageResponse } from '@/types';
 
-export const getProducts = async (filters?: ProductFilters): Promise<Product[]> => {
-  // GraphQL usa offset/limit en lugar de page/limit
+export interface PaginationParams {
+  limit?: number;
+  offset?: number;
+}
+
+export const getProducts = async (
+  filters?: ProductFilters,
+  pagination?: PaginationParams
+): Promise<Product[]> => {
   const { data } = await apolloClient.query({
     query: GET_ALL_PRODUCTS,
     variables: {
       pagination: {
-        offset: 0,
-        limit: 100, // Obtener muchos productos
+        offset: pagination?.offset || 0,
+        limit: pagination?.limit || 10,
       },
     },
     fetchPolicy: 'network-only',

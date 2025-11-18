@@ -6,6 +6,7 @@ import { User, Menu, X, Bell } from 'lucide-react';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { ROUTES, ORDER_STATUS } from '@/config/constants';
 import { Button } from '@/components/ui';
+import { capitalizeFirstLetter } from '@/lib/utils';
 
 export const Header = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
@@ -99,7 +100,7 @@ export const Header = () => {
                 <Link href={ROUTES.PROFILE}>
                   <Button variant="outline" size="sm" className="gap-2">
                     <User className="h-4 w-4" />
-                    {user?.username ?? 'Usuario'}
+                    {user?.username ? capitalizeFirstLetter(user.username) : 'Usuario'}
                   </Button>
                 </Link>
                 <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -193,7 +194,7 @@ export const Header = () => {
                   <Link href={ROUTES.PROFILE} onClick={() => setMobileMenuOpen(false)}>
                     <Button variant="outline" size="sm" className="w-full gap-2">
                       <User className="h-4 w-4" />
-                      {user?.username ?? 'Usuario'}
+                      {user?.username ? capitalizeFirstLetter(user.username) : 'Usuario'}
                     </Button>
                   </Link>
                   <Button

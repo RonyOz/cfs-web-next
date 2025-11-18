@@ -7,7 +7,8 @@ import {
   getProductById, 
   createProduct as apiCreateProduct,
   updateProduct as apiUpdateProduct,
-  deleteProduct as apiDeleteProduct 
+  deleteProduct as apiDeleteProduct,
+  PaginationParams 
 } from '@/lib/api';
 
 interface ProductState {
@@ -16,6 +17,9 @@ interface ProductState {
   loading: boolean;
   error: string | null;
   filters: ProductFilters;
+  currentPage: number;
+  itemsPerPage: number;
+  hasMore: boolean;
 
   // Actions
   setProducts: (products: Product[]) => void;
@@ -23,9 +27,11 @@ interface ProductState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   setFilters: (filters: ProductFilters) => void;
+  setCurrentPage: (page: number) => void;
+  setItemsPerPage: (count: number) => void;
   
   // API Actions
-  fetchProducts: (filters?: ProductFilters) => Promise<void>;
+  fetchProducts: (filters?: ProductFilters, pagination?: PaginationParams) => Promise<void>;
   fetchProductById: (id: string) => Promise<void>;
   createProduct: (data: ProductFormData) => Promise<void>;
   updateProduct: (id: string, data: Partial<ProductFormData>) => Promise<void>;
@@ -39,6 +45,9 @@ export const useProductStore = create<ProductState>((set, get) => ({
   loading: false,
   error: null,
   filters: {},
+  currentPage: 1,
+  itemsPerPage: 9,
+  hasMore: true,
 
   // State setters
   setProducts: (products) => set({ products }),
@@ -46,12 +55,15 @@ export const useProductStore = create<ProductState>((set, get) => ({
   setLoading: (loading) => set({ loading }),
   setError: (error) => set({ error }),
   setFilters: (filters) => set({ filters }),
+  setCurrentPage: (page) => set({ currentPage: page }),
+  setItemsPerPage: (count) => set({ itemsPerPage: count }),
 
-  fetchProducts: async (filters) => {
+  fetchProducts: async (filters, pagination) => {
     set({ loading: true, error: null });
     try {
-      const products = await getProducts(filters);
-      set({ products, loading: false });
+      const products = await getProducts(filters, pagination);
+      const hasMore = products.length === (pagination?.limit || 9);
+      set({ products, hasMore, loading: false });
     } catch (error) {
       set({ error: 'Error al cargar productos', loading: false });
     }
