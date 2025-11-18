@@ -28,7 +28,7 @@ export const ProductCard = ({
   const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
   const isOwner = user?.id === sellerId;
   const canEdit = isOwner || isAdmin;
-  const canBuy = !isOwner && product.stock > 0;
+  const canBuy = !isOwner && !isAdmin && product.stock > 0;
 
   return (
     <Card hover className="h-full flex flex-col">

@@ -12,7 +12,7 @@ import toast from 'react-hot-toast';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { user, isAuthenticated, _hasHydrated } = useAuth();
+  const { user, isAuthenticated, isAdmin, _hasHydrated } = useAuth();
   const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
   const { createOrder } = useOrders();
   const [error, setError] = useState('');
@@ -155,6 +155,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
   const sellerId = typeof selectedProduct.seller === 'object' ? selectedProduct.seller.id : selectedProduct.seller;
   const isOwner = user?.id === sellerId;
+  const canBuy = !isOwner && !isAdmin && selectedProduct.stock > 0;
 
   return (
     <div className="max-w-5xl">
@@ -195,7 +196,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             </div>
           </div>
 
-          {!isOwner && selectedProduct.stock > 0 && (
+          {canBuy && (
             <>
               {/* Quantity Selector */}
               <div className="mb-6">
