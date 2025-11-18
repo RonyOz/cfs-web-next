@@ -173,7 +173,7 @@ export default function ProductsPage() {
                 <div className="mt-8 flex flex-col items-center gap-4">
                   <div className="flex items-center gap-4">
                     <Button
-                      variant="outline"
+                      variant="outline" 
                       size="md"
                       onClick={handlePreviousPage}
                       disabled={currentPage === 1}

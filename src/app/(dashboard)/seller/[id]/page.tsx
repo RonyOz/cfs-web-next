@@ -8,7 +8,7 @@ import { useAuth } from '@/lib/hooks';
 import { User, Product } from '@/types';
 import { ROUTES } from '@/config/constants';
 import { getSellerProfile } from '@/lib/api';
-import { capitalizeFirstLetter } from '@/lib/utils';
+import { capitalizeFirstLetter, getStatusText, formatPrice } from '@/lib/utils';
 import { ProductCard } from '@/components/products';
 
 export default function SellerProfilePage({ params }: { params: Promise<{ id: string }> }) {
@@ -85,7 +85,7 @@ export default function SellerProfilePage({ params }: { params: Promise<{ id: st
       </Button>
 
       <div className="grid gap-6 md:grid-cols-[260px_1fr]">
-        {/* Sidebar - Products List */}
+        {/* Sidebar - Products List and Orders */}
         <aside className="space-y-6">
           <Card className="rounded-xl border border-dark-700 bg-dark-800 shadow-lg shadow-black/20 p-5">
             <h3 className="text-sm uppercase tracking-wide text-gray-500 mb-3">
@@ -95,8 +95,8 @@ export default function SellerProfilePage({ params }: { params: Promise<{ id: st
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase text-gray-500">Productos</p>
                 <ul className="space-y-2">
-                  {seller.products && seller.products.length > 0 ? (
-                    seller.products.slice(0, 5).map((product: any) => (
+                  {(seller.products || []).length > 0 ? (
+                    (seller.products || []).slice(0, 5).map((product: any) => (
                       <li key={product.id}>
                         <div className="block rounded-lg border border-dark-700/60 bg-dark-900/40 px-3 py-2 text-sm text-gray-200">
                           <p className="font-medium text-gray-100">{product.name}</p>
@@ -106,6 +106,30 @@ export default function SellerProfilePage({ params }: { params: Promise<{ id: st
                     ))
                   ) : (
                     <li className="text-xs text-gray-500">No hay productos disponibles.</li>
+                  )}
+                </ul>
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase text-gray-500">Ventas Recientes</p>
+                <ul className="space-y-2">
+                  {(seller.salesHistory || []).length > 0 ? (
+                    (seller.salesHistory || []).slice(0, 5).map((order: any) => (
+                      <li
+                        key={order.id}
+                        className="rounded-lg border border-dark-700/60 bg-dark-900/40 px-3 py-2 text-sm text-gray-200"
+                      >
+                        <p className="font-medium text-gray-100">Orden #{order.id.slice(0, 6)}...</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(order.createdAt).toLocaleDateString('es-ES', {
+                            month: 'short',
+                            day: 'numeric'
+                          })} · {getStatusText(order.status)}
+                        </p>
+                        <p className="text-xs text-primary-400 mt-1">{formatPrice(order.total)}</p>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="text-xs text-gray-500">No hay ventas registradas.</li>
                   )}
                 </ul>
               </div>
@@ -189,9 +213,9 @@ export default function SellerProfilePage({ params }: { params: Promise<{ id: st
               </p>
             </div>
 
-            {seller.products && seller.products.length > 0 ? (
+            {(seller.products || []).length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {seller.products.map((product: any) => (
+                {(seller.products || []).map((product: any) => (
                   <ProductCard
                     key={product.id}
                     product={product}

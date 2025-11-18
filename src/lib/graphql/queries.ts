@@ -91,6 +91,19 @@ export const GET_SELLER_PROFILE = gql`
           username
         }
       }
+      salesHistory {
+        id
+        status
+        total
+        createdAt
+        items {
+          orderItemId
+          productId
+          productName
+          quantity
+          itemPrice
+        }
+      }
     }
   }
 `;
