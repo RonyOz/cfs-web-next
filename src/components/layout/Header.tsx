@@ -58,12 +58,13 @@ export const Header = () => {
 
               {/* Show admin link only for admin users */}
               {isAdmin && (
-                <Link
-                  href={ROUTES.ADMIN_USERS}
+                <a
+                  href="http://localhost:3001/admin/"
                   className="text-gray-300 hover:text-primary-400 transition-colors"
+                  rel="noopener noreferrer"
                 >
                   Admin
-                </Link>
+                </a>
               )}
             </div>
           )}
@@ -165,13 +166,15 @@ export const Header = () => {
                 </Link>
 
                 {isAdmin && (
-                  <Link
-                    href={ROUTES.ADMIN_USERS}
+                  <a
+                    href="http://localhost:3001/admin/"
                     className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                     onClick={() => setMobileMenuOpen(false)}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     Admin
-                  </Link>
+                  </a>
                 )}
               </div>
             )}

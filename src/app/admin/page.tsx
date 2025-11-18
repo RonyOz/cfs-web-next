@@ -89,10 +89,14 @@ export default function AdminDashboardPage() {
   const acceptedOrders = stats.orders.filter((o) => o.status === OrderStatus.ACCEPTED).length;
   const deliveredOrders = stats.orders.filter((o) => o.status === OrderStatus.DELIVERED).length;
   const canceledOrders = stats.orders.filter((o) => o.status === OrderStatus.CANCELED).length;
+  // El backend devuelve total y price como strings, necesitamos convertirlos a números
   const totalRevenue = stats.orders
     .filter((o) => o.status === OrderStatus.DELIVERED)
-    .reduce((sum, o) => sum + o.total, 0);
-  const inventoryValue = stats.products.reduce((sum, p) => sum + p.price * p.stock, 0);
+    .reduce((sum, o) => sum + (parseFloat(o.total as any) || 0), 0);
+  const inventoryValue = stats.products.reduce(
+    (sum, p) => sum + (parseFloat(p.price as any) || 0) * p.stock, 
+    0
+  );
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -159,15 +163,10 @@ export default function AdminDashboardPage() {
 
         {/* Revenue Stats */}
         <Card>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-gray-400 text-sm font-medium">Ingresos Totales</p>
-              <p className="text-3xl font-bold text-success-500 mt-2">{formatPrice(totalRevenue)}</p>
-              <p className="text-xs text-gray-500 mt-1">{deliveredOrders} órdenes completadas</p>
-            </div>
-            <div className="h-12 w-12 bg-success-500/20 rounded-lg flex items-center justify-center">
-              <DollarSign className="h-6 w-6 text-success-500" />
-            </div>
+          <div>
+            <p className="text-gray-400 text-sm font-medium">Ingresos Totales</p>
+            <p className="text-3xl font-bold text-success-500 mt-2">{formatPrice(totalRevenue)}</p>
+            <p className="text-xs text-gray-500 mt-1">{deliveredOrders} órdenes completadas</p>
           </div>
         </Card>
       </div>
