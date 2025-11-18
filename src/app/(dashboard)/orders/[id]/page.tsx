@@ -35,8 +35,24 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     try {
       setLoading(true);
       const data = await fetchOrderById(orderId);
+      
+      // Logs de depuración
+      console.log('📦 [Order Detail] Orden completa del backend:', data);
+      console.log('📦 [Order Detail] Items de la orden:', data.items);
+      if (data.items && data.items.length > 0) {
+        console.log('📦 [Order Detail] Primer item:', data.items[0]);
+        console.log('📦 [Order Detail] Estructura del primer item:', {
+          id: data.items[0].id,
+          quantity: data.items[0].quantity,
+          price: data.items[0].price,
+          priceAtPurchase: data.items[0].priceAtPurchase,
+          product: data.items[0].product,
+        });
+      }
+      
       setOrder(data);
     } catch (err: any) {
+      console.error('❌ [Order Detail] Error al cargar orden:', err);
       setError(err.message || 'Error al cargar la orden');
     } finally {
       setLoading(false);
@@ -136,21 +152,36 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       <Card className="mb-6">
         <h2 className="text-xl font-semibold text-gray-100 mb-4">Productos</h2>
         <div className="space-y-4">
-          {order.items?.map((item, index) => (
-            <div key={index} className="flex items-center justify-between p-4 bg-dark-900 rounded-lg">
-              <div className="flex-1">
-                <p className="font-medium text-gray-100">
-                  {typeof item.product === 'object' ? item.product.name : 'Producto'}
-                </p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Cantidad: {item.quantity} x {formatPrice(item.price)}
+          {order.items?.map((item, index) => {
+            // Usar priceAtPurchase si existe, sino price como fallback
+            const itemPrice = item.priceAtPurchase ?? item.price ?? 0;
+            
+            // Log de depuración por item
+            console.log(`📦 [Order Detail] Item #${index}:`, {
+              item,
+              priceAtPurchase: item.priceAtPurchase,
+              price: item.price,
+              itemPrice,
+              quantity: item.quantity,
+              total: itemPrice * item.quantity
+            });
+            
+            return (
+              <div key={index} className="flex items-center justify-between p-4 bg-dark-900 rounded-lg">
+                <div className="flex-1">
+                  <p className="font-medium text-gray-100">
+                    {typeof item.product === 'object' ? item.product.name : 'Producto'}
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Cantidad: {item.quantity} x {formatPrice(itemPrice)}
+                  </p>
+                </div>
+                <p className="text-lg font-bold text-primary-400">
+                  {formatPrice(itemPrice * item.quantity)}
                 </p>
               </div>
-              <p className="text-lg font-bold text-primary-400">
-                {formatPrice(item.price * item.quantity)}
-              </p>
-            </div>
-          )) || (
+            );
+          }) || (
             <p className="text-gray-400 text-center py-4">No hay productos en esta orden</p>
           )}
         </div>

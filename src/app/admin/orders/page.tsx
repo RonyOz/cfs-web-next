@@ -31,6 +31,23 @@ export default function AdminOrdersPage() {
     fetchOrders(); // Admin obtiene todas las órdenes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isAdmin]);
+  
+  // Log de depuración cuando cambian las órdenes
+  useEffect(() => {
+    if (orders.length > 0) {
+      console.log('🛒 [Admin Orders] Total órdenes:', orders.length);
+      console.log('🛒 [Admin Orders] Primera orden:', orders[0]);
+      if (orders[0].items && orders[0].items.length > 0) {
+        console.log('🛒 [Admin Orders] Primer item de primera orden:', orders[0].items[0]);
+        console.log('🛒 [Admin Orders] Estructura item:', {
+          id: orders[0].items[0].id,
+          quantity: orders[0].items[0].quantity,
+          price: orders[0].items[0].price,
+          priceAtPurchase: orders[0].items[0].priceAtPurchase,
+        });
+      }
+    }
+  }, [orders]);
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);
@@ -60,9 +77,23 @@ export default function AdminOrdersPage() {
   const pendingOrders = orders.filter((o) => o.status === OrderStatus.PENDING);
   const acceptedOrders = orders.filter((o) => o.status === OrderStatus.ACCEPTED);
   const deliveredOrders = orders.filter((o) => o.status === OrderStatus.DELIVERED);
+  
+  // Calcular ingresos totales con manejo de valores nulos
+  // El backend devuelve total como string, necesitamos convertirlo a número
   const totalRevenue = orders
     .filter((o) => o.status === OrderStatus.DELIVERED)
-    .reduce((sum, o) => sum + o.total, 0);
+    .reduce((sum, o) => {
+      const orderTotal = parseFloat(o.total as any) || 0;
+      console.log('💰 [Admin Orders] Revenue calc:', { 
+        orderId: o.id.slice(0, 8), 
+        total: o.total, 
+        orderTotal,
+        sum
+      });
+      return sum + orderTotal;
+    }, 0);
+  
+  console.log('💰 [Admin Orders] Total Revenue:', totalRevenue);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -160,23 +191,37 @@ export default function AdminOrdersPage() {
             <div>
               <h3 className="text-lg font-semibold text-gray-100 mb-4">Productos</h3>
               <div className="space-y-3">
-                {selectedOrder.items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center gap-4 p-4 bg-dark-700 rounded-lg"
-                  >
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-100">{item.product.name}</p>
-                      <p className="text-xs text-gray-500">Cantidad: {item.quantity}</p>
+                {selectedOrder.items.map((item) => {
+                  // Usar priceAtPurchase si existe, sino price como fallback
+                  const itemPrice = item.priceAtPurchase ?? item.price ?? 0;
+                  
+                  console.log(`🛒 [Admin Orders Modal] Item:`, {
+                    id: item.id,
+                    product: item.product.name,
+                    priceAtPurchase: item.priceAtPurchase,
+                    price: item.price,
+                    itemPrice,
+                    quantity: item.quantity,
+                  });
+                  
+                  return (
+                    <div
+                      key={item.id}
+                      className="flex items-center gap-4 p-4 bg-dark-700 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-100">{item.product.name}</p>
+                        <p className="text-xs text-gray-500">Cantidad: {item.quantity}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-primary-400">
+                          {formatPrice(itemPrice)}
+                        </p>
+                        <p className="text-xs text-gray-500">por unidad</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-primary-400">
-                        {formatPrice(item.priceAtPurchase)}
-                      </p>
-                      <p className="text-xs text-gray-500">por unidad</p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
