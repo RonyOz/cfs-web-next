@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "dev:test": "cross-env-shell NEXT_TELEMETRY_DISABLED=1 node scripts/dev-test.js",
+    "test": "cross-env NEXT_TELEMETRY_DISABLED=1 jest",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:e2e": "node scripts/run-e2e.js"
