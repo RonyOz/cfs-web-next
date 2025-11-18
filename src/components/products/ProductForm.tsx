@@ -96,35 +96,70 @@ export const ProductForm = ({ product }: ProductFormProps) => {
       return;
     }
 
+    console.log('📦 [ProductForm] Iniciando envío del formulario...');
+    console.log('📦 [ProductForm] Modo:', isEditMode ? 'EDICIÓN' : 'CREACIÓN');
+    console.log('📦 [ProductForm] Datos del formulario:', formData);
+    console.log('📦 [ProductForm] ¿Hay archivo nuevo?:', !!file);
+    if (file) {
+      console.log('📦 [ProductForm] Información del archivo:', {
+        name: file.name,
+        size: `${(file.size / 1024).toFixed(2)} KB`,
+        type: file.type
+      });
+    }
+
     setIsLoading(true);
     try {
       let imageUrl = formData.imageUrl;
 
       // Si hay una nueva imagen, subirla primero
       if (file) {
+        console.log('🖼️ [ProductForm] Iniciando subida de imagen...');
         toast.loading('Subiendo imagen...', { id: 'upload-image' });
+        
         const result = await uploadImage(file);
+        
+        console.log('✅ [ProductForm] Imagen subida correctamente');
+        console.log('✅ [ProductForm] URL resultante:', result.publicUrl);
+        
         imageUrl = result.publicUrl;
         toast.success('Imagen subida exitosamente', { id: 'upload-image' });
+      } else {
+        console.log('ℹ️ [ProductForm] No hay archivo nuevo, usando URL existente:', imageUrl);
       }
 
       // Crear o actualizar producto con la URL de la imagen
       const productData = { ...formData, imageUrl };
+      console.log('💾 [ProductForm] Datos finales del producto:', productData);
 
       if (isEditMode && product) {
+        console.log('🔄 [ProductForm] Actualizando producto ID:', product.id);
         await updateProduct(product.id, productData);
+        console.log('✅ [ProductForm] Producto actualizado exitosamente');
         toast.success('Producto actualizado exitosamente');
       } else {
+        console.log('➕ [ProductForm] Creando nuevo producto...');
         await createProduct(productData);
+        console.log('✅ [ProductForm] Producto creado exitosamente');
         toast.success('Producto creado exitosamente');
       }
+      
+      console.log('🎉 [ProductForm] Redirigiendo a lista de productos...');
       router.push(ROUTES.PRODUCTS);
     } catch (err: any) {
+      console.error('❌ [ProductForm] Error en el proceso:', err);
+      console.error('❌ [ProductForm] Tipo de error:', err?.constructor?.name);
+      console.error('❌ [ProductForm] err.response:', err?.response);
+      console.error('❌ [ProductForm] err.message:', err?.message);
+      
       const errorMessage = err?.response?.data?.message || err?.message || 'Error al guardar el producto';
+      console.error('❌ [ProductForm] Mensaje final de error:', errorMessage);
+      
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      console.log('🏁 [ProductForm] Proceso finalizado');
     }
   };
 
