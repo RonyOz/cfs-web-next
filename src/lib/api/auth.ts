@@ -17,11 +17,26 @@ import {
 import { TOKEN_KEY } from '@/config/constants';
 
 export const signup = async (data: SignupRequest): Promise<any> => {
-  const { data: result } = await apolloClient.mutate({
-    mutation: SIGNUP_MUTATION,
-    variables: { input: data },
-  });
-  return (result as any).signup;
+  try {
+    const { data: result } = await apolloClient.mutate({
+      mutation: SIGNUP_MUTATION,
+      variables: { input: data },
+    });
+    
+    if (!result || !(result as any).signup) {
+      throw new Error('Error al crear la cuenta');
+    }
+    
+    return (result as any).signup;
+  } catch (error: any) {
+    // Si es un error de GraphQL, extraer el mensaje
+    if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+      const message = error.graphQLErrors[0].message;
+      throw new Error(message || 'Error al crear la cuenta');
+    }
+    // Si ya es un error lanzado por nosotros, re-lanzarlo
+    throw error;
+  }
 };
 
 export const getProfile = async (): Promise<{ user: any }> => {
@@ -30,17 +45,32 @@ export const getProfile = async (): Promise<{ user: any }> => {
 };
 
 export const login = async (data: LoginRequest): Promise<any> => {
-  const { data: result } = await apolloClient.mutate({
-    mutation: LOGIN_MUTATION,
-    variables: {
-      input: {
-        email: data.email,
-        password: data.password,
-        token: data.twoFactorCode,
+  try {
+    const { data: result } = await apolloClient.mutate({
+      mutation: LOGIN_MUTATION,
+      variables: {
+        input: {
+          email: data.email,
+          password: data.password,
+          token: data.twoFactorCode,
+        },
       },
-    },
-  });
-  return (result as any).login;
+    });
+    
+    if (!result || !(result as any).login) {
+      throw new Error('Credenciales inválidas');
+    }
+    
+    return (result as any).login;
+  } catch (error: any) {
+    // Si es un error de GraphQL, extraer el mensaje
+    if (error.graphQLErrors && error.graphQLErrors.length > 0) {
+      const message = error.graphQLErrors[0].message;
+      throw new Error(message || 'Error al iniciar sesión');
+    }
+    // Si ya es un error lanzado por nosotros, re-lanzarlo
+    throw error;
+  }
 };
 
 export const logout = async (): Promise<MessageResponse> => {

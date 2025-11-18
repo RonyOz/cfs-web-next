@@ -37,24 +37,63 @@ export default function AuthPage() {
 
       const token = (resp as any).access_token || (resp as any).token;
 
-      if (token) {
-        // Guardar token en localStorage
-        localStorage.setItem(TOKEN_KEY, token);
+      if (!token) {
+        setError('Credenciales incorrectas. Verifica tu email y contraseña.');
+        setIsLoading(false);
+        return;
+      }
 
-        // Pequeño delay para asegurar que localStorage se actualice
-        await new Promise(resolve => setTimeout(resolve, 100));
+      // Guardar token en localStorage
+      localStorage.setItem(TOKEN_KEY, token);
 
+      // Pequeño delay para asegurar que localStorage se actualice
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      try {
         // Obtener perfil del usuario
         const profile = await getProfile();
+        
+        if (!profile) {
+          setError('Error al obtener la información del usuario. Intenta nuevamente.');
+          localStorage.removeItem(TOKEN_KEY);
+          setIsLoading(false);
+          return;
+        }
         
         // El backend devuelve {user: {user: {...}}} - necesitamos extraer el user interno
         const userData = (profile as any).user?.user || (profile as any).user || profile;
 
+        if (!userData) {
+          setError('Error al procesar la información del usuario. Intenta nuevamente.');
+          localStorage.removeItem(TOKEN_KEY);
+          setIsLoading(false);
+          return;
+        }
+
         storeLogin(userData, token);
         router.push(ROUTES.HOME);
+      } catch (profileError: any) {
+        // Error al obtener el perfil
+        localStorage.removeItem(TOKEN_KEY);
+        setError('Error al obtener la información del usuario. Intenta nuevamente.');
+        setIsLoading(false);
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || 'Error al iniciar sesión');
+      // Manejar diferentes tipos de errores
+      const status = err?.response?.status;
+      const message = err?.response?.data?.message;
+      
+      if (status === 401 || status === 404) {
+        setError('Usuario o contraseña incorrectos. Verifica tus credenciales.');
+      } else if (status === 400) {
+        setError(message || 'Datos inválidos. Verifica tu email y contraseña.');
+      } else if (message) {
+        setError(message);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError('Error al iniciar sesión. Verifica tu conexión e intenta nuevamente.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -81,27 +120,66 @@ export default function AuthPage() {
       const resp = await apiSignup({ email, username, password });
       const token = (resp as any).access_token || (resp as any).token;
 
-      if (token) {
-        // Guardar token en localStorage
-        localStorage.setItem(TOKEN_KEY, token);
+      if (!token) {
+        setError('No se pudo crear la cuenta. Intenta nuevamente.');
+        setIsLoading(false);
+        return;
+      }
 
-        // Pequeño delay para asegurar que localStorage se actualice
-        await new Promise(resolve => setTimeout(resolve, 100));
+      // Guardar token en localStorage
+      localStorage.setItem(TOKEN_KEY, token);
 
+      // Pequeño delay para asegurar que localStorage se actualice
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      try {
         // Obtener perfil del usuario
         const profile = await getProfile();
+        
+        if (!profile) {
+          setError('Cuenta creada, pero hubo un error. Por favor inicia sesión.');
+          localStorage.removeItem(TOKEN_KEY);
+          setActiveTab('login');
+          setIsLoading(false);
+          return;
+        }
         
         // El backend devuelve {user: {user: {...}}} - necesitamos extraer el user interno
         const userData = (profile as any).user?.user || (profile as any).user || profile;
 
+        if (!userData) {
+          setError('Cuenta creada, pero hubo un error. Por favor inicia sesión.');
+          localStorage.removeItem(TOKEN_KEY);
+          setActiveTab('login');
+          setIsLoading(false);
+          return;
+        }
+
         storeLogin(userData, token);
         router.push(ROUTES.HOME);
-      } else {
-        setError('Cuenta creada. Por favor inicia sesión.');
+      } catch (profileError: any) {
+        // Error al obtener el perfil
+        localStorage.removeItem(TOKEN_KEY);
+        setError('Cuenta creada, pero hubo un error. Por favor inicia sesión.');
         setActiveTab('login');
+        setIsLoading(false);
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || err?.message || 'Error al crear la cuenta');
+      // Manejar diferentes tipos de errores
+      const status = err?.response?.status;
+      const message = err?.response?.data?.message;
+      
+      if (status === 409) {
+        setError('Este email o nombre de usuario ya está registrado.');
+      } else if (status === 400) {
+        setError(message || 'Datos inválidos. Verifica la información ingresada.');
+      } else if (message) {
+        setError(message);
+      } else if (err?.message) {
+        setError(err.message);
+      } else {
+        setError('Error al crear la cuenta. Verifica tu conexión e intenta nuevamente.');
+      }
     } finally {
       setIsLoading(false);
     }
