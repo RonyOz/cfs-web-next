@@ -9,6 +9,7 @@ export const useOrders = () => {
   const error = useOrderStore((state) => state.error);
   const fetchOrders = useOrderStore((state) => state.fetchOrders);
   const fetchMyOrders = useOrderStore((state) => state.fetchMyOrders);
+  const fetchMySales = useOrderStore((state) => state.fetchMySales);
   const fetchOrderById = useOrderStore((state) => state.fetchOrderById);
   const createOrder = useOrderStore((state) => state.createOrder);
   const updateOrderStatus = useOrderStore((state) => state.updateOrderStatus);
@@ -27,6 +28,7 @@ export const useOrders = () => {
     error,
     fetchOrders,
     fetchMyOrders,
+    fetchMySales,
     fetchOrderById,
     createOrder,
     updateOrderStatus,

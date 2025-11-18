@@ -9,7 +9,6 @@ import { Input } from "@/components/ui";
 import { Search, AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ProductCard } from "@/components/products";
-import { useOrderStore } from "@/store";
 import { Product } from "@/types";
 import toast from 'react-hot-toast';
 
@@ -18,7 +17,6 @@ const PRODUCTS_LIMIT = 6;
 export default function Home() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { addToCart } = useOrderStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const {
@@ -49,39 +47,6 @@ export default function Home() {
 
   const handleViewMore = () => {
     router.push(ROUTES.PRODUCTS);
-  };
-
-  const handleAddToCart = (product: Product) => {
-    if (!isAuthenticated) {
-      toast.error('Debes iniciar sesión para agregar productos al carrito', {
-        duration: 3000,
-        position: 'top-center',
-      });
-      setTimeout(() => router.push(ROUTES.AUTH), 1000);
-      return;
-    }
-
-    try {
-      addToCart({
-        productId: product.id,
-        productName: product.name,
-        price: product.price,
-        quantity: 1,
-        stock: product.stock,
-      });
-
-      // Show success message
-      toast.success(`${product.name} agregado al carrito`, {
-        duration: 2000,
-        position: 'top-center',
-        icon: '🛒',
-      });
-    } catch (error: any) {
-      toast.error(error.message || 'No se pudo agregar al carrito', {
-        duration: 3000,
-        position: 'top-center',
-      });
-    }
   };
 
   return (
@@ -175,7 +140,6 @@ export default function Home() {
                     <ProductCard
                       key={product.id}
                       product={product}
-                      onAddToCart={handleAddToCart}
                       showActions={true}
                       hideOwnerActions={true}
                     />

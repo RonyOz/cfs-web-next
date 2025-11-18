@@ -19,6 +19,12 @@ export const getMyOrders = async (params?: GetOrdersParams): Promise<Order[]> =>
   return response.data;
 };
 
+// Obtener mis ventas (seller) - órdenes donde soy vendedor
+export const getMySales = async (params?: GetOrdersParams): Promise<Order[]> => {
+  const response = await apiClient.get('/orders/my-sales', { params });
+  return response.data;
+};
+
 // Obtener orden por ID
 export const getOrderById = async (id: string): Promise<Order> => {
   const response = await apiClient.get(`/orders/${id}`);

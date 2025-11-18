@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, ShoppingCart, User, Package } from 'lucide-react';
 import { Button, Card } from '@/components/ui';
-import { useAuth, useProducts } from '@/lib/hooks';
-import { useOrderStore } from '@/store';
+import { useAuth, useProducts, useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
 import Link from 'next/link';
@@ -14,9 +13,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter();
   const { user, isAuthenticated, _hasHydrated } = useAuth();
   const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
-  const { addToCart } = useOrderStore();
+  const { createOrder } = useOrders();
   const [error, setError] = useState('');
   const [productId, setProductId] = useState<string>('');
+  const [quantity, setQuantity] = useState(1);
+  const [purchasing, setPurchasing] = useState(false);
 
   useEffect(() => {
     params.then(p => setProductId(p.id));
@@ -44,16 +45,37 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleAddToCart = () => {
-    if (!selectedProduct) return;
-    addToCart({
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      price: selectedProduct.price,
-      quantity: 1,
-      stock: selectedProduct.stock,
-    });
-    router.push(ROUTES.ORDERS);
+  const handleBuyNow = async () => {
+    if (!selectedProduct || purchasing) return;
+    
+    if (quantity <= 0 || quantity > selectedProduct.stock) {
+      alert('Cantidad inválida');
+      return;
+    }
+    
+    try {
+      setPurchasing(true);
+      await createOrder({
+        items: [
+          {
+            productId: selectedProduct.id,
+            quantity: quantity,
+          },
+        ],
+      });
+      alert('Orden creada exitosamente');
+      router.push(ROUTES.ORDERS);
+    } catch (err: any) {
+      alert(err.message || 'Error al crear la orden');
+    } finally {
+      setPurchasing(false);
+    }
+  };
+  
+  const handleQuantityChange = (newQuantity: number) => {
+    if (newQuantity < 1) return;
+    if (newQuantity > selectedProduct!.stock) return;
+    setQuantity(newQuantity);
   };
 
   if (!isAuthenticated) return null;
@@ -127,15 +149,60 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
 
           {!isOwner && selectedProduct.stock > 0 && (
-            <Button
-              variant="primary"
-              size="lg"
-              className="w-full gap-2"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              Agregar al Carrito
-            </Button>
+            <>
+              {/* Quantity Selector */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Cantidad
+                </label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(quantity - 1)}
+                    disabled={quantity <= 1}
+                  >
+                    -
+                  </Button>
+                  <span className="text-xl font-semibold text-gray-100 min-w-12 text-center">
+                    {quantity}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleQuantityChange(quantity + 1)}
+                    disabled={quantity >= selectedProduct.stock}
+                  >
+                    +
+                  </Button>
+                  <span className="text-sm text-gray-400">
+                    (Disponibles: {selectedProduct.stock})
+                  </span>
+                </div>
+              </div>
+              
+              {/* Total Price */}
+              <div className="mb-6 p-4 bg-dark-800 rounded-lg border border-dark-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-400">Total a pagar</span>
+                  <span className="text-2xl font-bold text-primary-400">
+                    {formatPrice(selectedProduct.price * quantity)}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Buy Button */}
+              <Button
+                variant="primary"
+                size="lg"
+                className="w-full gap-2"
+                onClick={handleBuyNow}
+                disabled={purchasing}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {purchasing ? 'Procesando...' : 'Comprar Ahora'}
+              </Button>
+            </>
           )}
 
           {selectedProduct.stock === 0 && (

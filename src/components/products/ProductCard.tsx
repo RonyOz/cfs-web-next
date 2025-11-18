@@ -11,7 +11,6 @@ import { ShoppingCart } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart?: (product: Product) => void;
   onDelete?: (productId: string) => void;
   showActions?: boolean;
   hideOwnerActions?: boolean; // Ocultar botones de editar/eliminar (para home)
@@ -19,7 +18,6 @@ interface ProductCardProps {
 
 export const ProductCard = ({
   product,
-  onAddToCart,
   onDelete,
   showActions = true,
   hideOwnerActions = false,
@@ -30,7 +28,7 @@ export const ProductCard = ({
   const sellerId = typeof product.seller === 'object' ? product.seller.id : product.seller;
   const isOwner = user?.id === sellerId;
   const canEdit = isOwner || isAdmin;
-  const canAddToCart = !isOwner && onAddToCart && product.stock > 0;
+  const canBuy = !isOwner && product.stock > 0;
 
   return (
     <Card hover className="h-full flex flex-col">
@@ -88,16 +86,16 @@ export const ProductCard = ({
       {/* Actions */}
       {showActions && (
         <div className="mt-4 flex gap-2">
-          {/* Add to Cart Button - Always visible if conditions are met */}
-          {canAddToCart && (
+          {/* Buy Button - Redirect to product detail */}
+          {canBuy && (
             <Button
               variant="primary"
               size="sm"
               className="flex-1 gap-2"
-              onClick={() => onAddToCart(product)}
+              onClick={() => router.push(ROUTES.PRODUCT_DETAIL(product.id))}
             >
               <ShoppingCart className="h-4 w-4" />
-              Agregar
+              Comprar
             </Button>
           )}
 
@@ -107,7 +105,7 @@ export const ProductCard = ({
               <Button
                 variant="outline"
                 size="sm"
-                className={canAddToCart ? '' : 'flex-1'}
+                className={canBuy ? '' : 'flex-1'}
                 onClick={() => router.push(`${ROUTES.PRODUCTS}/${product.id}/edit`)}
               >
                 Editar

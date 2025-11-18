@@ -6,6 +6,7 @@ import { Order, CreateOrderData, CreateOrderItem } from '@/types';
 import {
   getOrders,
   getMyOrders,
+  getMySales,
   getOrderById,
   createOrder as apiCreateOrder,
   deleteOrder as apiDeleteOrder,
@@ -42,6 +43,7 @@ interface OrderState {
   // API Actions
   fetchOrders: () => Promise<void>;
   fetchMyOrders: () => Promise<void>;
+  fetchMySales: () => Promise<void>;
   fetchOrderById: (id: string) => Promise<Order>;
   createOrder: (data: CreateOrderData) => Promise<void>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<void>;
@@ -157,6 +159,17 @@ export const useOrderStore = create<OrderState>()(
           set({ orders, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar mis órdenes', loading: false });
+          throw error;
+        }
+      },
+
+      fetchMySales: async () => {
+        set({ loading: true, error: null });
+        try {
+          const orders = await getMySales();
+          set({ orders, loading: false });
+        } catch (error) {
+          set({ error: 'Error al cargar mis ventas', loading: false });
           throw error;
         }
       },

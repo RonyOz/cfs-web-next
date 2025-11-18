@@ -2,18 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { User, Menu, X, ShoppingCart } from 'lucide-react';
-import { useAuth, useOrders } from '@/lib/hooks';
+import { User, Menu, X } from 'lucide-react';
+import { useAuth } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { Button } from '@/components/ui';
-import { cn } from '@/lib/utils';
 
 export const Header = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
-  const { cart } = useOrders();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleLogout = () => {
     logout();
@@ -55,6 +51,12 @@ export const Header = () => {
               >
                 Órdenes
               </Link>
+              <Link
+                href={ROUTES.SELLER_ORDERS}
+                className="text-gray-300 hover:text-primary-400 transition-colors"
+              >
+                Pedidos
+              </Link>
 
               {/* Show admin links only for admin users */}
               {isAdmin && (
@@ -72,28 +74,6 @@ export const Header = () => {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center gap-3">
-            {/* Shopping Cart */}
-            {isAuthenticated && (
-              <Link href={ROUTES.CART}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "relative",
-                    cartItemCount > 0 && "text-primary-400"
-                  )}
-                  title="Ver carrito"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute -right-1 -top-1 h-5 w-5 rounded-full bg-primary-500 text-white text-xs flex items-center justify-center font-bold shadow-lg animate-pulse">
-                      {cartItemCount > 9 ? '9+' : cartItemCount}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-            )}
-
             {isAuthenticated ? (
               <>
                 <Link href={ROUTES.PROFILE}>
@@ -139,19 +119,6 @@ export const Header = () => {
             {isAuthenticated && (
               <div className="flex flex-col gap-4 mb-4">
                 <Link
-                  href={ROUTES.CART}
-                  className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1 flex items-center gap-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <ShoppingCart className="h-4 w-4" />
-                  Carrito
-                  {cartItemCount > 0 && (
-                    <span className="ml-auto bg-primary-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
-                <Link
                   href={ROUTES.PRODUCTS}
                   className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
                   onClick={() => setMobileMenuOpen(false)}
@@ -164,6 +131,13 @@ export const Header = () => {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Órdenes
+                </Link>
+                <Link
+                  href={ROUTES.SELLER_ORDERS}
+                  className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Pedidos
                 </Link>
 
                 {isAdmin && (
