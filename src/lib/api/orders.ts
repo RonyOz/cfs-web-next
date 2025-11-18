@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Order, CreateOrderData, UpdateOrderData, MessageResponse } from '@/types';
+import { Order, CreateOrderData, UpdateOrderData, MessageResponse, PaginatedResponse } from '@/types';
 
 interface GetOrdersParams {
   page?: number;
@@ -8,19 +8,19 @@ interface GetOrdersParams {
 }
 
 // Obtener todas las órdenes (para admin)
-export const getOrders = async (params?: GetOrdersParams): Promise<Order[]> => {
+export const getOrders = async (params?: GetOrdersParams): Promise<PaginatedResponse<Order>> => {
   const response = await apiClient.get('/orders', { params });
   return response.data;
 };
 
 // Obtener mis órdenes (buyer) - endpoint específico para usuario autenticado
-export const getMyOrders = async (params?: GetOrdersParams): Promise<Order[]> => {
+export const getMyOrders = async (params?: GetOrdersParams): Promise<PaginatedResponse<Order>> => {
   const response = await apiClient.get('/orders/my-orders', { params });
   return response.data;
 };
 
 // Obtener mis ventas (seller) - órdenes donde soy vendedor
-export const getMySales = async (params?: GetOrdersParams): Promise<Order[]> => {
+export const getMySales = async (params?: GetOrdersParams): Promise<PaginatedResponse<Order>> => {
   const response = await apiClient.get('/orders/my-sales', { params });
   return response.data;
 };

@@ -56,8 +56,9 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
 
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="overflow-x-auto -mx-4 sm:mx-0">
+        <div className="inline-block min-w-full align-middle">
+        <table className="min-w-full">
           <thead>
             <tr className="border-b border-dark-700">
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -166,6 +167,7 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Confirm Delete Dialog */}

@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Order, OrderStatus } from '@/types';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, Pagination } from '@/components/ui';
 import { ShoppingBag, X } from 'lucide-react';
 import { useAuth, useOrders } from '@/lib/hooks';
 import toast from 'react-hot-toast';
@@ -14,9 +14,11 @@ import { formatPrice } from '@/lib/utils';
 export default function SellerOrdersPage() {
   const router = useRouter();
   const { user, isAuthenticated, _hasHydrated } = useAuth();
-  const { orders, loading, fetchMySales, updateOrderStatus, cancelOrder } = useOrders();
+  const { orders, paginationMeta, loading, fetchMySales, updateOrderStatus, cancelOrder } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!_hasHydrated) return;
@@ -25,7 +27,7 @@ export default function SellerOrdersPage() {
       router.push(ROUTES.AUTH);
       return;
     }
-    fetchMySales(); // Obtiene solo las órdenes donde soy vendedor (filtrado por backend)
+    fetchMySales(currentPage, itemsPerPage); // Obtiene solo las órdenes donde soy vendedor (filtrado por backend)
   }, [isAuthenticated, _hasHydrated]);
 
   // El backend ya filtra, usamos orders directamente
@@ -36,11 +38,11 @@ export default function SellerOrdersPage() {
     setIsModalOpen(true);
   };
 
-  const handleUpdateStatus = async (orderId: string, status: string) => {
+  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
-      await updateOrderStatus(orderId, status as OrderStatus);
-      toast.success(`Estado actualizado a "${status}"`);
-      await fetchMySales();
+      await updateOrderStatus(orderId, newStatus);
+      toast.success('Estado actualizado exitosamente');
+      await fetchMySales(currentPage, itemsPerPage);
     } catch (error: any) {
       toast.error(error?.message || 'Error al actualizar estado');
     }
@@ -50,7 +52,7 @@ export default function SellerOrdersPage() {
     try {
       await cancelOrder(orderId);
       toast.success('Orden cancelada y stock restaurado');
-      await fetchMySales();
+      await fetchMySales(currentPage, itemsPerPage);
     } catch (error: any) {
       toast.error(error?.message || 'Error al cancelar orden');
     }
@@ -59,6 +61,26 @@ export default function SellerOrdersPage() {
   const pendingOrders = sellerOrders.filter((o) => o.status === OrderStatus.PENDING);
   const acceptedOrders = sellerOrders.filter((o) => o.status === OrderStatus.ACCEPTED);
   const deliveredOrders = sellerOrders.filter((o) => o.status === OrderStatus.DELIVERED);
+
+  // Paginación del backend
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchMySales(page, itemsPerPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+    fetchMySales(1, newItemsPerPage);
+  };
+
+  // Refetch cuando cambia página o items por página
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchMySales(currentPage, itemsPerPage);
+    }
+  }, [currentPage, itemsPerPage]);
   
   // Calcular ingresos totales solo de productos del vendedor
   const totalRevenue = sellerOrders
@@ -105,13 +127,27 @@ export default function SellerOrdersPage() {
 
       {/* Orders Table */}
       {sellerOrders.length > 0 ? (
-        <OrdersTable
-          orders={sellerOrders}
-          onViewDetails={handleViewDetails}
-          onUpdateStatus={handleUpdateStatus}
-          onCancelOrder={handleCancelOrder}
-          isLoading={loading}
-        />
+        <>
+          <OrdersTable
+            orders={sellerOrders}
+            onViewDetails={handleViewDetails}
+            onUpdateStatus={handleUpdateStatus}
+            onCancelOrder={handleCancelOrder}
+            isLoading={loading}
+          />
+
+          {/* Pagination */}
+          {!loading && paginationMeta && paginationMeta.total > 0 && (
+            <Pagination
+              currentPage={paginationMeta.page}
+              totalPages={paginationMeta.totalPages}
+              totalItems={paginationMeta.total}
+              itemsPerPage={paginationMeta.limit}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
+          )}
+        </>
       ) : (
         <Card className="text-center py-12">
           <ShoppingBag className="h-16 w-16 text-gray-600 mx-auto mb-4" />

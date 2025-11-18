@@ -37,21 +37,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     try {
       setLoading(true);
       const data = await fetchOrderById(orderId);
-      
-      // Logs de depuración
-      console.log('📦 [Order Detail] Orden completa del backend:', data);
-      console.log('📦 [Order Detail] Items de la orden:', data.items);
-      if (data.items && data.items.length > 0) {
-        console.log('📦 [Order Detail] Primer item:', data.items[0]);
-        console.log('📦 [Order Detail] Estructura del primer item:', {
-          id: data.items[0].id,
-          quantity: data.items[0].quantity,
-          price: data.items[0].price,
-          priceAtPurchase: data.items[0].priceAtPurchase,
-          product: data.items[0].product,
-        });
-      }
-      
       setOrder(data);
     } catch (err: any) {
       console.error('❌ [Order Detail] Error al cargar orden:', err);
@@ -137,16 +122,16 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       </Link>
 
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-100 mb-2">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div className="flex-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-100 mb-2">
             Orden #{order.id.slice(0, 8)}
           </h1>
-          <p className="text-gray-400">{formatDateTime(order.createdAt)}</p>
+          <p className="text-sm sm:text-base text-gray-400">{formatDateTime(order.createdAt)}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 w-fit">
           {getStatusIcon(order.status)}
-          <span className={`text-lg font-semibold ${
+          <span className={`text-base sm:text-lg font-semibold ${
             order.status === OrderStatus.PENDING ? 'text-warning-500' :
             order.status === OrderStatus.DELIVERED ? 'text-success-500' :
             order.status === OrderStatus.ACCEPTED ? 'text-primary-500' :
@@ -165,18 +150,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             // Usar priceAtPurchase si existe, sino price como fallback
             const itemPrice = item.priceAtPurchase ?? item.price ?? 0;
             
-            // Log de depuración por item
-            console.log(`📦 [Order Detail] Item #${index}:`, {
-              item,
-              priceAtPurchase: item.priceAtPurchase,
-              price: item.price,
-              itemPrice,
-              quantity: item.quantity,
-              total: itemPrice * item.quantity
-            });
-            
             return (
-              <div key={index} className="flex items-center justify-between p-4 bg-dark-900 rounded-lg">
+              <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-4 bg-dark-900 rounded-lg">
                 <div className="flex-1">
                   <p className="font-medium text-gray-100">
                     {typeof item.product === 'object' ? item.product.name : 'Producto'}

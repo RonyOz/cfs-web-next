@@ -78,8 +78,8 @@ export default function AdminUserProfilePage() {
     try {
       setOrdersLoading(true);
       setOrdersError('');
-      const data = await getOrders();
-      const filteredOrders = data.filter((order) => {
+      const response = await getOrders({ limit: 100 });
+      const filteredOrders = response.data.filter((order) => {
         const buyerId =
           typeof order.buyer === 'object' ? order.buyer.id : (order.buyer as any);
         return buyerId === id;
@@ -228,7 +228,7 @@ export default function AdminUserProfilePage() {
             Editar usuario
           </Button>
           <Button
-            variant={status === 'active' ? 'danger' : 'success'}
+            variant={status === 'active' ? 'danger' : 'primary'}
             onClick={handleToggleStatus}
             isLoading={togglingStatus}
           >
@@ -357,7 +357,7 @@ export default function AdminUserProfilePage() {
                   </p>
                 </div>
                 <p className="text-xl font-bold text-primary-400">
-                  {formatPrice(product.price)}
+                  {formatPrice(product.price || 0)}
                 </p>
               </div>
             ))}
