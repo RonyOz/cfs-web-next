@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import apolloClient from '@/lib/graphql/client';
 import { CREATE_UPLOAD_URL_MUTATION } from '@/lib/graphql/mutations';
-import { getSupabaseClient, isSupabaseConfigured } from '@/lib/supabase';
 
 interface UploadResult {
   publicUrl: string;
@@ -25,20 +24,6 @@ export const useImageUpload = () => {
     });
 
     try {
-      // Verificar configuración de Supabase
-      console.log('🔧 [ImageUpload] Verificando configuración de Supabase...');
-      console.log('🔧 [ImageUpload] NEXT_PUBLIC_SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? '✅ Configurado' : '❌ NO configurado');
-      console.log('🔧 [ImageUpload] NEXT_PUBLIC_SUPABASE_ANON_KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? '✅ Configurado' : '❌ NO configurado');
-
-      if (!isSupabaseConfigured()) {
-        const errorMsg = 'Supabase no esta configurado. Define NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY para habilitar las cargas de imagenes.';
-        console.error('❌ [ImageUpload] Error de configuración:', errorMsg);
-        throw new Error(errorMsg);
-      }
-
-      const supabase = getSupabaseClient();
-      console.log('✅ [ImageUpload] Cliente de Supabase creado');
-
       // PASO 1: Obtener URL firmada del backend
       console.log('📡 [ImageUpload] PASO 1: Solicitando URL firmada al backend...');
       console.log('📡 [ImageUpload] Mutation:', 'CREATE_UPLOAD_URL_MUTATION');
@@ -53,27 +38,43 @@ export const useImageUpload = () => {
 
       console.log('✅ [ImageUpload] Respuesta del backend recibida:', data);
 
-      const { token, path, publicUrl } = (data as any).createUploadUrl;
+      const { uploadUrl, publicUrl } = (data as any).createUploadUrl;
       console.log('📝 [ImageUpload] Datos de subida:', {
-        path,
-        publicUrl,
-        tokenLength: token?.length || 0
+        uploadUrl,
+        publicUrl
       });
 
       setProgress(30);
 
-      // PASO 2: Subir imagen a Supabase usando SDK
-      console.log('☁️ [ImageUpload] PASO 2: Subiendo imagen a Supabase...');
-      console.log('☁️ [ImageUpload] Bucket:', 'product-images');
-      console.log('☁️ [ImageUpload] Path:', path);
+      // PASO 2: Subir imagen directamente usando fetch con la URL firmada
+      console.log('☁️ [ImageUpload] PASO 2: Subiendo imagen usando fetch...');
+      console.log('☁️ [ImageUpload] Upload URL:', uploadUrl);
+      console.log('☁️ [ImageUpload] File type:', file.type);
+      console.log('☁️ [ImageUpload] File size:', `${(file.size / 1024).toFixed(2)} KB`);
 
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .uploadToSignedUrl(path, token, file);
+      const uploadResponse = await fetch(uploadUrl, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': file.type,
+          'x-upsert': 'true',
+        },
+      });
 
-      if (uploadError) {
-        console.error('❌ [ImageUpload] Error de Supabase:', uploadError);
-        throw new Error(uploadError.message);
+      console.log('📊 [ImageUpload] Respuesta de subida:', {
+        status: uploadResponse.status,
+        statusText: uploadResponse.statusText,
+        ok: uploadResponse.ok
+      });
+
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text().catch(() => 'No se pudo leer el error');
+        console.error('❌ [ImageUpload] Error en la subida:', {
+          status: uploadResponse.status,
+          statusText: uploadResponse.statusText,
+          body: errorText
+        });
+        throw new Error(`Error al subir imagen: ${uploadResponse.status} ${uploadResponse.statusText}`);
       }
 
       setProgress(100);
