@@ -113,7 +113,9 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading }: UserTableProps
                   </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-400">{user.productsCount || 0}</span>
+                  <span className="text-sm text-gray-400">
+                    {user.productsCount ?? user.products?.length ?? 0}
+                  </span>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right">
                   <div className="flex items-center justify-end gap-2">

@@ -70,29 +70,19 @@ export const GET_SELLERS = gql`
 export const GET_SELLER_PROFILE = gql`
   query GetSellerProfile($id: String!) {
     sellerProfile(id: $id) {
-      seller {
-        id
-        username
-        twoFactorEnabled
-      }
+      id
+      username
+      email
+      role
+      twoFactorEnabled
+      productsCount
       products {
         id
         name
         description
         price
         stock
-      }
-      salesHistory {
-        id
-        status
-        createdAt
-        items {
-          orderItemId
-          productId
-          productName
-          quantity
-          itemPrice
-        }
+        imageUrl
       }
     }
   }
@@ -107,6 +97,9 @@ export const GET_ALL_USERS = gql`
       role
       twoFactorEnabled
       productsCount
+      products {
+        id
+      }
     }
   }
 `;

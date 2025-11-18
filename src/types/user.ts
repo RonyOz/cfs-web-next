@@ -7,6 +7,7 @@ export interface User {
   role: UserRole;
   twoFactorEnabled?: boolean;
   productsCount?: number;
+  products?: Array<{ id: string; name?: string; price?: number; stock?: number; imageUrl?: string }>;
 }
 
 export interface CreateUserInput {

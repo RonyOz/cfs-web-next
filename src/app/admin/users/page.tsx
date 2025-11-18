@@ -11,7 +11,7 @@ import { User, CreateUserInput, UpdateUserInput } from '@/types';
 import { UserTable, UserModal } from '@/components/admin';
 import { Button } from '@/components/ui';
 import { Plus, Users } from 'lucide-react';
-import { getAllUsers, createUser, updateUser, deleteUser } from '@/lib/api/users';
+import { getAllUsers, createUser, updateUser, deleteUser, getSellerProfile } from '@/lib/api/users';
 import { useAuth } from '@/lib/hooks';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/config/constants';
@@ -42,7 +42,32 @@ export default function AdminUsersPage() {
     try {
       setIsLoading(true);
       const data = await getAllUsers();
-      setUsers(data);
+      
+      // Si productsCount no viene del backend, enriquecer con sellerProfile
+      const enrichedUsers = await Promise.all(
+        data.map(async (user) => {
+          // Si ya tiene productsCount válido, usar ese
+          if (user.productsCount !== undefined && user.productsCount !== null) {
+            return user;
+          }
+          
+          // Si tiene products array, contar manualmente
+          if (user.products && user.products.length > 0) {
+            return { ...user, productsCount: user.products.length };
+          }
+          
+          // Como último recurso, obtener de sellerProfile
+          try {
+            const sellerProfile = await getSellerProfile(user.id);
+            return { ...user, productsCount: sellerProfile.productsCount || 0 };
+          } catch (error) {
+            console.warn(`No se pudo obtener productsCount para ${user.username}`);
+            return { ...user, productsCount: 0 };
+          }
+        })
+      );
+      
+      setUsers(enrichedUsers);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast.error(error?.message || 'Error al cargar usuarios');

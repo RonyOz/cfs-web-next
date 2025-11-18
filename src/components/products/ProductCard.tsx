@@ -14,6 +14,7 @@ interface ProductCardProps {
   onAddToCart?: (product: Product) => void;
   onDelete?: (productId: string) => void;
   showActions?: boolean;
+  hideOwnerActions?: boolean; // Ocultar botones de editar/eliminar (para home)
 }
 
 export const ProductCard = ({
@@ -21,6 +22,7 @@ export const ProductCard = ({
   onAddToCart,
   onDelete,
   showActions = true,
+  hideOwnerActions = false,
 }: ProductCardProps) => {
   const router = useRouter();
   const { user, isAdmin } = useAuth();
@@ -100,7 +102,7 @@ export const ProductCard = ({
           )}
 
           {/* Edit/Delete buttons for owner or admin */}
-          {canEdit && (
+          {canEdit && !hideOwnerActions && (
             <>
               <Button
                 variant="outline"

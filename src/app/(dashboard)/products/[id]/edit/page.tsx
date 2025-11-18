@@ -10,7 +10,7 @@ import { ROUTES } from '@/config/constants';
 
 export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isAdmin } = useAuth();
   const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
   const [productId, setProductId] = useState<string>('');
 
@@ -40,18 +40,19 @@ export default function EditProductPage({ params }: { params: Promise<{ id: stri
     };
   }, [productId, isAuthenticated, router, fetchProductById, setSelectedProduct]);
 
-  // Validar ownership después de cargar
+  // Validar ownership después de cargar (admin puede editar cualquier producto)
   useEffect(() => {
     if (selectedProduct && user) {
       const sellerId = typeof selectedProduct.seller === 'object' 
         ? selectedProduct.seller.id 
         : selectedProduct.seller;
       
-      if (sellerId !== user.id) {
+      // Solo redirigir si NO es el propietario Y NO es admin
+      if (sellerId !== user.id && !isAdmin) {
         router.push(ROUTES.PRODUCTS);
       }
     }
-  }, [selectedProduct, user, router]);
+  }, [selectedProduct, user, isAdmin, router]);
 
   if (!isAuthenticated || loading) return null;
   if (!selectedProduct) return null;

@@ -177,6 +177,7 @@ export default function Home() {
                       product={product}
                       onAddToCart={handleAddToCart}
                       showActions={true}
+                      hideOwnerActions={true}
                     />
                   ))}
                 </div>

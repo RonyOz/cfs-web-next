@@ -1,5 +1,9 @@
 import apolloClient from '@/lib/graphql/client';
-import { GET_ALL_USERS, GET_USER } from '@/lib/graphql/queries';
+import {
+  GET_ALL_USERS,
+  GET_USER,
+  GET_SELLER_PROFILE,
+} from '@/lib/graphql/queries';
 import { 
   CREATE_USER_MUTATION, 
   UPDATE_USER_MUTATION, 
@@ -78,6 +82,19 @@ export const deleteUser = async (id: string): Promise<boolean> => {
   }) as { data: { removeUser: boolean } };
 
   return data.removeUser;
+};
+
+/**
+ * Get seller profile with products count (public)
+ */
+export const getSellerProfile = async (id: string): Promise<User> => {
+  const { data } = await apolloClient.query({
+    query: GET_SELLER_PROFILE,
+    variables: { id },
+    fetchPolicy: 'network-only'
+  }) as { data: { sellerProfile: User } };
+
+  return data.sellerProfile;
 };
 
 /**

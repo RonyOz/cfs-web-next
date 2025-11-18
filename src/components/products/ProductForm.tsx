@@ -68,8 +68,14 @@ export const ProductForm = ({ product }: ProductFormProps) => {
 
   const handleRemoveImage = () => {
     setFile(null);
-    setPreview(product?.imageUrl || null);
-    setFormData(prev => ({ ...prev, imageUrl: product?.imageUrl }));
+    setPreview(null);
+    setFormData(prev => ({ ...prev, imageUrl: undefined }));
+    
+    // Limpiar el input de archivo también
+    const fileInput = document.getElementById('image-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
