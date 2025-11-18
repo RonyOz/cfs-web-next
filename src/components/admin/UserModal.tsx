@@ -19,6 +19,7 @@ export const UserModal = ({ user, isOpen, onClose, onSubmit }: UserModalProps) =
     username: '',
     email: '',
     password: '',
+    phoneNumber: '',
     role: 'user' as 'user' | 'admin',
   });
 
@@ -28,6 +29,7 @@ export const UserModal = ({ user, isOpen, onClose, onSubmit }: UserModalProps) =
         username: user.username,
         email: user.email,
         password: '',
+        phoneNumber: user.phoneNumber || '',
         role: user.role,
       });
     } else {
@@ -35,6 +37,7 @@ export const UserModal = ({ user, isOpen, onClose, onSubmit }: UserModalProps) =
         username: '',
         email: '',
         password: '',
+        phoneNumber: '',
         role: 'user',
       });
     }
@@ -54,12 +57,16 @@ export const UserModal = ({ user, isOpen, onClose, onSubmit }: UserModalProps) =
         if (formData.password) {
           updateData.password = formData.password;
         }
+        if (formData.phoneNumber) {
+          updateData.phoneNumber = formData.phoneNumber;
+        }
         await onSubmit(updateData, user.id);
       } else {
         const createData: CreateUserInput = {
           username: formData.username,
           email: formData.email,
           password: formData.password,
+          phoneNumber: formData.phoneNumber || undefined,
           role: formData.role,
         };
         await onSubmit(createData);
@@ -107,6 +114,15 @@ export const UserModal = ({ user, isOpen, onClose, onSubmit }: UserModalProps) =
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
             placeholder="user@example.com"
+          />
+
+          <Input
+            label="Número de Teléfono"
+            type="tel"
+            value={formData.phoneNumber}
+            required
+            onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+            placeholder="+573001234567"
           />
 
           <Input
