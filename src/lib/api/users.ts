@@ -97,27 +97,13 @@ export const deleteUser = async (id: string): Promise<boolean> => {
 
 /**
  * Get seller profile with products count (public)
- * Usa REST API directamente ya que GraphQL retorna products: null
+ * Usa REST API directamente 
  */
 export const getSellerProfile = async (id: string): Promise<User> => {
   try {
     console.log('Obteniendo perfil del vendedor desde REST API para ID:', id);
-    const response = await fetch(`http://localhost:3000/api/v1/seller/${id}`);
+    const { data } = await apiClient.get<User>(`/seller/${id}`);
     
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('REST API error response:', errorText);
-      
-      if (response.status === 404) {
-        throw new Error('Este vendedor no existe');
-      }
-      if (response.status === 500) {
-        throw new Error('Error del servidor. Por favor, intenta de nuevo más tarde.');
-      }
-      throw new Error(`Error HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const data = await response.json();
     console.log('Datos obtenidos desde REST API:', data);
     
     // Asegurar que products y salesHistory siempre sean arrays
@@ -129,8 +115,18 @@ export const getSellerProfile = async (id: string): Promise<User> => {
   } catch (error: any) {
     console.error('Error obteniendo perfil del vendedor:', error);
     
-    if (error.message.includes('vendedor no existe') || error.message.includes('Error del servidor')) {
-      throw error;
+    // Manejar errores específicos de Axios
+    if (error.response) {
+      const status = error.response.status;
+      const message = error.response.data?.message || error.message;
+      
+      if (status === 404) {
+        throw new Error('Este vendedor no existe');
+      }
+      if (status === 500) {
+        throw new Error('Error del servidor. Por favor, intenta de nuevo más tarde.');
+      }
+      throw new Error(message || `Error HTTP ${status}`);
     }
     
     throw new Error('No se pudo cargar el perfil del vendedor. Verifica tu conexión.');
