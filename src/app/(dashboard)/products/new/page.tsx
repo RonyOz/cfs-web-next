@@ -11,13 +11,15 @@ import Link from 'next/link';
 
 export default function NewProductPage() {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, _hasHydrated } = useAuth();
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+    
     if (!isAuthenticated) {
       router.push(ROUTES.AUTH);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, _hasHydrated]);
 
   if (!isAuthenticated) return null;
 

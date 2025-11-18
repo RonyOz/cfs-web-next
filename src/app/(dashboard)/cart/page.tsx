@@ -8,13 +8,15 @@ import { ROUTES } from '@/config/constants';
 
 export default function CartPage() {
     const router = useRouter();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, _hasHydrated } = useAuth();
 
     useEffect(() => {
+        if (!_hasHydrated) return;
+        
         if (!isAuthenticated) {
             router.push(ROUTES.AUTH);
         }
-    }, [isAuthenticated, router]);
+    }, [isAuthenticated, _hasHydrated, router]);
 
     if (!isAuthenticated) return null;
 

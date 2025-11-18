@@ -10,13 +10,15 @@ import { formatDateTime } from '@/lib/utils';
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, isAdmin } = useAuth();
+  const { user, isAuthenticated, isAdmin, _hasHydrated } = useAuth();
 
   useEffect(() => {
+    if (!_hasHydrated) return;
+    
     if (!isAuthenticated) {
       router.push(ROUTES.AUTH);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, _hasHydrated]);
 
   if (!isAuthenticated || !user) return null;
 

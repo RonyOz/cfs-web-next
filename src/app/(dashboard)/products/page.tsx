@@ -11,17 +11,22 @@ import { Product } from '@/types';
 
 export default function ProductsPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, _hasHydrated } = useAuth();
   const { products, loading, error, fetchProducts, deleteProduct } = useProducts();
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    // Esperar a que el store se hidrate antes de verificar autenticación
+    if (!_hasHydrated) {
+      return;
+    }
+    
     if (!isAuthenticated) {
       router.push(ROUTES.AUTH);
       return;
     }
     fetchProducts();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, _hasHydrated]);
 
   const filteredProducts = products.filter(product => {
     if (!searchQuery) return true;

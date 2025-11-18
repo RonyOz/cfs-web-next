@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, _hasHydrated } = useAuth();
   const { selectedProduct, loading, fetchProductById, setSelectedProduct } = useProducts();
   const { addToCart } = useOrderStore();
   const [error, setError] = useState('');
@@ -23,7 +23,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   }, [params]);
 
   useEffect(() => {
-    if (!isAuthenticated || !productId) {
+    if (!_hasHydrated || !isAuthenticated || !productId) {
+      if (!_hasHydrated) return;
       if (!isAuthenticated) router.push(ROUTES.AUTH);
       return;
     }
