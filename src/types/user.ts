@@ -7,6 +7,8 @@ export interface User {
   role: UserRole;
   twoFactorEnabled?: boolean;
   productsCount?: number;
+  totalOrders?: number;
+  ordersThisMonth?: number;
   products?: Array<{ id: string; name?: string; price?: number; stock?: number; imageUrl?: string }>;
   phoneNumber?: string | null;
 }

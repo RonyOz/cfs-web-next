@@ -199,7 +199,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div key={index} className="p-4 bg-dark-900 rounded-lg border border-dark-700 hover:border-primary-400/50 transition-all duration-300">
                 <p className="text-xs text-gray-500 mb-2">Producto: {typeof item.product === 'object' ? item.product.name : 'N/A'}</p>
                 <Link 
-                  href={`/admin/users/${seller.id}`}
+                  href={`/seller/${seller.id}`}
                   className="text-gray-100 font-medium hover:text-primary-400 transition-colors duration-300 flex items-center gap-2 group"
                 >
                   <User className="h-4 w-4 text-primary-400 group-hover:scale-110 transition-transform" />

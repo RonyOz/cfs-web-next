@@ -73,9 +73,12 @@ export const GET_SELLER_PROFILE = gql`
       id
       username
       email
+      phoneNumber
       role
       twoFactorEnabled
       productsCount
+      totalOrders
+      ordersThisMonth
       products {
         id
         name
@@ -83,6 +86,10 @@ export const GET_SELLER_PROFILE = gql`
         price
         stock
         imageUrl
+        seller {
+          id
+          username
+        }
       }
     }
   }
