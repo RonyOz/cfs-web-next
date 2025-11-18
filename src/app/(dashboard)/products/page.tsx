@@ -170,31 +170,46 @@ export default function ProductsPage() {
 
               {/* Pagination Controls */}
               {!searchQuery && (
-                <div className="mt-8 flex items-center justify-center gap-4">
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={handlePreviousPage}
-                    disabled={currentPage === 1}
-                    className="gap-2"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Anterior
-                  </Button>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400">Página</span>
-                    <span className="text-lg font-semibold text-primary-400">{currentPage}</span>
+                <div className="mt-8 flex flex-col items-center gap-4">
+                  <div className="flex items-center gap-4">
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={handlePreviousPage}
+                      disabled={currentPage === 1}
+                      className="gap-2"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Anterior
+                    </Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-400">Página</span>
+                      <span className="text-lg font-semibold text-primary-400">{currentPage}</span>
+                      {!hasMore && (
+                        <>
+                          <span className="text-sm text-gray-400">de</span>
+                          <span className="text-lg font-semibold text-gray-300">{currentPage}</span>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="md"
+                      onClick={handleNextPage}
+                      disabled={!hasMore}
+                      className="gap-2"
+                    >
+                      Siguiente
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={handleNextPage}
-                    disabled={!hasMore}
-                    className="gap-2"
-                  >
-                    Siguiente
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
+                  <div className="text-xs text-gray-500">
+                    {hasMore ? (
+                      <span>Mostrando {products.length} productos • Hay más disponibles</span>
+                    ) : (
+                      <span>Mostrando {products.length} productos • Última página</span>
+                    )}
+                  </div>
                 </div>
               )}
             </>
