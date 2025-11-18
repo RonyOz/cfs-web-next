@@ -11,7 +11,7 @@ import { User, CreateUserInput, UpdateUserInput } from '@/types';
 import { UserTable, UserModal } from '@/components/admin';
 import { Button, Pagination } from '@/components/ui';
 import { Plus, Users } from 'lucide-react';
-import { getAllUsers, createUser, updateUser, deleteUser, getSellerProfile } from '@/lib/api/users';
+import { getAllUsers, createUser, updateUser, deleteUser, getSellerProfile, getUserById } from '@/lib/api/users';
 import { useAuth } from '@/lib/hooks';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/config/constants';
@@ -69,7 +69,23 @@ export default function AdminUsersPage() {
         })
       );
       
-      setUsers(enrichedUsers);
+      const usersWithPhone = await Promise.all(
+        enrichedUsers.map(async (user) => {
+          if (user.phoneNumber) {
+            return user;
+          }
+
+          try {
+            const fullUser = await getUserById(user.id);
+            return { ...user, phoneNumber: fullUser.phoneNumber };
+          } catch (error) {
+            console.warn(`No se pudo obtener phoneNumber para ${user.username}`);
+            return user;
+          }
+        })
+      );
+
+      setUsers(usersWithPhone);
     } catch (error: any) {
       console.error('Error fetching users:', error);
       toast.error(error?.message || 'Error al cargar usuarios');

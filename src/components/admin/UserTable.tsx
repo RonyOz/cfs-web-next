@@ -65,7 +65,7 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
                 Usuario
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Email
+                Contacto
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Rol
@@ -101,7 +101,12 @@ export const UserTable = ({ users, onEdit, onDelete, isLoading, onViewProfile }:
                   </button>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-400">{user.email}</span>
+                  <div>
+                    <p className="text-sm text-gray-100">{user.email}</p>
+                    <p className="text-xs text-gray-500">
+                      {user.phoneNumber }
+                    </p>
+                  </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
