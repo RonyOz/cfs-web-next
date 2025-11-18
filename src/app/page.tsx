@@ -57,14 +57,14 @@ export default function Home() {
       <section className="relative overflow-hidden border-b border-dark-700 bg-linear-to-r from-dark-800 to-dark-900">
         <div className="container mx-auto px-4 py-16 md:py-20">
           <div className="mx-4 max-w-3xl">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-100 sm:text-4xl md:text-5xl">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-100 sm:text-4xl md:text-5xl animate-fade-in-down">
               Toda la comida del campus
               <span className="block text-primary-400">en un solo lugar</span>
             </h1>
-            <p className="mt-4 text-base leading-7 text-gray-300">
+            <p className="mt-4 text-base leading-7 text-gray-300 animate-fade-in-up">
               Explora, pide o comparte comida cuando más la necesitas. Conecta con quienes tienen hambre, haz visible tu oferta y disfruta lo mejor del campus.
             </p>
-            <div className="mt-8">
+            <div className="mt-8 animate-fade-in">
               <Input
                 prefixIcon={<Search className="h-5 w-5" />}
                 placeholder="Buscar productos..."
@@ -136,13 +136,18 @@ export default function Home() {
             {limitedProducts.length > 0 ? (
               <>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {limitedProducts.map((product) => (
-                    <ProductCard
+                  {limitedProducts.map((product, index) => (
+                    <div
                       key={product.id}
-                      product={product}
-                      showActions={true}
-                      hideOwnerActions={true}
-                    />
+                      className="animate-fade-in-up"
+                      style={{ animationDelay: `${index * 0.1}s`, animationFillMode: 'backwards' }}
+                    >
+                      <ProductCard
+                        product={product}
+                        showActions={true}
+                        hideOwnerActions={true}
+                      />
+                    </div>
                   ))}
                 </div>
 

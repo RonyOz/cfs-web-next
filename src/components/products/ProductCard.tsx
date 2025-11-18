@@ -31,14 +31,14 @@ export const ProductCard = ({
   const canBuy = !isOwner && !isAdmin && product.stock > 0;
 
   return (
-    <Card hover className="h-full flex flex-col">
+    <Card hover className="h-full flex flex-col group">
       {/* Product Image */}
       <div className="w-full h-48 bg-dark-700 rounded-lg mb-4 overflow-hidden">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">

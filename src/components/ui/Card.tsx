@@ -18,8 +18,8 @@ export const Card = ({ children, hover = false, className, ...props }: CardProps
   return (
     <div
       className={cn(
-        'bg-dark-800 rounded-lg border border-dark-700 shadow-sm p-6',
-        hover && 'hover:border-primary-400/50 hover:shadow-lg transition-all duration-200',
+        'bg-dark-800 rounded-lg border border-dark-700 shadow-sm p-6 transition-all duration-300 animate-fade-in-up',
+        hover && 'hover:border-primary-400/50 hover:shadow-lg hover:shadow-primary-400/5 hover:-translate-y-1 cursor-pointer',
         className
       )}
       {...props}

@@ -56,19 +56,20 @@ export const OrderCard = ({ order, onCancel, showActions = true }: OrderCardProp
   const StatusIcon = statusConfig.icon;
 
   return (
-    <Card hover>
+    <Card className="hover:shadow-lg transition-all duration-300 hover:border-primary-400/30 group">
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-4">
         <div className="flex-1">
-          <Link href={ROUTES.ORDER_DETAIL(order.id)}>
-            <h3 className="text-lg font-semibold text-gray-100 hover:text-primary-400 transition-colors">
-              Orden #{order.id.slice(0, 8)}
-            </h3>
+          <Link
+            href={ROUTES.ORDER_DETAIL(order.id)}
+            className="text-lg font-semibold text-gray-100 hover:text-primary-400 transition-colors duration-300 group-hover:translate-x-1 inline-block"
+          >
+            Orden #{order.id.slice(0, 8)}
           </Link>
           <p className="text-sm text-gray-500 mt-1">
             {formatDateTime(order.createdAt)}
           </p>
         </div>
-        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.border} border w-fit`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${statusConfig.bg} ${statusConfig.border} border w-fit transition-all duration-300`}>
           <StatusIcon className="h-3.5 w-3.5" />
           <span className={statusConfig.color}>{statusConfig.label}</span>
         </span>

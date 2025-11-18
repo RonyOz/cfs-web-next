@@ -27,12 +27,12 @@ export const ConfirmDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-in fade-in duration-200">
-      <Card className="w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 animate-fade-in backdrop-blur-sm">
+      <Card className="w-full max-w-md animate-scale-in">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             {variant === 'danger' || variant === 'warning' ? (
-              <div className={`p-2 rounded-lg ${
+              <div className={`p-2 rounded-lg transition-all duration-300 ${
                 variant === 'danger' 
                   ? 'bg-danger-500/20 text-danger-500' 
                   : 'bg-yellow-500/20 text-yellow-500'
@@ -44,7 +44,7 @@ export const ConfirmDialog = ({
           </div>
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-100 transition-colors"
+            className="text-gray-400 hover:text-gray-100 transition-all duration-300 hover:rotate-90"
           >
             <X className="h-5 w-5" />
           </button>
