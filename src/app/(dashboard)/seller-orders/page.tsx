@@ -14,7 +14,7 @@ import { formatPrice, getStatusText } from '@/lib/utils';
 export default function SellerOrdersPage() {
   const router = useRouter();
   const { user, isAuthenticated, _hasHydrated } = useAuth();
-  const { orders, paginationMeta, loading, fetchMySales, updateOrderStatus, cancelOrder } = useOrders();
+  const { sellerOrders, paginationMeta, loading, fetchMySales, updateOrderStatus, cancelOrder } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,9 +29,6 @@ export default function SellerOrdersPage() {
     }
     fetchMySales(currentPage, itemsPerPage); // Obtiene solo las órdenes donde soy vendedor (filtrado por backend)
   }, [isAuthenticated, _hasHydrated]);
-
-  // El backend ya filtra, usamos orders directamente
-  const sellerOrders = orders;
 
   const handleViewDetails = (order: Order) => {
     setSelectedOrder(order);

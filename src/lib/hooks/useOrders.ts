@@ -4,6 +4,7 @@ import { useOrderStore } from '@/store/orderStore';
 
 export const useOrders = () => {
   const orders = useOrderStore((state) => state.orders);
+  const sellerOrders = useOrderStore((state) => state.sellerOrders);
   const paginationMeta = useOrderStore((state) => state.paginationMeta);
   const cart = useOrderStore((state) => state.cart);
   const loading = useOrderStore((state) => state.loading);
@@ -24,6 +25,7 @@ export const useOrders = () => {
 
   return {
     orders,
+    sellerOrders,
     paginationMeta,
     cart,
     loading,

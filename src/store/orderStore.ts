@@ -33,6 +33,7 @@ interface PaginationMeta {
 
 interface OrderState {
   orders: Order[];
+  sellerOrders: Order[];
   paginationMeta: PaginationMeta | null;
   cart: CartItem[];
   loading: boolean;
@@ -66,6 +67,7 @@ export const useOrderStore = create<OrderState>()(
     (set, get) => ({
       // Initial state
       orders: [],
+      sellerOrders: [],
       paginationMeta: null,
       cart: [],
       loading: false,
@@ -178,7 +180,7 @@ export const useOrderStore = create<OrderState>()(
         set({ loading: true, error: null });
         try {
           const response = await getMySales({ page, limit });
-          set({ orders: response.data, paginationMeta: response.meta, loading: false });
+          set({ sellerOrders: response.data, paginationMeta: response.meta, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar mis ventas', loading: false });
           throw error;

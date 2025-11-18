@@ -1,15 +1,30 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { User, Menu, X } from 'lucide-react';
-import { useAuth } from '@/lib/hooks';
-import { ROUTES } from '@/config/constants';
+import { useState, useEffect } from 'react';
+import { User, Menu, X, Bell } from 'lucide-react';
+import { useAuth, useOrders } from '@/lib/hooks';
+import { ROUTES, ORDER_STATUS } from '@/config/constants';
 import { Button } from '@/components/ui';
 
 export const Header = () => {
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const { sellerOrders, fetchMySales } = useOrders();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [pendingOrdersCount, setPendingOrdersCount] = useState(0);
+
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin) {
+      fetchMySales();
+    }
+  }, [isAuthenticated, isAdmin]);
+
+  useEffect(() => {
+    if (sellerOrders) {
+      const pending = sellerOrders.filter((order) => order.status === ORDER_STATUS.PENDING).length;
+      setPendingOrdersCount(pending);
+    }
+  }, [sellerOrders]);
 
   const handleLogout = () => {
     logout();
@@ -53,9 +68,14 @@ export const Header = () => {
               </Link>
               <Link
                 href={ROUTES.SELLER_ORDERS}
-                className="text-gray-300 hover:text-primary-400 transition-colors"
+                className="text-gray-300 hover:text-primary-400 transition-colors relative"
               >
                 Ventas
+                {pendingOrdersCount > 0 && (
+                  <span className="absolute -top-2 -right-4 flex h-5 w-5 items-center justify-center rounded-full bg-primary-400 text-xs font-bold text-white">
+                    {pendingOrdersCount}
+                  </span>
+                )}
               </Link>
 
               {/* Show admin links only for admin users */}
@@ -134,10 +154,15 @@ export const Header = () => {
                 </Link>
                 <Link
                   href={ROUTES.SELLER_ORDERS}
-                  className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1"
+                  className="text-gray-300 hover:text-primary-400 transition-colors px-2 py-1 relative flex items-center gap-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Ventas
+                  {pendingOrdersCount > 0 && (
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-400 text-xs font-bold text-white">
+                      {pendingOrdersCount}
+                    </span>
+                  )}
                 </Link>
 
                 {isAdmin && (
