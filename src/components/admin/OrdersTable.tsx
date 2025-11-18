@@ -11,7 +11,7 @@ import { es } from 'date-fns/locale';
 interface OrdersTableProps {
   orders: Order[];
   onViewDetails: (order: Order) => void;
-  onUpdateStatus: (orderId: string, status: string) => void;
+  onUpdateStatus: (orderId: string, status: OrderStatus) => void;
   onCancelOrder: (orderId: string) => void;
   isLoading?: boolean;
 }
@@ -58,10 +58,10 @@ export const OrdersTable = ({
     isOpen: boolean;
     type: 'status' | 'cancel' | null;
     orderId: string | null;
-    newStatus?: string;
+    newStatus?: OrderStatus;
   }>({ isOpen: false, type: null, orderId: null });
 
-  const handleStatusChange = (orderId: string, newStatus: string) => {
+  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
     setConfirmDialog({
       isOpen: true,
       type: 'status',
@@ -243,7 +243,7 @@ export const OrdersTable = ({
         }
         message={
           confirmDialog.type === 'status'
-            ? `¿Cambiar estado de la orden a "${confirmDialog.newStatus ? getStatusText(confirmDialog.newStatus as OrderStatus) : ''}"?`
+            ? `¿Cambiar estado de la orden a "${confirmDialog.newStatus ? getStatusText(confirmDialog.newStatus) : ''}"?`
             : '¿Cancelar esta orden? Se restaurará el stock.'
         }
         confirmText={confirmDialog.type === 'status' ? 'Cambiar' : 'Cancelar Orden'}

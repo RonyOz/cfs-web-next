@@ -5,11 +5,11 @@
  * TODO: Implementar gestión de usuarios (admin only)
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { User, CreateUserInput, UpdateUserInput } from '@/types';
 import { UserTable, UserModal } from '@/components/admin';
-import { Button } from '@/components/ui';
+import { Button, Pagination } from '@/components/ui';
 import { Plus, Users } from 'lucide-react';
 import { getAllUsers, createUser, updateUser, deleteUser, getSellerProfile } from '@/lib/api/users';
 import { useAuth } from '@/lib/hooks';
@@ -23,6 +23,8 @@ export default function AdminUsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -87,7 +89,26 @@ export default function AdminUsersPage() {
   };
 
   const handleViewProfile = (userId: string) => {
-    router.push(`${ROUTES.ADMIN_USERS}/${userId}`);
+    router.push(`/admin/users/${userId}`);
+  };
+
+  // Paginación
+  const paginatedUsers = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return users.slice(startIndex, endIndex);
+  }, [users, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset a primera página
   };
 
   const handleSubmitUser = async (data: CreateUserInput | UpdateUserInput, userId?: string) => {
@@ -164,12 +185,24 @@ export default function AdminUsersPage() {
 
       {/* Users Table */}
       <UserTable
-        users={users}
+        users={paginatedUsers}
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
         isLoading={isLoading}
         onViewProfile={handleViewProfile}
       />
+
+      {/* Pagination */}
+      {!isLoading && users.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalItems={users.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
+      )}
 
       {/* User Modal */}
       <UserModal

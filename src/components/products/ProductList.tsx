@@ -22,7 +22,6 @@ import { DEFAULT_PAGE_SIZE } from '@/config/constants';
 
 interface ProductListProps {
   products: Product[];
-  onAddToCart?: (product: Product) => void;
   onEdit?: (product: Product) => void;
   onDelete?: (productId: string) => void;
   showActions?: boolean;
@@ -30,7 +29,6 @@ interface ProductListProps {
 
 export const ProductList = ({
   products,
-  onAddToCart,
   onEdit,
   onDelete,
   showActions = true,
@@ -77,7 +75,6 @@ export const ProductList = ({
           <ProductCard
             key={product.id}
             product={product}
-            onAddToCart={onAddToCart}
             onDelete={onDelete}
             showActions={showActions}
           />

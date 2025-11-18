@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Order, OrderStatus } from '@/types';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, Pagination } from '@/components/ui';
 import { ShoppingBag, X } from 'lucide-react';
 import { useAuth, useOrders } from '@/lib/hooks';
 import toast from 'react-hot-toast';
@@ -14,9 +14,11 @@ import { formatPrice } from '@/lib/utils';
 export default function AdminOrdersPage() {
   const router = useRouter();
   const { isAdmin, isAuthenticated } = useAuth();
-  const { orders, loading, fetchOrders, updateOrderStatus, cancelOrder } = useOrders();
+  const { orders, paginationMeta, loading, fetchOrders, updateOrderStatus, cancelOrder } = useOrders();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -28,7 +30,7 @@ export default function AdminOrdersPage() {
       toast.error('No tienes permisos de administrador');
       return;
     }
-    fetchOrders(); // Admin obtiene todas las órdenes
+    fetchOrders(currentPage, itemsPerPage); // Admin obtiene todas las órdenes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, isAdmin]);
   
@@ -54,11 +56,11 @@ export default function AdminOrdersPage() {
     setIsModalOpen(true);
   };
 
-  const handleUpdateStatus = async (orderId: string, status: string) => {
+  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
     try {
-      await updateOrderStatus(orderId, status as OrderStatus);
-      toast.success(`Estado actualizado a "${status}"`);
-      await fetchOrders();
+      await updateOrderStatus(orderId, newStatus);
+      toast.success('Estado actualizado exitosamente');
+      await fetchOrders(currentPage, itemsPerPage);
     } catch (error: any) {
       toast.error(error?.message || 'Error al actualizar estado');
     }
@@ -68,7 +70,7 @@ export default function AdminOrdersPage() {
     try {
       await cancelOrder(orderId);
       toast.success('Orden cancelada y stock restaurado');
-      await fetchOrders();
+      await fetchOrders(currentPage, itemsPerPage);
     } catch (error: any) {
       toast.error(error?.message || 'Error al cancelar orden');
     }
@@ -77,6 +79,26 @@ export default function AdminOrdersPage() {
   const pendingOrders = orders.filter((o) => o.status === OrderStatus.PENDING);
   const acceptedOrders = orders.filter((o) => o.status === OrderStatus.ACCEPTED);
   const deliveredOrders = orders.filter((o) => o.status === OrderStatus.DELIVERED);
+
+  // Paginación del backend
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchOrders(page, itemsPerPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+    fetchOrders(1, newItemsPerPage);
+  };
+
+  // Refetch cuando cambia página o items por página
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      fetchOrders(currentPage, itemsPerPage);
+    }
+  }, [currentPage, itemsPerPage]);
   
   // Calcular ingresos totales con manejo de valores nulos
   // El backend devuelve total como string, necesitamos convertirlo a número
@@ -136,6 +158,18 @@ export default function AdminOrdersPage() {
         onCancelOrder={handleCancelOrder}
         isLoading={loading}
       />
+
+      {/* Pagination */}
+      {!loading && paginationMeta && paginationMeta.total > 0 && (
+        <Pagination
+          currentPage={paginationMeta.page}
+          totalPages={paginationMeta.totalPages}
+          totalItems={paginationMeta.total}
+          itemsPerPage={paginationMeta.limit}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
+        />
+      )}
 
       {/* Order Details Modal */}
       {isModalOpen && selectedOrder && (

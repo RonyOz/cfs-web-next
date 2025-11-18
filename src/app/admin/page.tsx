@@ -55,12 +55,12 @@ export default function AdminDashboardPage() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [users, products, orders] = await Promise.all([
+      const [users, products, ordersResponse] = await Promise.all([
         getAllUsers(),
         getProducts(),
-        getOrders(),
+        getOrders({ limit: 100 }), // Obtener más órdenes para estadísticas
       ]);
-      setStats({ users, products, orders });
+      setStats({ users, products, orders: ordersResponse.data });
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Error al cargar estadísticas');

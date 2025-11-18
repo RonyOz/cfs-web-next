@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types';
-import { Button, Card, Input, ConfirmDialog } from '@/components/ui';
-import { Package, Search, Edit, Trash2 } from 'lucide-react';
+import { Button, Card, Input, ConfirmDialog, Pagination } from '@/components/ui';
+import { Package, Search, Edit, Trash2, Plus } from 'lucide-react';
 import { useAuth, useProducts } from '@/lib/hooks';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/config/constants';
@@ -21,6 +21,8 @@ export default function AdminProductsPage() {
     isOpen: boolean;
     productId: string | null;
   }>({ isOpen: false, productId: null });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -74,17 +76,51 @@ export default function AdminProductsPage() {
   const lowStockProducts = products.filter((p) => p.stock < 10);
   const outOfStockProducts = products.filter((p) => p.stock === 0);
 
+  // Paginación
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
+
+  // Reset page cuando cambia la búsqueda
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
-          <Package className="h-8 w-8 text-primary-400" />
-          Gestión de Productos
-        </h1>
-        <p className="text-gray-400 mt-2">
-          Administra todos los productos del sistema
-        </p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-100 flex items-center gap-3">
+            <Package className="h-8 w-8 text-primary-400" />
+            Gestión de Productos
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Administra todos los productos del sistema
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          onClick={() => router.push(ROUTES.PRODUCT_NEW)}
+          className="gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Crear Producto
+        </Button>
       </div>
 
       {/* Stats */}
@@ -152,7 +188,7 @@ export default function AdminProductsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-dark-700">
-                {filteredProducts.map((product) => (
+                {paginatedProducts.map((product) => (
                   <tr key={product.id} className="hover:bg-dark-700/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="h-12 w-12 bg-dark-700 rounded overflow-hidden">
@@ -216,6 +252,18 @@ export default function AdminProductsPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {filteredProducts.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredProducts.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={handlePageChange}
+              onItemsPerPageChange={handleItemsPerPageChange}
+            />
+          )}
         </Card>
       )}
 

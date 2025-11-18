@@ -22,8 +22,18 @@ interface CartItem {
   stock: number;
 }
 
+interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
 interface OrderState {
   orders: Order[];
+  paginationMeta: PaginationMeta | null;
   cart: CartItem[];
   loading: boolean;
   error: string | null;
@@ -41,9 +51,9 @@ interface OrderState {
   setError: (error: string | null) => void;
 
   // API Actions
-  fetchOrders: () => Promise<void>;
-  fetchMyOrders: () => Promise<void>;
-  fetchMySales: () => Promise<void>;
+  fetchOrders: (page?: number, limit?: number) => Promise<void>;
+  fetchMyOrders: (page?: number, limit?: number) => Promise<void>;
+  fetchMySales: (page?: number, limit?: number) => Promise<void>;
   fetchOrderById: (id: string) => Promise<Order>;
   createOrder: (data: CreateOrderData) => Promise<void>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<void>;
@@ -56,6 +66,7 @@ export const useOrderStore = create<OrderState>()(
     (set, get) => ({
       // Initial state
       orders: [],
+      paginationMeta: null,
       cart: [],
       loading: false,
       error: null,
@@ -141,33 +152,33 @@ export const useOrderStore = create<OrderState>()(
       setError: (error) => set({ error }),
 
       // API Actions
-      fetchOrders: async () => {
+      fetchOrders: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
         try {
-          const orders = await getOrders();
-          set({ orders, loading: false });
+          const response = await getOrders({ page, limit });
+          set({ orders: response.data, paginationMeta: response.meta, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar órdenes', loading: false });
           throw error;
         }
       },
 
-      fetchMyOrders: async () => {
+      fetchMyOrders: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
         try {
-          const orders = await getMyOrders();
-          set({ orders, loading: false });
+          const response = await getMyOrders({ page, limit });
+          set({ orders: response.data, paginationMeta: response.meta, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar mis órdenes', loading: false });
           throw error;
         }
       },
 
-      fetchMySales: async () => {
+      fetchMySales: async (page = 1, limit = 10) => {
         set({ loading: true, error: null });
         try {
-          const orders = await getMySales();
-          set({ orders, loading: false });
+          const response = await getMySales({ page, limit });
+          set({ orders: response.data, paginationMeta: response.meta, loading: false });
         } catch (error) {
           set({ error: 'Error al cargar mis ventas', loading: false });
           throw error;

@@ -1,5 +1,5 @@
 'use client';
-import { Header } from "@/components/layout";
+import { Header, Footer } from "@/components/layout";
 import Link from "next/link";
 import { ROUTES } from "@/config/constants";
 import { useAuth, useProducts } from "@/lib/hooks";
@@ -191,6 +191,9 @@ export default function Home() {
           </>
         )}
       </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
