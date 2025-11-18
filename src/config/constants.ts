@@ -39,6 +39,7 @@ export const ROUTES = {
   ADMIN_USERS: '/admin/users',
   ADMIN_PRODUCTS: '/admin/products',
   ADMIN_ORDERS: '/admin/orders',
+  ADMIN_DASHBOARD: '/admin',
 } as const;
 
 // Error Messages

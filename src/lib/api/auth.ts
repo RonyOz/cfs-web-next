@@ -16,12 +16,22 @@ import {
 } from '@/types';
 import { TOKEN_KEY } from '@/config/constants';
 
+const ensureGraphQLPayload = (operation: string, payload: any) => {
+  if (!payload) {
+    throw new Error(
+      `La operaci��n ${operation} no recibi�� respuesta del backend. Verifica que el servicio GraphQL est�� disponible.`
+    );
+  }
+  return payload;
+};
+
 export const signup = async (data: SignupRequest): Promise<any> => {
   const { data: result } = await apolloClient.mutate({
     mutation: SIGNUP_MUTATION,
     variables: { input: data },
   });
-  return (result as any).signup;
+
+  return ensureGraphQLPayload('signup', (result as any)?.signup);
 };
 
 export const getProfile = async (): Promise<{ user: any }> => {
@@ -40,7 +50,8 @@ export const login = async (data: LoginRequest): Promise<any> => {
       },
     },
   });
-  return (result as any).login;
+
+  return ensureGraphQLPayload('login', (result as any)?.login);
 };
 
 export const logout = async (): Promise<MessageResponse> => {
@@ -58,7 +69,8 @@ export const enable2FA = async (): Promise<Enable2FAResponse> => {
   const { data } = await apolloClient.mutate({
     mutation: ENABLE_2FA_MUTATION,
   });
-  return (data as any).enable2FA;
+
+  return ensureGraphQLPayload('enable2FA', (data as any)?.enable2FA);
 };
 
 export const verify2FA = async (data: Verify2FARequest): Promise<MessageResponse> => {
@@ -66,7 +78,8 @@ export const verify2FA = async (data: Verify2FARequest): Promise<MessageResponse
     mutation: VERIFY_2FA_MUTATION,
     variables: { input: data },
   });
-  return (result as any).verify2FA;
+
+  return ensureGraphQLPayload('verify2FA', (result as any)?.verify2FA);
 };
 
 export const disable2FA = async (data: Verify2FARequest): Promise<MessageResponse> => {
@@ -74,5 +87,6 @@ export const disable2FA = async (data: Verify2FARequest): Promise<MessageRespons
     mutation: DISABLE_2FA_MUTATION,
     variables: { input: data },
   });
-  return (result as any).disable2FA;
+
+  return ensureGraphQLPayload('disable2FA', (result as any)?.disable2FA);
 };

@@ -4,8 +4,16 @@ import { setContext } from '@apollo/client/link/context';
 import { TOKEN_KEY } from '@/config/constants';
 import { GraphQLError } from 'graphql';
 
-// GraphQL endpoint - replace with your backend URL
-const GRAPHQL_URL = process.env.NEXT_PUBLIC_GRAPHQL_URL;
+// Default GraphQL endpoint (Render deployment)
+const FALLBACK_GRAPHQL_URL = 'https://cfs-api.onrender.com/graphql';
+
+// GraphQL endpoint - prefer explicit env, then derive from REST API URL, finally fallback remote
+const GRAPHQL_URL =
+  process.env.NEXT_PUBLIC_GRAPHQL_URL ||
+  (process.env.NEXT_PUBLIC_API_URL
+    ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/v1\/?$/, '/graphql')
+    : undefined) ||
+  FALLBACK_GRAPHQL_URL;
 
 // HTTP Link
 const httpLink = new HttpLink({

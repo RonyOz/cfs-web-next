@@ -86,6 +86,10 @@ export default function AdminUsersPage() {
     setIsModalOpen(true);
   };
 
+  const handleViewProfile = (userId: string) => {
+    router.push(`${ROUTES.ADMIN_USERS}/${userId}`);
+  };
+
   const handleSubmitUser = async (data: CreateUserInput | UpdateUserInput, userId?: string) => {
     try {
       if (userId) {
@@ -164,6 +168,7 @@ export default function AdminUsersPage() {
         onEdit={handleEditUser}
         onDelete={handleDeleteUser}
         isLoading={isLoading}
+        onViewProfile={handleViewProfile}
       />
 
       {/* User Modal */}
