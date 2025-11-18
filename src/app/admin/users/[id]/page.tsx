@@ -17,7 +17,7 @@ import { Button, Card } from '@/components/ui';
 import { User, Product, UpdateUserInput, Order, OrderStatus } from '@/types';
 import { getUserById, updateUser } from '@/lib/api/users';
 import { ROUTES } from '@/config/constants';
-import { cn, formatDateTime, formatPrice } from '@/lib/utils';
+import { cn, formatDateTime, formatPrice, getStatusText } from '@/lib/utils';
 import { UserModal } from '@/components/admin';
 import toast from 'react-hot-toast';
 import { getOrders } from '@/lib/api/orders';
@@ -416,7 +416,7 @@ export default function AdminUserProfilePage() {
                         statusColorMap[order.status]
                       )}
                     >
-                      {order.status}
+                      {getStatusText(order.status)}
                     </span>
                     <p className="text-lg font-bold text-primary-400">
                       {formatPrice(order.total)}

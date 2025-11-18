@@ -31,3 +31,13 @@ export const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
   return `${text.substring(0, maxLength)}...`;
 };
+
+export const getStatusText = (status: string): string => {
+  const statusMap: Record<string, string> = {
+    'pending': 'Pendiente',
+    'accepted': 'Aceptado',
+    'delivered': 'Entregado',
+    'canceled': 'Cancelado',
+  };
+  return statusMap[status.toLowerCase()] || status;
+};

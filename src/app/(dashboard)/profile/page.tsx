@@ -10,6 +10,7 @@ import { getMyProducts } from '@/lib/api/products';
 import { getMyOrders } from '@/lib/api/orders';
 import type { Order, Product } from '@/types';
 import { ROUTES } from '@/config/constants';
+import { getStatusText } from '@/lib/utils';
 import { updateMyProfile } from '@/lib/api/users';
 import type { UpdateUserInput } from '@/types';
 import toast from 'react-hot-toast';
@@ -208,7 +209,7 @@ export default function ProfilePage() {
                     >
                       <p className="font-medium text-gray-100">Orden #{order.id.slice(0, 6)}...</p>
                       <p className="text-xs text-gray-500">
-                        {new Date(order.createdAt ?? '').toLocaleDateString()} · {order.status}
+                        {new Date(order.createdAt ?? '').toLocaleDateString()} · {getStatusText(order.status)}
                       </p>
                     </li>
                   ))}

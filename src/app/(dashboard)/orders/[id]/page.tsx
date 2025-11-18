@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Package, MapPin, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Package, MapPin as MapPinIcon, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { useAuth, useOrders } from '@/lib/hooks';
 import { Order, OrderStatus } from '@/types';
 import { ROUTES } from '@/config/constants';
-import { formatPrice, formatDateTime } from '@/lib/utils';
+import { formatPrice, formatDateTime, getStatusText } from '@/lib/utils';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
@@ -68,18 +68,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending': return <Clock className="h-6 w-6 text-warning-500" />;
-      case 'completed': return <CheckCircle className="h-6 w-6 text-success-500" />;
-      case 'cancelled': return <XCircle className="h-6 w-6 text-danger-500" />;
+      case 'accepted': return <Package className="h-6 w-6 text-primary-500" />;
+      case 'delivered': return <CheckCircle className="h-6 w-6 text-success-500" />;
+      case 'canceled': return <XCircle className="h-6 w-6 text-danger-500" />;
       default: return <Package className="h-6 w-6 text-gray-500" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'pending': return 'Pendiente';
-      case 'completed': return 'Completada';
-      case 'cancelled': return 'Cancelada';
-      default: return status;
     }
   };
 
@@ -169,6 +161,15 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             <p className="text-gray-400 text-center py-4">No hay productos en esta orden</p>
           )}
         </div>
+      </Card>
+
+      {/* Meeting Place */}
+      <Card className="mb-6">
+        <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-2">
+          <MapPinIcon className="h-5 w-5 text-primary-400" />
+          Lugar de Encuentro
+        </h2>
+        <p className="text-gray-300">{order.meetingPlace}</p>
       </Card>
 
       {/* Summary */}

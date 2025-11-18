@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ShoppingCart, User, Package } from 'lucide-react';
-import { Button, Card } from '@/components/ui';
+import { ArrowLeft, ShoppingCart, User, Package, MapPin, X } from 'lucide-react';
+import { Button, Card, Input } from '@/components/ui';
 import { useAuth, useProducts, useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
 import { formatPrice, formatDateTime } from '@/lib/utils';
@@ -19,6 +19,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [productId, setProductId] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
   const [purchasing, setPurchasing] = useState(false);
+  const [showMeetingPlaceModal, setShowMeetingPlaceModal] = useState(false);
+  const [meetingPlace, setMeetingPlace] = useState('');
+  const [meetingPlaceError, setMeetingPlaceError] = useState('');
 
   useEffect(() => {
     params.then(p => setProductId(p.id));
@@ -46,7 +49,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
-  const handleBuyNow = async () => {
+  const handleBuyNowClick = () => {
     if (!selectedProduct || purchasing) return;
     
     if (quantity <= 0 || quantity > selectedProduct.stock) {
@@ -57,20 +60,39 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       return;
     }
     
+    setShowMeetingPlaceModal(true);
+  };
+
+  const handleBuyNow = async () => {
+    setMeetingPlaceError('');
+    
+    // Validar meetingPlace
+    if (!meetingPlace.trim()) {
+      setMeetingPlaceError('El lugar de encuentro es obligatorio');
+      return;
+    }
+    if (meetingPlace.length > 255) {
+      setMeetingPlaceError('El lugar de encuentro no puede exceder 255 caracteres');
+      return;
+    }
+    
     try {
       setPurchasing(true);
       await createOrder({
         items: [
           {
-            productId: selectedProduct.id,
+            productId: selectedProduct!.id,
             quantity: quantity,
           },
         ],
+        meetingPlace: meetingPlace.trim(),
       });
       toast.success('Orden creada exitosamente', {
         duration: 3000,
         position: 'top-center',
       });
+      setShowMeetingPlaceModal(false);
+      setMeetingPlace('');
       router.push(ROUTES.ORDERS);
     } catch (err: any) {
       toast.error(err.message || 'Error al crear la orden', {
@@ -206,11 +228,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                 variant="primary"
                 size="lg"
                 className="w-full gap-2"
-                onClick={handleBuyNow}
+                onClick={handleBuyNowClick}
                 disabled={purchasing}
               >
                 <ShoppingCart className="h-5 w-5" />
-                {purchasing ? 'Procesando...' : 'Comprar Ahora'}
+                Comprar Ahora
               </Button>
             </>
           )}
@@ -237,6 +259,69 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </div>
       </Card>
+
+      {/* Meeting Place Modal */}
+      {showMeetingPlaceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <Card className="w-full max-w-md">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-100 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary-400" />
+                Lugar de Encuentro
+              </h2>
+              <button
+                onClick={() => {
+                  setShowMeetingPlaceModal(false);
+                  setMeetingPlace('');
+                  setMeetingPlaceError('');
+                }}
+                className="text-gray-400 hover:text-gray-100 transition-colors"
+                disabled={purchasing}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-400 mb-4">
+              Indica el lugar donde deseas recibir tu pedido
+            </p>
+
+            <Input
+              label="Lugar de Encuentro"
+              placeholder="Ej: Edificio 320, Salón 201"
+              value={meetingPlace}
+              onChange={(e) => setMeetingPlace(e.target.value)}
+              error={meetingPlaceError}
+              disabled={purchasing}
+              maxLength={255}
+              prefixIcon={<MapPin className="h-4 w-4" />}
+            />
+
+            <div className="mt-6 flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowMeetingPlaceModal(false);
+                  setMeetingPlace('');
+                  setMeetingPlaceError('');
+                }}
+                disabled={purchasing}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleBuyNow}
+                disabled={purchasing}
+                className="flex-1"
+              >
+                {purchasing ? 'Procesando...' : 'Confirmar Compra'}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

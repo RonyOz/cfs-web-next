@@ -2,17 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button, Card } from '@/components/ui';
+import { Button, Card, Input } from '@/components/ui';
 import { formatPrice } from '@/lib/utils';
 import { useOrders } from '@/lib/hooks';
 import { ROUTES } from '@/config/constants';
-import { Trash2, ShoppingCart, AlertCircle } from 'lucide-react';
+import { Trash2, ShoppingCart, AlertCircle, MapPin, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export const Cart = () => {
   const router = useRouter();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showMeetingPlaceModal, setShowMeetingPlaceModal] = useState(false);
+  const [meetingPlace, setMeetingPlace] = useState('');
+  const [meetingPlaceError, setMeetingPlaceError] = useState('');
 
   const {
     cart,
@@ -25,20 +28,35 @@ export const Cart = () => {
 
   const cartTotal = getCartTotal();
 
+  const handleCheckoutClick = () => {
+    // Validar que el carrito no esté vacío
+    if (cart.length === 0) {
+      toast.error('El carrito está vacío', {
+        icon: '🛒',
+        position: 'top-center',
+      });
+      return;
+    }
+    setShowMeetingPlaceModal(true);
+  };
+
   const handleCheckout = async () => {
+    setMeetingPlaceError('');
+    
+    // Validar meetingPlace
+    if (!meetingPlace.trim()) {
+      setMeetingPlaceError('El lugar de encuentro es obligatorio');
+      return;
+    }
+    if (meetingPlace.length > 255) {
+      setMeetingPlaceError('El lugar de encuentro no puede exceder 255 caracteres');
+      return;
+    }
+
     setIsCheckingOut(true);
     setError(null);
 
     try {
-      // Validar que el carrito no esté vacío
-      if (cart.length === 0) {
-        toast.error('El carrito está vacío', {
-          icon: '🛒',
-          position: 'top-center',
-        });
-        return;
-      }
-
       // Show loading toast
       const loadingToast = toast.loading('Procesando tu orden...', {
         position: 'top-center',
@@ -50,6 +68,7 @@ export const Cart = () => {
           productId: item.productId,
           quantity: item.quantity,
         })),
+        meetingPlace: meetingPlace.trim(),
       };
 
       await createOrder(orderData);
@@ -64,6 +83,9 @@ export const Cart = () => {
         position: 'top-center',
       });
 
+      setShowMeetingPlaceModal(false);
+      setMeetingPlace('');
+      
       setTimeout(() => {
         router.push(ROUTES.ORDERS);
       }, 1000);
@@ -310,13 +332,76 @@ export const Cart = () => {
             variant="primary"
             size="lg"
             className="flex-1"
-            onClick={handleCheckout}
+            onClick={handleCheckoutClick}
             disabled={isCheckingOut}
           >
-            {isCheckingOut ? 'Procesando...' : 'Finalizar Compra'}
+            Finalizar Compra
           </Button>
         </div>
       </div>
+
+      {/* Meeting Place Modal */}
+      {showMeetingPlaceModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
+          <Card className="w-full max-w-md">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-100 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary-400" />
+                Lugar de Encuentro
+              </h2>
+              <button
+                onClick={() => {
+                  setShowMeetingPlaceModal(false);
+                  setMeetingPlace('');
+                  setMeetingPlaceError('');
+                }}
+                className="text-gray-400 hover:text-gray-100 transition-colors"
+                disabled={isCheckingOut}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-400 mb-4">
+              Indica el lugar donde deseas recibir tu pedido
+            </p>
+
+            <Input
+              label="Lugar de Encuentro"
+              placeholder="Ej: Edificio 320, Salón 201"
+              value={meetingPlace}
+              onChange={(e) => setMeetingPlace(e.target.value)}
+              error={meetingPlaceError}
+              disabled={isCheckingOut}
+              maxLength={255}
+              prefixIcon={<MapPin className="h-4 w-4" />}
+            />
+
+            <div className="mt-6 flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowMeetingPlaceModal(false);
+                  setMeetingPlace('');
+                  setMeetingPlaceError('');
+                }}
+                disabled={isCheckingOut}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="flex-1"
+              >
+                {isCheckingOut ? 'Procesando...' : 'Confirmar Compra'}
+              </Button>
+            </div>
+          </Card>
+        </div>
+      )}
     </Card>
   );
 };

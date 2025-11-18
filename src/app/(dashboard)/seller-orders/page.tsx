@@ -9,7 +9,7 @@ import { useAuth, useOrders } from '@/lib/hooks';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/config/constants';
 import { OrdersTable } from '@/components/admin';
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, getStatusText } from '@/lib/utils';
 
 export default function SellerOrdersPage() {
   const router = useRouter();
@@ -183,11 +183,15 @@ export default function SellerOrdersPage() {
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Estado</p>
-                  <p className="text-sm font-semibold text-gray-100">{selectedOrder.status}</p>
+                  <p className="text-sm font-semibold text-gray-100">{getStatusText(selectedOrder.status)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Comprador</p>
                   <p className="text-sm text-gray-100">{selectedOrder.buyer.username}</p>
+                </div>
+                <div className="col-span-2">
+                  <p className="text-sm text-gray-400">Lugar de Encuentro</p>
+                  <p className="text-sm text-gray-100">{selectedOrder.meetingPlace}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Email</p>

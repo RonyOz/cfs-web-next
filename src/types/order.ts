@@ -20,6 +20,7 @@ export interface Order {
   id: string;
   total: number;
   status: OrderStatus;
+  meetingPlace: string;
   createdAt: string;
   updatedAt?: string;
   buyer: {
@@ -36,6 +37,7 @@ export interface CreateOrderItem {
 
 export interface CreateOrderData {
   items: CreateOrderItem[];
+  meetingPlace: string;
 }
 
 export interface UpdateOrderData {

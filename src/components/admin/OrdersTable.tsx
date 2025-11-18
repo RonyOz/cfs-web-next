@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Order, OrderStatus } from '@/types';
 import { Button, Card, ConfirmDialog } from '@/components/ui';
 import { Eye, XCircle, Package } from 'lucide-react';
-import { cn, formatPrice } from '@/lib/utils';
+import { cn, formatPrice, getStatusText } from '@/lib/utils';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -31,20 +31,6 @@ const getStatusColor = (status: OrderStatus) => {
   }
 };
 
-const getStatusText = (status: OrderStatus) => {
-  switch (status) {
-    case OrderStatus.PENDING:
-      return 'Pendiente';
-    case OrderStatus.ACCEPTED:
-      return 'Aceptado';
-    case OrderStatus.DELIVERED:
-      return 'Entregado';
-    case OrderStatus.CANCELED:
-      return 'Cancelado';
-    default:
-      return status;
-  }
-};
 
 export const OrdersTable = ({
   orders,
