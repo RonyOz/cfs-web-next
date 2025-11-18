@@ -91,6 +91,7 @@ export const CREATE_USER_MUTATION = gql`
       id
       email
       username
+      phoneNumber
       role
       twoFactorEnabled
     }
@@ -103,6 +104,7 @@ export const UPDATE_USER_MUTATION = gql`
       id
       email
       username
+      phoneNumber
       role
       twoFactorEnabled
     }

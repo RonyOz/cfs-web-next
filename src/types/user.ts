@@ -8,6 +8,7 @@ export interface User {
   twoFactorEnabled?: boolean;
   productsCount?: number;
   products?: Array<{ id: string; name?: string; price?: number; stock?: number; imageUrl?: string }>;
+  phoneNumber?: string | null;
 }
 
 export interface CreateUserInput {
@@ -15,6 +16,7 @@ export interface CreateUserInput {
   username: string;
   password: string;
   role?: UserRole;
+  phoneNumber?: string;
 }
 
 export interface UpdateUserInput {
@@ -22,6 +24,7 @@ export interface UpdateUserInput {
   username?: string;
   password?: string;
   role?: UserRole;
+  phoneNumber?: string | null;
 }
 
 export interface UserWithoutPassword extends Omit<User, 'password'> {}

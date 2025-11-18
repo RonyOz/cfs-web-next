@@ -94,6 +94,7 @@ export const GET_ALL_USERS = gql`
       id
       username
       email
+      phoneNumber
       role
       twoFactorEnabled
       productsCount
@@ -110,6 +111,7 @@ export const GET_USER = gql`
       id
       username
       email
+      phoneNumber
       role
       twoFactorEnabled
       products {

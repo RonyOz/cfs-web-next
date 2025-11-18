@@ -195,6 +195,12 @@ export default function SellerOrdersPage() {
                     {'email' in selectedOrder.buyer ? selectedOrder.buyer.email : 'N/A'}
                   </p>
                 </div>
+                {'phoneNumber' in selectedOrder.buyer && selectedOrder.buyer.phoneNumber && (
+                  <div>
+                    <p className="text-sm text-gray-400">Teléfono</p>
+                    <p className="text-sm text-gray-100">{selectedOrder.buyer.phoneNumber}</p>
+                  </div>
+                )}
                 <div>
                   <p className="text-sm text-gray-400">Fecha</p>
                   <p className="text-sm text-gray-100">

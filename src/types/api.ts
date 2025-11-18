@@ -5,6 +5,7 @@ export interface SignupRequest {
   email: string;
   username: string;
   password: string;
+  phoneNumber: string;
 }
 
 export interface SignupResponse {

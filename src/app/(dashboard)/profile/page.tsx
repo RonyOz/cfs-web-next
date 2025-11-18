@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { User, Mail, Shield, X } from 'lucide-react';
+import { User, Mail, Shield, X, Phone } from 'lucide-react';
 import { Card, Button, Input } from '@/components/ui';
 import { useAuth } from '@/lib/hooks';
 import { getMyProducts } from '@/lib/api/products';
@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, isAdmin, _hasHydrated, setUser } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', phoneNumber: '' });
   const [isSaving, setIsSaving] = useState(false);
   const [stats, setStats] = useState({ products: 0, orders: 0, monthlyOrders: 0 });
   const [chartData, setChartData] = useState<{ label: string; value: number }[]>([]);
@@ -34,7 +34,12 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (user && isModalOpen) {
-      setFormData({ username: user.username, email: user.email, password: '' });
+      setFormData({
+        username: user.username,
+        email: user.email,
+        password: '',
+        phoneNumber: user.phoneNumber ?? '',
+      });
     }
   }, [user, isModalOpen]);
 
@@ -47,11 +52,11 @@ export default function ProfilePage() {
       setStatsLoading(true);
       setStatsError(null);
       try {
-        const [products, orders] = await Promise.all([getMyProducts(), getMyOrders()]);
+        const [products, ordersResponse] = await Promise.all([getMyProducts(), getMyOrders()]);
         if (cancelled) return;
 
         const productList = products ?? [];
-        const orderList = orders ?? [];
+        const orderList = (ordersResponse?.data ?? []) as Order[];
         const buckets = buildMonthlyBuckets(orderList);
         setChartData(buckets);
         setStats({
@@ -140,6 +145,10 @@ export default function ProfilePage() {
       payload.password = formData.password.trim();
     }
 
+    if (formData.phoneNumber.trim() !== (user.phoneNumber ?? '')) {
+      payload.phoneNumber = formData.phoneNumber.trim() || null;
+    }
+
     if (!Object.keys(payload).length) {
       toast.error('No hay cambios para guardar');
       return;
@@ -219,9 +228,18 @@ export default function ProfilePage() {
                 <div className="flex h-24 w-24 items-center justify-center rounded-full border border-dark-700 bg-dark-900">
                   <User className="h-12 w-12 text-primary-300" />
                 </div>
-                <div>
+                <div className="space-y-1">
                   <h2 className="text-3xl font-semibold text-white">{user.username}</h2>
-                  <p className="text-gray-400">{user.email}</p>
+                  <p className="flex items-center gap-2 text-gray-400">
+                    <Mail className="h-4 w-4 text-primary-300" />
+                    {user.email}
+                  </p>
+                  {user.phoneNumber && (
+                    <p className="flex items-center gap-2 text-gray-400">
+                      <Phone className="h-4 w-4 text-primary-300" />
+                      {user.phoneNumber}
+                    </p>
+                  )}
                   {isAdmin && (
                     <span className="mt-2 inline-flex items-center gap-2 rounded-full border border-primary-400/40 px-3 py-1 text-sm text-primary-300">
                       <Shield className="h-4 w-4" />
@@ -342,6 +360,15 @@ export default function ProfilePage() {
                 disabled
                 readOnly
                 helperText="Este correo es tu identificador y no puede modificarse."
+              />
+              <Input
+                label="Número de teléfono"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))
+                }
+                placeholder="+57 300 000 0000"
               />
               <Input
                 label="Contraseña (opcional)"

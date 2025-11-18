@@ -21,6 +21,7 @@ export const SignupForm = () => {
     .object({
       email: z.string().min(1, 'El email es requerido').email('Formato de email inválido'),
       username: z.string().min(3, 'El nombre de usuario debe tener al menos 3 caracteres'),
+      phoneNumber: z.string().min(7, 'Ingresa un número de teléfono válido'),
       password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
       confirmPassword: z.string().min(6, 'Confirma tu contraseña'),
     })
@@ -45,7 +46,8 @@ export const SignupForm = () => {
       const signupResp = await apiSignup({
         email: data.email,
         username: data.username,
-        password: data.password
+        password: data.password,
+        phoneNumber: data.phoneNumber,
       });
 
       // 2. El signup devuelve un token, guardarlo temporalmente
@@ -97,6 +99,13 @@ export const SignupForm = () => {
           placeholder="usuario123"
           {...register('username')}
           error={errors.username?.message}
+        />
+        <Input
+          label="Número de teléfono"
+          type="tel"
+          placeholder="+57 300 000 0000"
+          {...register('phoneNumber')}
+          error={errors.phoneNumber?.message}
         />
 
         <Input

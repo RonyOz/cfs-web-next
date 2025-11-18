@@ -65,7 +65,7 @@ export const useMyProfile = () => {
 
   const stats = {
     products: profile?.products?.length ?? profile?.productsCount ?? 0,
-    orders: profile?.orders?.length ?? 0,
+    orders: (profile as any)?.orders?.length ?? 0,
   };
 
   return {
