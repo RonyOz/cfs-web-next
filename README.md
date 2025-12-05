@@ -7,12 +7,12 @@
 ![React](https://img.shields.io/badge/React-19.2-61dafb?logo=react)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ed?logo=docker)
 
-> **Nota:**
-> Esta aplicación web fue desarrollada con **Next.js 16** y tiene como propósito facilitar la compra y venta de alimentos dentro de un campus universitario, con autenticación JWT, gestión de productos y pedidos, diseñada con Tailwind CSS y estado global con Zustand.
+> **Note:**
+> This web application was built with **Next.js 16** and aims to facilitate the buying and selling of food within a university campus, featuring JWT authentication, product and order management, designed with Tailwind CSS and global state management with Zustand.
 
 ---
 
-## Autores
+## Authors
 
 * David Artunduaga ([@David104087](https://github.com/David104087))
 * Jennifer Castro ([@JenniferCastrocd](https://github.com/JenniferCastrocd))
@@ -21,75 +21,75 @@
 
 ---
 
-## Despliegue
+## Deployment
 
-La aplicación se encuentra desplegada en el siguiente enlace:
+The application is deployed at the following link:
 
 > [https://cfs-web-next.onrender.com](https://cfs-web-next.onrender.com)
 
-**API Backend:**
+**Backend API:**
 > [https://cfs-api.onrender.com/api-docs](https://cfs-api.onrender.com/api-docs)
 
 ---
 
 ## Campus Food Sharing — Next.js
 
-Este repositorio incluye una aplicación web completa con **autenticación**, **gestión de productos**, **carrito de compras** y **órdenes**, construida con Next.js 16 App Router, TypeScript, Tailwind CSS v4 y Zustand para el estado global.
+This repository includes a complete web application with **authentication**, **product management**, **shopping cart**, and **orders**, built with Next.js 16 App Router, TypeScript, Tailwind CSS v4, and Zustand for global state.
 
-**Puntos principales:**
+**Key Points:**
 
-* Framework: Next.js 16 con App Router
-* Estilos: Tailwind CSS v4 con tema oscuro personalizado
-* Estado: Zustand con persistencia en localStorage
-* API Client: Axios con interceptores JWT
-* Puerto desarrollo: `3001`
-* Puerto producción: `3000`
+* Framework: Next.js 16 with App Router
+* Styling: Tailwind CSS v4 with custom dark theme
+* State: Zustand with localStorage persistence
+* API Client: Axios with JWT interceptors
+* Development port: `3001`
+* Production port: `3000`
 
-**Cómo ejecutar:**
+**How to run:**
 
-1. Instalar dependencias:
+1. Install dependencies:
 
    ```bash
    bun install
-   # o
+   # or
    npm install
    ```
 
-2. Configurar variables de entorno:
+2. Configure environment variables:
 
    ```bash
    cp .env.example .env.local
    ```
 
-3. Iniciar el servidor en modo desarrollo:
+3. Start the development server:
 
    ```bash
    bun run dev
-   # o
+   # or
    npm run dev
    ```
 
-4. Acceder a la aplicación:
+4. Access the application:
    [http://localhost:3001](http://localhost:3001)
 
 ---
 
-## Características Principales
+## Main Features
 
-1. **Autenticación JWT:** Login, registro y persistencia de sesión con tokens.
-2. **Gestión de Productos:** CRUD completo con validaciones y permisos por rol.
-3. **Carrito de Compras:** Añadir productos, modificar cantidades y validar stock.
-4. **Gestión de Órdenes:** Crear, visualizar y cancelar pedidos.
-5. **Protected Routes:** Redirección automática según estado de autenticación.
-6. **Responsive Design:** Optimizado para móvil, tablet y desktop.
-7. **Dark Theme:** Tema oscuro personalizado con colores primarios en verde menta.
-8. **Real-time Search:** Filtrado instantáneo de productos.
-9. **Loading States:** Indicadores visuales en todas las operaciones asíncronas.
-10. **Error Handling:** Manejo centralizado de errores con mensajes al usuario.
+1. **JWT Authentication:** Login, registration, and session persistence with tokens.
+2. **Product Management:** Complete CRUD with validations and role-based permissions.
+3. **Shopping Cart:** Add products, modify quantities, and validate stock.
+4. **Order Management:** Create, view, and cancel orders.
+5. **Protected Routes:** Automatic redirection based on authentication state.
+6. **Responsive Design:** Optimized for mobile, tablet, and desktop.
+7. **Dark Theme:** Custom dark theme with mint green primary colors.
+8. **Real-time Search:** Instant product filtering.
+9. **Loading States:** Visual indicators for all async operations.
+10. **Error Handling:** Centralized error handling with user messages.
 
 ---
 
-## Stack Tecnológico
+## Tech Stack
 
 * **Framework:** Next.js 16 (App Router)
 * **Language:** TypeScript
@@ -103,86 +103,86 @@ Este repositorio incluye una aplicación web completa con **autenticación**, **
 
 ---
 
-## Estructura del Proyecto
+## Project Structure
 
 ```
 src/
 ├── app/                    # App Router pages
-│   ├── (auth)/            # Rutas de autenticación
-│   ├── (dashboard)/       # Rutas del dashboard
-│   └── admin/             # Panel de administración
-├── components/            # Componentes reutilizables
-│   ├── auth/             # Componentes de autenticación
+│   ├── (auth)/            # Authentication routes
+│   ├── (dashboard)/       # Dashboard routes
+│   └── admin/             # Admin panel
+├── components/            # Reusable components
+│   ├── auth/             # Authentication components
 │   ├── layout/           # Header, Footer, Navbar
-│   ├── orders/           # Órdenes y carrito
-│   ├── products/         # Productos
-│   └── ui/               # Componentes UI base
-├── lib/                   # Utilidades y lógica
-│   ├── api/              # Cliente API y endpoints
+│   ├── orders/           # Orders and cart
+│   ├── products/         # Products
+│   └── ui/               # Base UI components
+├── lib/                   # Utilities and logic
+│   ├── api/              # API client and endpoints
 │   ├── hooks/            # Custom hooks
-│   └── utils/            # Funciones auxiliares
+│   └── utils/            # Helper functions
 ├── store/                 # Zustand stores
 └── types/                 # TypeScript types
 ```
 
 ---
 
-## Puesta en Marcha
+## Getting Started
 
-> **Tip:** Sigue estos pasos para configurar y ejecutar el proyecto localmente.
+> **Tip:** Follow these steps to set up and run the project locally.
 
-### 1. Prerrequisitos
+### 1. Prerequisites
 
-* [Node.js](https://nodejs.org/) v20 o superior
-* [Bun](https://bun.sh/) (recomendado) o npm
-* API Backend corriendo en `https://cfs-api.onrender.com` o localmente
+* [Node.js](https://nodejs.org/) v20 or higher
+* [Bun](https://bun.sh/) (recommended) or npm
+* Backend API running at `https://cfs-api.onrender.com` or locally
 
-### 2. Variables de Entorno
+### 2. Environment Variables
 
-Crea un archivo `.env.local` en la raíz del proyecto:
+Create a `.env.local` file in the project root:
 
 ```env
 NEXT_PUBLIC_API_URL=https://cfs-api.onrender.com/api/v1
 NEXT_PUBLIC_ENVIRONMENT=development
 ```
 
-### 3. Ejecución
+### 3. Running
 
 ```bash
 bun run dev
-# o
+# or
 npm run dev
 ```
 
-La aplicación se ejecutará en [http://localhost:3001](http://localhost:3001).
+The application will run at [http://localhost:3001](http://localhost:3001).
 
 ---
 
-## Scripts Disponibles
+## Available Scripts
 
 ```bash
-bun run dev          # Desarrollo (puerto 3001)
-bun run build        # Build de producción
-bun start            # Servidor de producción
-bun test             # Tests unitarios
-bun run test:e2e     # Tests end-to-end
+bun run dev          # Development (port 3001)
+bun run build        # Production build
+bun start            # Production server
+bun test             # Unit tests
+bun run test:e2e     # End-to-end tests
 bun run lint         # Linter
 ```
 
 ---
 
-## Pruebas
+## Testing
 
-La aplicación cuenta con pruebas unitarias y end-to-end.
+The application includes unit and end-to-end tests.
 
 ```bash
-# Tests unitarios
+# Unit tests
 bun test
 
 # Coverage
 bun run test:coverage
 
-# E2E con Playwright
+# E2E with Playwright
 bun run test:e2e
 ```
 
@@ -190,114 +190,114 @@ bun run test:e2e
 
 ## Docker
 
-### Build y ejecución local
+### Local build and execution
 
 ```bash
 # Test Docker build
 ./scripts/docker-test.sh
 
-# Limpiar recursos
+# Clean up resources
 ./scripts/docker-cleanup.sh
 ```
 
-### Despliegue en Render
+### Deployment on Render
 
-1. Conecta tu repositorio en Render Dashboard
-2. Selecciona "Docker" como runtime
-3. Configura variables de entorno:
+1. Connect your repository in Render Dashboard
+2. Select "Docker" as runtime
+3. Configure environment variables:
    ```
    NODE_ENV=production
    NEXT_PUBLIC_API_URL=https://cfs-api.onrender.com/api/v1
    NEXT_PUBLIC_ENVIRONMENT=production
    ```
-4. Deploy automático desde la rama `main`
+4. Automatic deployment from `main` branch
 
 ---
 
-## Resumen de Rutas
+## Routes Overview
 
 <details>
-<summary><strong>Ver rutas principales</strong></summary>
+<summary><strong>View main routes</strong></summary>
 
-### Públicas
+### Public
 
-| Ruta         | Descripción                          |
+| Route        | Description                          |
 | :----------- | :----------------------------------- |
-| `/`          | Página principal con productos       |
-| `/auth`      | Login y registro (tabs)              |
+| `/`          | Home page with products              |
+| `/auth`      | Login and registration (tabs)        |
 
 ---
 
-### Protegidas (Dashboard)
+### Protected (Dashboard)
 
-| Ruta                     | Descripción                     |
+| Route                    | Description                     |
 | :----------------------- | :------------------------------ |
-| `/products`              | Gestión de productos del usuario |
-| `/products/new`          | Crear nuevo producto            |
-| `/products/{id}`         | Detalle de producto             |
-| `/products/{id}/edit`    | Editar producto                 |
-| `/orders`                | Historial de órdenes            |
-| `/orders/{id}`           | Detalle de orden                |
-| `/profile`               | Perfil de usuario               |
+| `/products`              | User product management         |
+| `/products/new`          | Create new product              |
+| `/products/{id}`         | Product detail                  |
+| `/products/{id}/edit`    | Edit product                    |
+| `/orders`                | Order history                   |
+| `/orders/{id}`           | Order detail                    |
+| `/profile`               | User profile                    |
 
 ---
 
 ### Admin
 
-| Ruta            | Descripción              |
-| :-------------- | :----------------------- |
-| `/admin/users`  | Gestión de usuarios      |
-| `/admin/products` | Todos los productos    |
-| `/admin/orders` | Todas las órdenes        |
+| Route            | Description              |
+| :--------------- | :----------------------- |
+| `/admin/users`   | User management          |
+| `/admin/products`| All products             |
+| `/admin/orders`  | All orders               |
 
 </details>
 
 ---
 
-## Tecnologías Clave
+## Key Technologies
 
 ### Zustand Stores
 
 ```typescript
-// authStore - Autenticación y usuario
-// productStore - Productos y CRUD
-// orderStore - Órdenes y carrito
+// authStore - Authentication and user
+// productStore - Products and CRUD
+// orderStore - Orders and cart
 ```
 
 ### API Client
 
 ```typescript
-// Axios con interceptores automáticos:
-// - Inyección de JWT en headers
-// - Manejo de errores 401/403/500
-// - Logout automático en token inválido
+// Axios with automatic interceptors:
+// - JWT injection in headers
+// - Error handling 401/403/500
+// - Automatic logout on invalid token
 ```
 
 ### Tailwind Theme
 
 ```css
-/* Colores personalizados */
---color-primary-400: #6BEFA3  /* Verde menta */
---color-dark-900: #0E0E10     /* Fondo principal */
+/* Custom colors */
+--color-primary-400: #6BEFA3  /* Mint green */
+--color-dark-900: #0E0E10     /* Main background */
 --color-dark-800: #1A1A1D     /* Cards */
 ```
 
 ---
 
-## Contribución
+## Contributing
 
-1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
----
-
-## Licencia
-
-Este proyecto es parte de un trabajo académico para la Universidad.
+1. Fork the project
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ---
 
-Hecho con ❤️ para la comunidad universitaria
+## License
+
+This project is part of an academic work for the University.
+
+---
+
+Made with ❤️ for the university community
